@@ -27,7 +27,7 @@ class GDN_Scraper(BaseScraper):
 
     def getArrivalsTableHeader(self):
         table_header = f"""
-                <h>Arrivals:</h>
+                <h>Arrivals: {self.airportName_}</h>
                 <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                     <thead>
                         <tr style="background-color: #f2f2f2;">
@@ -43,7 +43,7 @@ class GDN_Scraper(BaseScraper):
         return table_header
     def getDeparturesTableHeader(self):
         table_header = f"""
-                <h>Departures:</h>
+                 <h>Departures: {self.airportName_}</h>
                     <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                         <thead>
                             <tr style="background-color: #f2f2f2;">

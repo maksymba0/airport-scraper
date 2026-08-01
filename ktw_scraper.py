@@ -27,7 +27,7 @@ class KTW_Scraper(BaseScraper):
 
     def getArrivalsTableHeader(self):
         table_header = f"""
-                <h>Arrivals:</h>
+                 <h>Arrivals: {self.airportName_}</h>
                 <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                     <thead>
                         <tr style="background-color: #f2f2f2;">
@@ -44,7 +44,7 @@ class KTW_Scraper(BaseScraper):
         return table_header
     def getDeparturesTableHeader(self):
         table_header = f"""
-                <h>Departures:</h>
+                 <h>Departures: {self.airportName_}</h>
                     <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                         <thead>
                             <tr style="background-color: #f2f2f2;">
@@ -134,7 +134,7 @@ class KTW_Scraper(BaseScraper):
 
         dateToday = datetime.today().strftime("%Y-%m-%d")
         data = self.makeRequestHTML(f"https://www.katowice-airport.com/pl/api/flight-board/list?direction=1&date={dateToday}&time_from=00:00&time_to=23:59") 
-        
+
         _data = data
  
 

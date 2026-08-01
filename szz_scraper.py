@@ -30,7 +30,7 @@ class SZZ_Scraper(BaseScraper):
 
     def getArrivalsTableHeader(self):
         table_header = f"""
-                <h>Arrivals:</h>
+                 <h>Arrivals: {self.airportName_}</h>
                 <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                     <thead>
                         <tr style="background-color: #f2f2f2;">
@@ -45,7 +45,7 @@ class SZZ_Scraper(BaseScraper):
         return table_header
     def getDeparturesTableHeader(self):
         table_header = f"""
-                <h>Departures:</h>
+                 <h>Departures: {self.airportName_}</h>
                     <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                         <thead>
                             <tr style="background-color: #f2f2f2;">
@@ -123,34 +123,18 @@ class SZZ_Scraper(BaseScraper):
 
     def getDepartures(self):
         data = ""
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            scrapper = CloudScrapper.create_scraper(browser={
-                'browser':'chrome',
-                'platform':'windows',
-                'desktop':True
-            })
-            data = scrapper.get(self.url_) 
+        print("downloading")
+        scrapper = CloudScrapper.create_scraper(browser={
+            'browser':'chrome',
+            'platform':'windows',
+            'desktop':True
+        })
+        data = scrapper.get(self.url_) 
         try:
-            try:
-                _data = bs(data,"html.parser")
-            except Exception:
-                _data = bs(data.text,"html.parser")
+            _data = bs(data.text,"html.parser")
         except Exception as e:
             print(f"error: {e}")
             return []
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
 
 
 
@@ -180,37 +164,20 @@ class SZZ_Scraper(BaseScraper):
         print(f"Found {len(trs)} elements")
         return flights 
     def getArrivals(self):
-
-        data = ""
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            scrapper = CloudScrapper.create_scraper(browser={
-                'browser':'chrome',
-                'platform':'windows',
-                'desktop':True
-            })
-            data = scrapper.get(self.url_) 
+ 
+        print("downloading")
+        scrapper = CloudScrapper.create_scraper(browser={
+            'browser':'chrome',
+            'platform':'windows',
+            'desktop':True
+        })
+        data = scrapper.get(self.url_) 
+             
         try:
-            try:
-                _data = bs(data,"html.parser")
-            except Exception:
-                _data = bs(data.text,"html.parser")
+           _data = bs(data.text,"html.parser")
         except Exception as e:
             print(f"error: {e}")
-            return []
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
-
+            return [] 
 
 
         flightsTable = _data.find('div', id="arrivalsInfo")
