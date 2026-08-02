@@ -1,4 +1,4 @@
-# Airport Flight Tracker
+# Airport Data Scraper
 
 A Python-based tracking tool designed to gather live airport data. The goal is to collect and centralize flight schedules from various airport sources for easy monitoring and logging.
 
