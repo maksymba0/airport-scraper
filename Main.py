@@ -9,6 +9,8 @@ import szz_scraper
 import bzg_scraper
 import poz_scraper
 import ktw_scraper
+import lcj_scraper
+import rze_scraper
 
 #import json as JSON
 from datetime import datetime
@@ -25,10 +27,11 @@ def home():
     Bydgoszcz = bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals")
     Poznan = poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&count=10&lang=pl")
     Katowice = ktw_scraper.KTW_Scraper("None")
+    Lodz = lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl")
+    Rzeszow = rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty")
 
-
-    result = Katowice.getArrivalsTable()
-    departures = Katowice.getDeparturesAsTable()
+    result = Rzeszow.getArrivalsTable()
+    departures = Rzeszow.getDeparturesAsTable()
     #Bydgoszcz.getArrivalsTable()
     #departures = Gdansk.getDeparturesAsTable()
     #arrivals = Gdansk.getArrivalsTable()

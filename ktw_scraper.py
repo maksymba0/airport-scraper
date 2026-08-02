@@ -12,7 +12,7 @@ class KTW_Scraper(BaseScraper):
 
     def __init__(self, url):
         super().__init__(url)
-        print(f"{self.airportName_} scrapper - init")
+        print(f"{self.airportName_} scraper - init")
         super().printUrl()
 
     def makeRequestHTML(self,url=None):
