@@ -2,9 +2,22 @@
 
 A Python-based tracking tool designed to gather live airport data. The goal is to collect and centralize flight schedules from various airport sources for easy monitoring and logging.
 
-## Current Features
-* **Data Extraction**: Fetches live arrivals and departures data directly from airport web systems.
-* **Data Processing**: Parses raw HTML schedules and handles direct API endpoints seamlessly.
+### ✈️ Supported Airports
+| Code | Airport Name | Region / City |
+| :---: | :--- | :--- |
+| **GDN** | Gdańsk Lech Wałęsa Airport | Gdańsk |
+| **SZZ** | Port Lotniczy Szczecin-Goleniów | Szczecin |
+| **POZ** | Port Lotniczy Poznań-Ławica | Poznań |
+| **WRO** | Port Lotniczy Wrocław | Wrocław |
+| **KTW** | Katowice Airport | Katowice |
+| **KRK** | Kraków Airport | Kraków |
+| **RZE** | Port Lotniczy Rzeszów-Jasionka | Rzeszów |
+| **LUZ** | Port Lotniczy Lublin | Lublin |
+| **RDO** | Warsaw-Radom Airport | Radom |
+| **LCJ** | Port Lotniczy Łódź | Łódź |
+| **WAW** | Warsaw Chopin Airport | Warsaw |
+| **SZY** | Port Lotniczy Olsztyn-Mazury | Olsztyn |
+| **BZG** | Port Lotniczy Bydgoszcz | Bydgoszcz |
 
 ## Future Plans
 * Add support for tracking more regional and international airports.
