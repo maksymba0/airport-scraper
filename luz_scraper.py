@@ -5,15 +5,15 @@ import json as JSON
 from datetime import datetime
 from flight import Flight
 
-class LCJ_Scraper(BaseScraper):
+class LUZ_Scraper(BaseScraper):
 
     airportName_ = "Port lotniczy lublin SA"
     airportCode_ = "LUZ"
 
     def __init__(self, url):
         super().__init__(url)
-        print(f"{self.airportName_} scraper - init")
-        super().printUrl()
+        print(f"{self.airportCode_} |  {self.airportName_} scraper - init")
+        #super().printUrl()
 
     def makeRequestHTML(self,url=None):
   
@@ -57,11 +57,7 @@ class LCJ_Scraper(BaseScraper):
         return table_header
     def getArrivalsTable(self):
 
-        flights = self.getArrivals() 
-        #"arrivalTime": arrivaltime_,
-        #"destination":destination_,
-        #"flightNum":number,
-        #"gate":gate
+        flights = self.getArrivals()  
         print("Flight data: \n")
         
         table_header = self.getArrivalsTableHeader()
@@ -141,9 +137,9 @@ class LCJ_Scraper(BaseScraper):
             time = tds[0].get_text() or ''
 
             arrivaltime_ = time
-            destination_ = tds[2].get_text() or ' '
+            destination_ = tds[2].find("p").get_text() or ' '
             number = tds[3].get_text() or ' '
-            status = tds[4].get_text() or ' '
+            status = tds[5].get_text() or ' '
             flight = {
                 "arrivalTime": arrivaltime_,
                 "destination":destination_,
@@ -155,32 +151,30 @@ class LCJ_Scraper(BaseScraper):
 
     def getArrivals(self):
 
-        data = ""
-        print("downloading")
-        data = self.makeRequestHTML()  
-
+        data = self.makeRequestHTML() 
+        
         _data = data.text
- 
-
+        
+        
         data_ = bs(_data,"html.parser")
 
-        tbody = data_.find("tbody",class_="timetableArrivals")
+        tbody = data_.find("div",id="arrivals-table").find("div",role="table").find_all("div",recursive=False)[1]
 
-        trs = tbody.find_all("tr")
+        trs = tbody.find_all("div",recursive=False)
 
         print(f"Found {len(data_)} elements")
 
         flights_info = []
         for key in trs:
 
-            tds = key.find_all("td")
+            tds = key.find_all("div",recursive=False)
             
             time = tds[0].get_text() or ''
 
             arrivaltime_ = time
-            destination_ = tds[1].get_text() or ' '
-            number = tds[2].get_text() or ' '
-            status = tds[3].get_text() or ' '
+            destination_ = tds[2].find("p").get_text() or ' '
+            number = tds[3].get_text() or ' '
+            status = tds[5].get_text() or ' '
             flight = {
                 "arrivalTime": arrivaltime_,
                 "destination":destination_,

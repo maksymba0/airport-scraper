@@ -11,9 +11,9 @@ class RDO_Scraper(BaseScraper):
     airportCode_ = "RDO"
 
     def __init__(self, url):
-        super().__init__(url)
-        print(f"{self.airportName_} scraper - init")
-        super().printUrl()
+            super().__init__(url)
+            print(f"{self.airportCode_} |  {self.airportName_} scraper - init")
+            #super().printUrl()
 
     def makeRequestHTML(self,url=None, headers=None, method=None, json=None):
 
@@ -158,7 +158,7 @@ class RDO_Scraper(BaseScraper):
         for flight in data_["data"]:
  
             time = flight["scheduled_datetime_pl"] or '' 
-            
+
             arrivaltime_ = time
             destination_ = flight["origin_en"] or ' '
             number = flight["flight_no"] or ' '

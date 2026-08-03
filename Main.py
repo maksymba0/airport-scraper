@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 import home as _home
 from flight import Flight
+
 import gdn_scraper 
 import waw_scraper
 import krk_scraper
@@ -13,6 +14,7 @@ import lcj_scraper
 import rze_scraper
 import rdo_scraper
 import szy_scraper
+import luz_scraper
 
 #import json as JSON
 from datetime import datetime
@@ -33,10 +35,13 @@ def home():
     Rzeszow = rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty")
     Radom = rdo_scraper.RDO_Scraper("https://www.lotniskowarszawa-radom.pl/api/search-flight")
     Olsztyn = szy_scraper.SZY_Scraper("https://mazuryairport.pl/")
+    Lublin = luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/")
+
     
 
-    result = Olsztyn.getArrivalsTable()
-    departures = Olsztyn.getDeparturesAsTable()
+
+    result = Lublin.getArrivalsTable()
+    departures = Lublin.getDeparturesAsTable()
     #Bydgoszcz.getArrivalsTable()
     #departures = Gdansk.getDeparturesAsTable()
     #arrivals = Gdansk.getArrivalsTable()

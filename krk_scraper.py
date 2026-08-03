@@ -7,13 +7,13 @@ from flight import Flight
 
 class KRK_Scraper(BaseScraper):
 
-    airportName_ = "Warsaw Chopin Airport"
-    airportCode_ = "WAW"
+    airportName_ = "Kraków Airport"
+    airportCode_ = "KRK"
 
     def __init__(self, url):
         super().__init__(url)
-        print(f"{self.airportName_} scraper - init")
-        super().printUrl()
+        print(f"{self.airportCode_} |  {self.airportName_} scraper - init")
+        #super().printUrl()
 
     def makeRequestHTML(self,url=None):
   
