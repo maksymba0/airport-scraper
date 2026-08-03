@@ -11,6 +11,8 @@ import poz_scraper
 import ktw_scraper
 import lcj_scraper
 import rze_scraper
+import rdo_scraper
+import szy_scraper
 
 #import json as JSON
 from datetime import datetime
@@ -29,9 +31,12 @@ def home():
     Katowice = ktw_scraper.KTW_Scraper("None")
     Lodz = lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl")
     Rzeszow = rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty")
+    Radom = rdo_scraper.RDO_Scraper("https://www.lotniskowarszawa-radom.pl/api/search-flight")
+    Olsztyn = szy_scraper.SZY_Scraper("https://mazuryairport.pl/")
+    
 
-    result = Rzeszow.getArrivalsTable()
-    departures = Rzeszow.getDeparturesAsTable()
+    result = Olsztyn.getArrivalsTable()
+    departures = Olsztyn.getDeparturesAsTable()
     #Bydgoszcz.getArrivalsTable()
     #departures = Gdansk.getDeparturesAsTable()
     #arrivals = Gdansk.getArrivalsTable()
