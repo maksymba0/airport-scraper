@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 
 class GDN_Scraper(BaseScraper):
 
@@ -157,10 +157,31 @@ class GDN_Scraper(BaseScraper):
         
         departures_list = JSON.loads(departures)  
 
-        return departures_list
+        flights_info = []
+        for flight in departures_list: 
+
+            raw_time = flight["dateTime"].strip()
+            dtTime = datetime.fromisoformat(raw_time)
+            time = dtTime.strftime("%H:%M")
+            destination = flight["destination"].strip()
+            carrier = flight["carrierName"].strip() 
+            number = flight["flight"].strip()
+            status = flight["remarks"].strip() 
+            gate = flight["gate"] or ""
+            
+            flight_ = {
+                FlightFields.arrivalTime: time,
+                FlightFields.destination:destination,
+                FlightFields.number:number,
+                FlightFields.carrier:carrier,
+                FlightFields.gate:gate,
+                FlightFields.status:status
+            }
+            flights_info.append(flight_) 
+        return flights_info 
     def getArrivals(self):
 
-        data = self.makeRequestHTML() 
+        data = self.makeRequestHTML("https://www.airport.gdansk.pl/loty/tablica-odlotow") 
         try:
             _data = bs(data.text,"html.parser")
         except Exception as e:
@@ -183,5 +204,26 @@ class GDN_Scraper(BaseScraper):
             return []
         
         arrivals_list = JSON.loads(arrivals) 
-                
-        return arrivals_list
+
+        flights_info = []
+        for li in arrivals_list: 
+
+            raw_time = flight["dateTime"].strip()
+            dtTime = datetime.fromisoformat(raw_time)
+            time = dtTime.strftime("%H:%M")
+            destination = flight["destination"].strip()
+            carrier = flight["carrierName"].strip() 
+            number = flight["flight"].strip()
+            status = flight["remarks"].strip() 
+            gate = flight["gate"] or ""
+            
+            flight = {
+                FlightFields.arrivalTime: time,
+                FlightFields.destination:destination,
+                FlightFields.number:number,
+                FlightFields.carrier:carrier,
+                FlightFields.gate:gate,
+                FlightFields.status:status
+            }
+            flights_info.append(flight) 
+        return flights_info

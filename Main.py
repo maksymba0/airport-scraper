@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import home as _home
 from flight import Flight, FlightFields
 
@@ -66,6 +66,8 @@ def allFlights():
     return ""
 @app.route("/")
 def home(): 
+
+    return render_template("dashboard.html")
 
     Gdansk = gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow")
     Szczecin = szz_scraper.SZZ_Scraper("https://airport.com.pl/loty/tablica-przylotow-odlotow/")
