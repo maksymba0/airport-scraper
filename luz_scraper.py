@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 
 class LUZ_Scraper(BaseScraper):
 
@@ -63,13 +63,13 @@ class LUZ_Scraper(BaseScraper):
         table_header = self.getArrivalsTableHeader()
     
         flights_text = []
-        for panel in flights:
+        for flight in flights:
     
-            time = panel["arrivalTime"].strip() 
-            destination = panel["destination"].strip() 
-            number = panel["flightNum"].strip()
-            status = panel["status"].strip() 
-    
+            time = flight[FlightFields.arrivalTime].strip() 
+            destination = flight[FlightFields.destination].strip() 
+            number = flight[FlightFields.number].strip() 
+            status = flight[FlightFields.status].strip() 
+
             htmlText = f"""
             <tr>
                 <td style="padding:5px;">{time}</td>
@@ -94,10 +94,11 @@ class LUZ_Scraper(BaseScraper):
 
         departures_rows = []
         for flight in departures_list:
-            time = flight["arrivalTime"].strip() 
-            destination = flight["destination"].strip() 
-            number = flight["flightNum"].strip() 
-            status = flight["status"].strip()  
+            time = flight[FlightFields.arrivalTime].strip() 
+            destination = flight[FlightFields.destination].strip() 
+            number = flight[FlightFields.number].strip() 
+            status = flight[FlightFields.status].strip()   
+ 
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
@@ -141,11 +142,12 @@ class LUZ_Scraper(BaseScraper):
             number = tds[3].get_text() or ' '
             status = tds[5].get_text() or ' '
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "status":status
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number,
+                FlightFields.status:status
             }
+            
             flights_info.append(flight) 
         return flights_info   
 
@@ -176,10 +178,10 @@ class LUZ_Scraper(BaseScraper):
             number = tds[3].get_text() or ' '
             status = tds[5].get_text() or ' '
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "status":status
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number,
+                FlightFields.status:status
             }
             flights_info.append(flight) 
         return flights_info  

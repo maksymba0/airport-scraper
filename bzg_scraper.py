@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 
 class BZG_Scraper(BaseScraper):
 
@@ -71,14 +71,14 @@ class BZG_Scraper(BaseScraper):
         table_header = self.getArrivalsTableHeader()
     
         flights_text = []
-        for panel in flights:
+        for flight in flights:
     
-            time = panel["arrivalTime"].strip() 
-            destination = panel["destination"].strip() 
-            number = panel["flightNum"].strip()
-            gate = panel["gate"].strip() 
-            status = panel["status"].strip() 
-            carrier = panel["carrier"].strip()
+            time = flight[FlightFields.arrivalTime].strip() 
+            destination = flight[FlightFields.destination].strip() 
+            number = flight[FlightFields.number].strip()
+            gate = flight[FlightFields.gate].strip() 
+            status = flight[FlightFields.status].strip() 
+            carrier = flight[FlightFields.carrier].strip()
     
             htmlText = f"""
             <tr>
@@ -106,12 +106,12 @@ class BZG_Scraper(BaseScraper):
 
         departures_rows = []
         for flight in departures_list:
-            time = flight["arrivalTime"].strip() 
-            destination = flight["destination"].strip() 
-            number = flight["flightNum"].strip()
-            gate = flight["gate"].strip() 
-            status = flight["status"].strip() 
-            carrier = flight["carrier"].strip()
+            time = flight[FlightFields.arrivalTime].strip() 
+            destination = flight[FlightFields.destination].strip() 
+            number = flight[FlightFields.number].strip()
+            gate = flight[FlightFields.gate].strip() 
+            status = flight[FlightFields.status].strip() 
+            carrier = flight[FlightFields.carrier].strip()
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
@@ -134,23 +134,11 @@ class BZG_Scraper(BaseScraper):
     
         data = self.makeRequestHTML("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=departures&day=0&timeFrom=00:00&timeTo=23:59&count=10&lang=pl") 
          
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            data = self.makeRequestHTML()  
+         
+        print("downloading")
+        data = self.makeRequestHTML() 
 
-        _data = data
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
+        _data = data.text
 
         data_ = JSON.loads(_data)
             
@@ -170,36 +158,22 @@ class BZG_Scraper(BaseScraper):
             gate = key['gateNumbers'] or ' '
             status = key['statusEn'] or ' '
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
+                 FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number,
+                FlightFields.carrier:carrier,
+                FlightFields.gate:gate,
+                FlightFields.status:status
             }
             flights_info.append(flight) 
         return flights_info  
     
     def getArrivals(self):
 
-        data = ""
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            data = self.makeRequestHTML()  
+        print("downloading")
+        data = self.makeRequestHTML()  
 
-        _data = data
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
+        _data = data.text
 
         data_ = JSON.loads(_data)
          
@@ -219,12 +193,12 @@ class BZG_Scraper(BaseScraper):
             gate = key['gateNumbers'] or ' '
             status = key['statusEn'] or ' '
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number,
+                FlightFields.carrier:carrier,
+                FlightFields.gate:gate,
+                FlightFields.status:status
             }
             flights_info.append(flight) 
         return flights_info  

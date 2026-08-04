@@ -23,8 +23,7 @@ class BaseScraper:
             arg = self.url
         try:
             # Mimic a standard Chrome browser header
- 
-            result = ""
+  
             if method_ is None:
                 print("sent get request")
                 result = requests.get(arg, headers=header_)

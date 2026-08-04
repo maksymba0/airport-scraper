@@ -122,21 +122,15 @@ class WRO_Scraper(BaseScraper):
 
 
     def getDepartures(self):
-        data = ""
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            scrapper = CloudScrapper.create_scraper(browser={
-                'browser':'chrome',
-                'platform':'windows',
-                'desktop':True
-            })
-            data = scrapper.get(self.url_) 
+
+        print("downloading")
+        scrapper = CloudScrapper.create_scraper(browser={
+            'browser':'chrome',
+            'platform':'windows',
+            'desktop':True
+        })
+        data = scrapper.get(self.url_) 
+
         try:
             try:
                 _data = bs(data,"html.parser")
@@ -145,14 +139,6 @@ class WRO_Scraper(BaseScraper):
         except Exception as e:
             print(f"error: {e}")
             return []
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
-
-
 
         flightsTable = _data.find('div', id="departures")
 
@@ -182,23 +168,16 @@ class WRO_Scraper(BaseScraper):
 
         print(f"Found {len(trs)} elements")
         return flights 
+    
     def getArrivals(self):
 
-        data = ""
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            scrapper = CloudScrapper.create_scraper(browser={
-                'browser':'chrome',
-                'platform':'windows',
-                'desktop':True
-            })
-            data = scrapper.get(self.url_) 
+        print("downloading")
+        scrapper = CloudScrapper.create_scraper(browser={
+            'browser':'chrome',
+            'platform':'windows',
+            'desktop':True
+        })
+        data = scrapper.get(self.url_) 
         try:
             try:
                 _data = bs(data,"html.parser")
@@ -207,12 +186,7 @@ class WRO_Scraper(BaseScraper):
         except Exception as e:
             print(f"error: {e}")
             return []
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
+ 
 
 
 

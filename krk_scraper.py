@@ -132,17 +132,10 @@ class KRK_Scraper(BaseScraper):
 
 
     def getDepartures(self):
-     
-        data = ""
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            data = self.makeRequestHTML("https://krakowairport.pl/pl/pasazer/loty/polaczenia/odloty") 
+
+        print("downloading")
+        data = self.makeRequestHTML("https://krakowairport.pl/pl/pasazer/loty/polaczenia/odloty") 
+             
         try:
             try:
                 _data = bs(data,"html.parser")
@@ -151,12 +144,7 @@ class KRK_Scraper(BaseScraper):
         except Exception as e:
             print(f"error: {e}")
             return []
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
+ 
 
         departures_table = _data.find('div', class_="departures_table") 
 
@@ -181,8 +169,7 @@ class KRK_Scraper(BaseScraper):
                 "flightNum":number,
                 "carrier":carrier,
                 "status":status
-            }
-            print(fl[0])
+            } 
             flights_info.append(flight) 
 
         print(flights_info)
@@ -190,16 +177,8 @@ class KRK_Scraper(BaseScraper):
     
     def getArrivals(self):
 
-        data = ""
-        with open("test.txt", "r", encoding="utf-8") as file_:
-            if file_.read(1):
-                print("reading")
-                file_.seek(0)
-                data = file_.read()
-        if data == "":
-            
-            print("downloading")
-            data = self.makeRequestHTML() 
+        print("downloading")
+        data = self.makeRequestHTML() 
         try:
             try:
                 _data = bs(data,"html.parser")
@@ -208,12 +187,6 @@ class KRK_Scraper(BaseScraper):
         except Exception as e:
             print(f"error: {e}")
             return []
-
-        with open("test.txt","w",encoding="utf-8") as file:
-            try: 
-                file.write(data)
-            except TypeError:
-                file.write(data.text)
 
         departures_table = _data.find('div', class_="departures_table") 
 
@@ -242,8 +215,7 @@ class KRK_Scraper(BaseScraper):
                 "status":status
             }
             flights_info.append(flight)
-            
-        print(flights_info)
+             
         return flights_info  
 
 # 'id', 

@@ -172,9 +172,7 @@ class GDN_Scraper(BaseScraper):
         rawData = panel['data-symfony--ux-react--react-props-value'] 
     
         PData = JSON.loads(rawData)
-
-        with open("test.txt","w",encoding="utf-8") as file: 
-            file.write(rawData) 
+ 
       
         print("Keys found in data:", PData.keys()) 
         # ['arrivals', 'departures', 'locale', 'fetchedDate', 'securityWaitTime', 'isMainPage', 'ticketsLink']

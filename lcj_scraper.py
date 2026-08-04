@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 
 class LCJ_Scraper(BaseScraper):
 
@@ -58,10 +58,7 @@ class LCJ_Scraper(BaseScraper):
     def getArrivalsTable(self):
 
         flights = self.getArrivals() 
-        #"arrivalTime": arrivaltime_,
-        #"destination":destination_,
-        #"flightNum":number,
-        #"gate":gate
+
         print("Flight data: \n")
         
         table_header = self.getArrivalsTableHeader()
@@ -69,10 +66,10 @@ class LCJ_Scraper(BaseScraper):
         flights_text = []
         for panel in flights:
     
-            time = panel["arrivalTime"].strip() 
-            destination = panel["destination"].strip() 
-            number = panel["flightNum"].strip()
-            status = panel["status"].strip() 
+            time = panel[FlightFields.arrivalTime].strip() 
+            destination = panel[FlightFields.destination].strip() 
+            number = panel[FlightFields.number].strip()
+            status = panel[FlightFields.status].strip() 
     
             htmlText = f"""
             <tr>

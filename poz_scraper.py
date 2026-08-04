@@ -20,7 +20,11 @@ class POZ_Scraper(BaseScraper):
         if url is None:
             url = self.url_
 
-        result = super().makeRequestHTML(url) 
+        header_ = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+        }
+        result = super().makeRequestHTML(url, method=None, headers=header_) 
 
         return result
 
@@ -163,15 +167,14 @@ class POZ_Scraper(BaseScraper):
         return flights_info  
 
     def getArrivals(self):
-
-        data = ""
+ 
         print("downloading")
         data = self.makeRequestHTML()  
 
         _data = data.text
- 
+        print(data)
 
-        data_ = JSON.loads(_data)
+        data_ = data.json()
          
 
         print(f"Found {len(data_)} elements")
