@@ -171,8 +171,7 @@ class KRK_Scraper(BaseScraper):
                 "status":status
             } 
             flights_info.append(flight) 
-
-        print(flights_info)
+ 
         return flights_info   
     
     def getArrivals(self):

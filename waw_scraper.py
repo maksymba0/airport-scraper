@@ -166,8 +166,7 @@ class WAW_Scraper(BaseScraper):
             }
             flights_info.append(flight)
         #flights_info_text = " \n".join(flights_info)
-        #print(flights_info_text)
-        print(flights_info)
+        #print(flights_info_text) 
         return flights_info  
         
     def getArrivals(self):
@@ -207,7 +206,5 @@ class WAW_Scraper(BaseScraper):
                 FlightFields.gate:gate,
                 FlightFields.status:status
             }
-            flights_info.append(flight)
-        #flights_info_text = " \n".join(flights_info)
-        #print(flights_info_text) 
+            flights_info.append(flight) 
         return flights_info  

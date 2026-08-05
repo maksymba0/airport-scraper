@@ -149,7 +149,7 @@ class RDO_Scraper(BaseScraper):
             }
         
         data = self.makeRequestHTML(headers=headers, method="POST", json=payload_ )  #(url=None, headers=None, method=None):
-        print(data)
+        
         data_ = data.json() 
 
         print(f"Found {len(data_["data"])} elements")
@@ -195,7 +195,7 @@ class RDO_Scraper(BaseScraper):
             }
         
         data = self.makeRequestHTML(headers=headers, method="POST", json=payload_ )  #(url=None, headers=None, method=None):
-        print(data)
+       
         data_ = data.json() 
 
         print(f"Found {len(data_["data"])} elements")

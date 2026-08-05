@@ -66,12 +66,16 @@
                 container.innerHTML = '<p>No flights found.</p>';
                 return;
             }
-            
-            let html = `<p>Found ${flights.length} flights</p>`;
+            const search = document.getElementById('search').value.toLowerCase();
+            const airport = document.getElementById('airportFilter').value;
+            const type = document.getElementById('typeFilter').value;
+            let html = `<p>Found ${flights.length} flights. </p>`;
+             
             html += `<table>
                 <tr>
                     <th>Airport</th>
                     <th>Type</th>
+                    <th>Airline</th>
                     <th>Flight</th>
                     <th>Destination/Origin</th>
                     <th>Time</th>
@@ -82,6 +86,7 @@
                 html += `<tr>
                     <td><strong>${f.code || '??'}</strong></td>
                     <td>${f.type || 'unknown'}</td>
+                    <td>${f.carrier || 'N/A'}</td>
                     <td>${f.flightNum || 'N/A'}</td>
                     <td>${f.destination || 'N/A'}</td>
                     <td>${f.arrivalTime || 'N/A'}</td>
@@ -100,15 +105,18 @@
             const filtered = allFlights.filter(f => 
             {
                 const matchSearch = 
-                    (f.number || '').toLowerCase().includes(search) ||
+                    (f.flightNum || '').toLowerCase().includes(search) ||
                     (f.destination || '').toLowerCase().includes(search) ||
                     (f.carrier || '').toLowerCase().includes(search) ||
+                    (f.status || '').toLowerCase().includes(search) ||
                     (f.arrivalTime || '').toLowerCase().includes(search);
+
                 const matchAirport = airport === 'all' || f.code === airport;
                 const matchType = type === 'all' || f.type === type;
-                return matchSearch && matchAirport && matchType;
-            });
-            
+                
+                return matchSearch && matchAirport && matchType
+
+            }); 
             renderTable(filtered);
         }
 

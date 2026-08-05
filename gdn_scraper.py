@@ -181,7 +181,7 @@ class GDN_Scraper(BaseScraper):
         return flights_info 
     def getArrivals(self):
 
-        data = self.makeRequestHTML("https://www.airport.gdansk.pl/loty/tablica-odlotow") 
+        data = self.makeRequestHTML("https://www.airport.gdansk.pl/loty/tablica-przylotow") 
         try:
             _data = bs(data.text,"html.parser")
         except Exception as e:
@@ -206,18 +206,18 @@ class GDN_Scraper(BaseScraper):
         arrivals_list = JSON.loads(arrivals) 
 
         flights_info = []
-        for li in arrivals_list: 
+        for flight in arrivals_list: 
 
             raw_time = flight["dateTime"].strip()
             dtTime = datetime.fromisoformat(raw_time)
             time = dtTime.strftime("%H:%M")
-            destination = flight["destination"].strip()
+            destination = flight["origin"].strip()
             carrier = flight["carrierName"].strip() 
             number = flight["flight"].strip()
             status = flight["remarks"].strip() 
-            gate = flight["gate"] or ""
+            gate = flight["terminal"] or ""
             
-            flight = {
+            flight_ = {
                 FlightFields.arrivalTime: time,
                 FlightFields.destination:destination,
                 FlightFields.number:number,
@@ -225,5 +225,5 @@ class GDN_Scraper(BaseScraper):
                 FlightFields.gate:gate,
                 FlightFields.status:status
             }
-            flights_info.append(flight) 
+            flights_info.append(flight_) 
         return flights_info
