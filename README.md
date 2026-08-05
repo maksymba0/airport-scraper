@@ -25,7 +25,11 @@ A Python-based tracking tool designed to gather live airport data. The goal is t
 * **UX/UI Enhancements**: Improve the web design for easier access to airport tables information, ensuring a clean, responsive layout for desktop and mobile users.
 
 ## Screenshots
-Page display
+Page display now
+
+<img width="1862" height="867" alt="image" src="https://github.com/user-attachments/assets/0650184b-4079-4e1a-9838-8c7c978c4642" />
+
+Page display before
 
 <img width="883" height="868" alt="image" src="https://github.com/user-attachments/assets/33d33d92-fd21-4b2b-9663-69314dcab956" />
 
