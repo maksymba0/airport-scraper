@@ -2,17 +2,52 @@
 <html>
 <head>
 <title>Airport Scraper</title>
+
+<style>
+
+body{
+font-family: system-ui, -apple-system;
+background-color: rgb(192, 183, 170);
+color: #262626;
+margin: 0;
+padding: 20px;
+}
+.topbar
+{
+    text-align: center;
+}
+.container
+{
+ max-width: 1200px;
+ margin: 0 auto;
+ background: #ffffff;
+ padding: 30px;
+ border-radius: 12px;
+ box-shadow: 0 4px 6px rgba(0,0,0,0.95);   
+}
+table
+{
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+font-size: 0.95rem;
+}
+</style>
 </head>
 
 <body>
 <div class="container">
-    <h1> Airport Scraper</h1>
-    <p> See real time data from multiple Polish airports in one place </p>
+    
+    <div class="topbar">
+        <h1> Airport Scraper</h1>
+        <p> See real time data from multiple Polish airports in one place </p>
+    </div>
 
     <div>
             <input style="width:350px;" type="text" 
             id="search" class="search-box" placeholder="Search by flight number, destination, or airline..." 
             oninput="filterTable()">
+            <button style="width: auto;" onclick="loadData()"> Load Data </button>
     </div>
     <div>
             <select id="airportFilter" onchange="filterTable()">
@@ -29,8 +64,7 @@
                 <option value="RZE">Rzeszów (RZE)</option>
                 <option value="RDO">Warszawa Radom (RDO)</option>
                 <option value="SZY">Olsztyn (SZY)</option>
-                <option value="LUZ">Lublin (LUZ)</option>
-                <!-- Add all 13 airports -->
+                <option value="LUZ">Lublin (LUZ)</option> 
             </select>
             <select id="typeFilter" onchange="filterTable()">
                 <option value="all">All</option>
@@ -39,7 +73,7 @@
             </select>
         </div>
         <div id="status">
-            <p>Loading flights...</p>
+            <p> Click 'Load Data' </p>
         </div>
 </div>
 <script>
@@ -119,8 +153,10 @@
             }); 
             renderTable(filtered);
         }
-
-        fetchFlights();
+        function loadData()
+        {
+            fetchFlights();
+        }
 </script>
 
 </body>
