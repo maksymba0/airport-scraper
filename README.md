@@ -26,10 +26,13 @@ A Python-based tracking tool designed to gather live airport data. The goal is t
 
 ## Screenshots
 Page display now
+<img width="1537" height="721" alt="image" src="https://github.com/user-attachments/assets/f2227d51-5cd1-4ee3-9baf-2ccf6e8890de" />
+
+Page display before
 
 <img width="1862" height="867" alt="image" src="https://github.com/user-attachments/assets/0650184b-4079-4e1a-9838-8c7c978c4642" />
 
-Page display before
+Page display old
 
 <img width="883" height="868" alt="image" src="https://github.com/user-attachments/assets/33d33d92-fd21-4b2b-9663-69314dcab956" />
 
