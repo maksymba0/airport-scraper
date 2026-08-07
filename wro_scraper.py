@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 import cloudscraper as CloudScrapper
 
 
@@ -158,11 +158,26 @@ class WRO_Scraper(BaseScraper):
             airport = tds[1].find_all("div")[0].get_text(strip=True)
             flight_no = tds[2].get_text(strip=True)
             status = tds[3].get_text(strip=True)
+            carriertext = flight_no
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "PC" in carriertext:
+                carrier = "PEGASUS AIRLINES"
+            elif "ENT" in carriertext:
+                carrier = "ENTER AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            elif "KL" in carriertext:
+                carrier = "Royal Dutch"
+            else:
+                carrier = carriertext
             flight = {
-                "arrivalTime": flightTime,
-                "destination":airport,
-                "flightNum":flight_no, 
-                "status":status
+                FlightFields.arrivalTime: flightTime,
+                FlightFields.destination:airport,
+                FlightFields.number:flight_no, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
             }
             flights.append(flight)
 
@@ -207,12 +222,28 @@ class WRO_Scraper(BaseScraper):
             flightTime = tds[0].get_text(strip=True)
             airport = tds[1].find_all("div")[0].get_text(strip=True)
             flight_no = tds[2].get_text(strip=True)
-            status = tds[3].get_text(strip=True)
+            status = tds[3].get_text(strip=True) 
+            carriertext = flight_no
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "PC" in carriertext:
+                carrier = "PEGASUS AIRLINES"
+            elif "ENT" in carriertext:
+                carrier = "ENTER AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            elif "KL" in carriertext:
+                carrier = "Royal Dutch"
+            else:
+                carrier = carriertext
+
             flight = {
-                "arrivalTime": flightTime,
-                "destination":airport,
-                "flightNum":flight_no, 
-                "status":status
+                FlightFields.arrivalTime: flightTime,
+                FlightFields.destination:airport,
+                FlightFields.number:flight_no, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
             }
             flights.append(flight)
  

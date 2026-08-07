@@ -141,11 +141,26 @@ class LCJ_Scraper(BaseScraper):
             destination_ = tds[1].get_text() or ' '
             number = tds[2].get_text() or ' '
             status = tds[3].get_text() or ' '
+            carriertext = number
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "PC" in carriertext:
+                carrier = "PEGASUS AIRLINES"
+            elif "ENT" in carriertext:
+                carrier = "ENTER AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            elif "KL" in carriertext:
+                carrier = "Royal Dutch"
+            else:
+                carrier = carriertext
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "status":status
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
             }
             flights_info.append(flight) 
         return flights_info   
@@ -178,11 +193,26 @@ class LCJ_Scraper(BaseScraper):
             destination_ = tds[1].get_text() or ' '
             number = tds[2].get_text() or ' '
             status = tds[3].get_text() or ' '
+            carriertext = number
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "PC" in carriertext:
+                carrier = "PEGASUS AIRLINES"
+            elif "ENT" in carriertext:
+                carrier = "ENTER AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            elif "KL" in carriertext:
+                carrier = "Royal Dutch"
+            else:
+                carrier = carriertext
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "status":status
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
             }
             flights_info.append(flight) 
         return flights_info  

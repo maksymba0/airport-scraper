@@ -141,9 +141,24 @@ class LUZ_Scraper(BaseScraper):
             destination_ = tds[2].find("p").get_text() or ' '
             number = tds[3].get_text() or ' '
             status = tds[5].get_text().split() or ' '
+            carrierText = tds[4].find("img").get("alt");
+            carrier = "-"
+            if carrierText == "LO":
+            
+                carrier = "LOT"
+            elif carrierText == "W6":
+                carrier = "WIZZ AIR"
+            elif carrierText == "FR":
+                carrier = "RYANAIR"
+            elif carrierText == "E4":
+                carrier ="ENTER AIR"
+            else:
+                carrier = carrierText
+            
             flight = {
                 FlightFields.arrivalTime: arrivaltime_,
                 FlightFields.destination:destination_,
+                FlightFields.carrier:carrier,
                 FlightFields.number:number,
                 FlightFields.status:status
             }
@@ -177,9 +192,24 @@ class LUZ_Scraper(BaseScraper):
             destination_ = tds[2].find("p").get_text() or ' '
             number = tds[3].get_text() or ' '
             status = tds[5].get_text().split() or ' '
+            carrierText = tds[4].find("img").get("alt");
+            carrier = "-"
+            if carrierText == "LO":
+            
+                carrier = "LOT"
+            elif carrierText == "W6":
+                carrier = "WIZZ AIR"
+            elif carrierText == "FR":
+                carrier = "RYANAIR"
+            elif carrierText == "E4":
+                carrier ="ENTER AIR"
+            else:
+                carrier = carrierText
+            
             flight = {
                 FlightFields.arrivalTime: arrivaltime_,
                 FlightFields.destination:destination_,
+                FlightFields.carrier:carrier,
                 FlightFields.number:number,
                 FlightFields.status:status
             }

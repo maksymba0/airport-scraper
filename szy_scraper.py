@@ -190,7 +190,19 @@ class SZY_Scraper(BaseScraper):
             destination_ = destt or ' '
             text = tds[1].get_text().split()
             number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
-            carrier = text[0]
+            carriertext = text[0]
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "LO" in carriertext:
+                carrier = "LOT"
+            elif "W6" in carriertext:
+                carrier = "WIZZ AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            else:
+                carrier = carriertext
+
             status = tds[3].get_text() or ' '
             flight = {
                 "arrivalTime": arrivaltime_,

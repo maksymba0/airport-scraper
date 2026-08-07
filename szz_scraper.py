@@ -3,8 +3,9 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 import cloudscraper as CloudScrapper
+
 
 
 
@@ -153,11 +154,24 @@ class SZZ_Scraper(BaseScraper):
             airport = tds[2].get_text(strip=True)
             flight_no = tds[1].get_text(strip=True)
             status = tds[3].get_text(strip=True)
+            carriertext = flight_no
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "LO" in carriertext:
+                carrier = "LOT"
+            elif "W6" in carriertext:
+                carrier = "WIZZ AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            else:
+                carrier = carriertext
             flight = {
-                "arrivalTime": flightTime,
-                "destination":airport,
-                "flightNum":flight_no, 
-                "status":status
+                FlightFields.arrivalTime: flightTime,
+                FlightFields.destination:airport,
+                FlightFields.number:flight_no, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
             }
             flights.append(flight)
 
@@ -195,11 +209,24 @@ class SZZ_Scraper(BaseScraper):
             airport = tds[2].get_text(strip=True)
             flight_no = tds[1].get_text(strip=True)
             status = tds[3].get_text(strip=True)
+            carriertext = flight_no
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "LO" in carriertext:
+                carrier = "LOT"
+            elif "W6" in carriertext:
+                carrier = "WIZZ AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            else:
+                carrier = carriertext
             flight = {
-                "arrivalTime": flightTime,
-                "destination":airport,
-                "flightNum":flight_no, 
-                "status":status
+                FlightFields.arrivalTime: flightTime,
+                FlightFields.destination:airport,
+                FlightFields.number:flight_no, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
             }
             flights.append(flight)
         
