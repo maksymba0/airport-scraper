@@ -141,10 +141,11 @@ class SZY_Scraper(BaseScraper):
 
             tds = tr.find_all("td") 
 
-            time = tds[0].get_text() or ''
+            time = tds[0].get_text().split() or ''
 
-            arrivaltime_ = time
-            destination_ = tds[2].get_text() or ' '
+            arrivaltime_ = time[2] 
+            destt = " ".join(tds[2].get_text().split())
+            destination_ = destt or ' '
             text = tds[1].get_text().split()
             number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
             carrier = text[0]
@@ -182,10 +183,11 @@ class SZY_Scraper(BaseScraper):
 
             tds = tr.find_all("td") 
 
-            time = tds[0].get_text() or ''
-
-            arrivaltime_ = time
-            destination_ = tds[2].get_text() or ' '
+            time = tds[0].get_text().split() or ''
+            
+            arrivaltime_ = time[2] 
+            destt = " ".join(tds[2].get_text().split())
+            destination_ = destt or ' '
             text = tds[1].get_text().split()
             number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
             carrier = text[0]

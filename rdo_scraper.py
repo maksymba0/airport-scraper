@@ -157,10 +157,10 @@ class RDO_Scraper(BaseScraper):
         flights_info = []
         for flight in data_["data"]:
  
-            time = flight["scheduled_datetime_pl"] or '' 
-
-            arrivaltime_ = time
-            destination_ = flight["origin_en"] or ' '
+            time = flight["scheduled_datetime_pl"].split() or ''
+            
+            arrivaltime_ = time[1]
+            destination_ = flight["destination"] or ' '
             number = flight["flight_no"] or ' '
             carrier = flight["airline"] or ' '
             status = flight["status_en"] or ' '
@@ -203,9 +203,9 @@ class RDO_Scraper(BaseScraper):
         flights_info = []
         for flight in data_["data"]:
  
-            time = flight["scheduled_datetime_pl"] or ''
+            time = flight["scheduled_datetime_pl"].split() or ''
 
-            arrivaltime_ = time
+            arrivaltime_ = time[1]
             destination_ = flight["origin_en"] or ' '
             number = flight["flight_no"] or ' '
             carrier = flight["airline"] or ' '

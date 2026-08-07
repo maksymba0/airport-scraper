@@ -25,12 +25,130 @@ padding: 20px;
  border-radius: 12px;
  box-shadow: 0 4px 6px rgba(0,0,0,0.95);   
 }
+ 
+.loader-container
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #4a5568;
+    font-weight: 500;
+}
+.spinner
+{
+    width: 40px;
+    height:40px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #2b6cb0;
+    border-radius: 50%;            
+    animation: spin 0.2s linear infinite;
+    margin-bottom: 15px;
+
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 table
 {
 width: 100%;
 border-collapse: collapse;
 margin-top: 20px;
 font-size: 0.95rem;
+}
+.filter-toolbar
+{
+    display: flex;
+    flex-direction: row; 
+    gap: 15px;
+    margin-bottom: 25px;    
+    flex-wrap: wrap;       
+}
+.search-box {
+    flex: 1;                
+    min-width: 250px;      
+    padding: 10px 15px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;          
+    transition: border-color 0.2s;  
+}
+.export-btn
+{
+    padding: 10px 20px;       
+    background-color: #3ddc75;  
+    color: #ffffff;             
+    border: none;               
+    border-radius: 6px;         
+    font-size: 0.95rem;
+    font-weight: 600;           
+    letter-spacing: 0.3px;    
+    cursor: pointer;           
+     
+    box-shadow: 0 2px 4px rgba(43, 108, 176, 0.2);
+    
+    
+    transition: background-color 0.2s;
+}
+.export-btn:hover
+{
+background-color: #1a6a30;
+}
+.load-btn
+{
+    padding: 10px 24px;       
+    background-color: #2b6cb0;  
+    color: #ffffff;             
+    border: none;               
+    border-radius: 6px;         
+    font-size: 0.95rem;
+    font-weight: 600;           
+    letter-spacing: 0.3px;    
+    cursor: pointer;           
+     
+    box-shadow: 0 2px 4px rgba(43, 108, 176, 0.2);
+    
+    
+    transition: all 0.2s ease-in-out; 
+
+}
+.filter-toolbar .load-btn:hover {
+    background-color: #2c5282;  
+    transform: translateY(-1px); 
+    box-shadow: 0 4px 6px rgba(43, 108, 176, 0.3);  
+}
+.filter-toolbar button:active {
+    transform: translateY(1px);  
+    box-shadow: 0 1px 2px rgba(43, 108, 176, 0.2); 
+}
+.search-box:focus {
+    border-color: #2b6cb0;
+    box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.1);
+}
+select {
+    padding: 10px 15px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    outline: none;
+}
+ 
+select:focus {
+    border-color: #2b6cb0;
+}
+
+.row-darkish {
+    background-color: #43474d;
+    color: #ffffff;            
+}
+.row-lightish {
+    background-color: #585b60;
+    color: #ffffff;             
 }
 </style>
 </head>
@@ -43,71 +161,116 @@ font-size: 0.95rem;
         <p> See real time data from multiple Polish airports in one place </p>
     </div>
 
-    <div>
-            <input style="width:350px;" type="text" 
-            id="search" class="search-box" placeholder="Search by flight number, destination, or airline..." 
-            oninput="filterTable()">
-            <button style="width: auto;" onclick="loadData()"> Load Data </button>
+    <div class="filter-toolbar"> 
+        <div>
+                <input style="width:350px;" type="text" 
+                id="search" class="search-box" placeholder="Search by flight number, destination, or airline..." 
+                oninput="filterTable()">
+                </input>
+                <button class="load-btn" style="width: auto;" onclick="loadData()"> 
+                    Load Data 
+                </button>
+                <button class="export-btn" style="width: auto;" onclick="exportCSV()"> 
+                    Export
+                </button>
+        </div>
+        <div>
+                <select id="airportFilter" onchange="filterTable()">
+                    <option value="all">All Airports</option>
+                    <option value="GDN">Gdańsk (GDN)</option>
+                    <option value="SZZ">Szczecin (SZZ)</option>
+                    <option value="WRO">Wrocław (WRO)</option>
+                    <option value="KRK">Kraków (KRK)</option>
+                    <option value="POZ">Poznań (POZ)</option>
+                    <option value="WAW">Warszawa Chopin (WAW)</option>
+                    <option value="BZG">Bydgoszcz (BZG)</option>
+                    <option value="KTW">Katowice (KTW)</option>
+                    <option value="LCJ">Łódź (LCJ)</option>
+                    <option value="RZE">Rzeszów (RZE)</option>
+                    <option value="RDO">Warszawa Radom (RDO)</option>
+                    <option value="SZY">Olsztyn (SZY)</option>
+                    <option value="LUZ">Lublin (LUZ)</option> 
+                </select>
+                <select id="typeFilter" onchange="filterTable()">
+                    <option value="all">All</option>
+                    <option value="arrival">Arrival</option>
+                    <option value="departure">Departure</option>
+                </select>
+        </div>
     </div>
-    <div>
-            <select id="airportFilter" onchange="filterTable()">
-                <option value="all">All Airports</option>
-                <option value="GDN">Gdańsk (GDN)</option>
-                <option value="SZZ">Szczecin (SZZ)</option>
-                <option value="WRO">Wrocław (WRO)</option>
-                <option value="KRK">Kraków (KRK)</option>
-                <option value="POZ">Poznań (POZ)</option>
-                <option value="WAW">Warszawa Chopin (WAW)</option>
-                <option value="BZG">Bydgoszcz (BZG)</option>
-                <option value="KTW">Katowice (KTW)</option>
-                <option value="LCJ">Łódź (LCJ)</option>
-                <option value="RZE">Rzeszów (RZE)</option>
-                <option value="RDO">Warszawa Radom (RDO)</option>
-                <option value="SZY">Olsztyn (SZY)</option>
-                <option value="LUZ">Lublin (LUZ)</option> 
-            </select>
-            <select id="typeFilter" onchange="filterTable()">
-                <option value="all">All</option>
-                <option value="arrival">Arrivals</option>
-                <option value="departure">Departures</option>
-            </select>
-        </div>
-        <div id="status">
-            <p> Click 'Load Data' </p>
-        </div>
+    <div id="status">
+        <p> Click 'Load Data' </p>
+    </div>
+         
 </div>
 <script>
     let allFlights = []
+    
+    function getStatusObj()
+    {
+        return document.getElementById('status');
+    }
+    
     function setStatus(text)
     {
         const container = document.getElementById('status');
-        container.innerHTML = `<p> ${text} </p>`;
+        if(text === "Loading")
+        {
+            container.innerHTML = `
+            <div class="loader-container">
+                <p>${text}</p>
+                <div class="spinner"></div>
+            </div>`; 
+        }
+        else 
+        {
+            container.innerHTML = `<p> ${text} </p>`;
+        }
     }
-    async function fetchFlights() {
+     
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-            alert("Requesting data")
-            setStatus("Loading data...")
-            const response = await fetch('/api/all-flights');
+    async function fetchFlights() 
+    {
+ 
+            setStatus("Loading") ;
+            
+            const response = await fetch('/api/all-flights'); 
+
             const data = await response.json();
             allFlights = data.flights;
             setStatus("Done...")
-            renderTable(allFlights);
-        }
+            renderTable(allFlights,response.status);
+    }
 
-        function renderTable(flights) {
+    function renderTable(flights, searchResponseStatus = 0) 
+    {
             const container = document.getElementById('status');
+          
             if (flights.length === 0) {
                 container.innerHTML = '<p>No flights found.</p>';
                 return;
-            }
+            } 
             const search = document.getElementById('search').value.toLowerCase();
             const airport = document.getElementById('airportFilter').value;
             const type = document.getElementById('typeFilter').value;
-            let html = `<p>Found ${flights.length} flights. </p>`;
-             
+            let html = `<p>Found ${flights.length} flights.</p>`;
+
+            if (searchResponseStatus === 200) { 
+                html = `<p>Found ${flights.length} flights. <span style="color:green"> (Success)</span></p>`;
+            }
+            else if (searchResponseStatus >= 400 && searchResponseStatus < 500) 
+            { 
+                html = `<p>Not found flights... <span style="color:grey"> (CError #${searchResponseStatus})</span></p>`;
+            }
+            else if (searchResponseStatus >= 500) 
+            {
+                html = `<p>Not found flights... <span style="color:red"> (SError #${searchResponseStatus})</span></p>`;
+            }
+
             html += `<table>
                 <tr>
-                    <th>Airport</th>
+                    <th><button>Airport</button></th>
                     <th>Type</th>
                     <th>Airline</th>
                     <th>Flight</th>
@@ -115,9 +278,13 @@ font-size: 0.95rem;
                     <th>Time</th>
                     <th>Status</th>
                 </tr>`;
-            
-            flights.forEach(f => {
-                html += `<tr>
+
+             
+
+            flights.forEach((f,i) => 
+            {
+                const bgClass = (i % 2 === 0) ? 'row-lightish' : 'row-darkish';
+                html += `<tr class="${bgClass}">
                     <td><strong>${f.code || '??'}</strong></td>
                     <td>${f.type || 'unknown'}</td>
                     <td>${f.carrier || 'N/A'}</td>
@@ -129,34 +296,64 @@ font-size: 0.95rem;
             });
             html += `</table>`;
             container.innerHTML = html;
-        }
+    }
 
-        function filterTable() {
-            const search = document.getElementById('search').value.toLowerCase();
-            const airport = document.getElementById('airportFilter').value;
-            const type = document.getElementById('typeFilter').value;
-            
-            const filtered = allFlights.filter(f => 
-            {
-                const matchSearch = 
-                    (f.flightNum || '').toLowerCase().includes(search) ||
-                    (f.destination || '').toLowerCase().includes(search) ||
-                    (f.carrier || '').toLowerCase().includes(search) ||
-                    (f.status || '').toLowerCase().includes(search) ||
-                    (f.arrivalTime || '').toLowerCase().includes(search);
-
-                const matchAirport = airport === 'all' || f.code === airport;
-                const matchType = type === 'all' || f.type === type;
-                
-                return matchSearch && matchAirport && matchType
-
-            }); 
-            renderTable(filtered);
-        }
-        function loadData()
+    function filterTable() 
+    {
+        const search = document.getElementById('search').value.toLowerCase();
+        const airport = document.getElementById('airportFilter').value;
+        const type = document.getElementById('typeFilter').value.toLowerCase();
+        
+        const filtered = allFlights.filter(f => 
         {
-            fetchFlights();
-        }
+            const matchSearch = 
+                (f.flightNum || '').toLowerCase().includes(search) ||
+                (f.destination || '').toLowerCase().includes(search) ||
+                (f.carrier || '').toLowerCase().includes(search) ||
+                (f.status || '').toLowerCase().includes(search) ||
+                (f.arrivalTime || '').toLowerCase().includes(search);
+
+            const matchAirport = airport === 'all' || f.code === airport;
+            const matchType = type === 'all' || f.type === type;
+            
+            return matchSearch && matchAirport && matchType
+
+        }); 
+        renderTable(filtered);
+    }
+
+    function loadData()
+    {
+        fetchFlights();
+    }
+
+    function exportCSV()
+    {
+        let csvContent = "Airport,Type,Airline,Flight Number,Destination/Origin,Time,Status\n";
+        
+        allFlights.forEach(f => 
+        { 
+
+            let row = [`${f.code || ''}`,
+                `${f.type}`,
+                `${f.carrier}`,
+                `${f.flightNum}`,
+                `${f.destination}`,
+                `${f.arrivalTime}`,
+                `${f.status}`
+            ].join(",")
+            csvContent += row + "\n";
+        });
+
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement("a");
+        link.setAttribute("href",url);
+        link.setAttribute("download",`airport_flight_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 </script>
 
 </body>

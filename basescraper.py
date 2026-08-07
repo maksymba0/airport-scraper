@@ -8,9 +8,7 @@ class BaseScraper:
         print(self.url_)
         return self.url_
 
-    def makeRequestHTML(self,arg, headers=None, method=None, json=None):
-
-        
+    def makeRequestHTML(self,arg, headers=None, method=None, json=None): 
         header_ = headers if headers is not None else {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
             }
@@ -22,8 +20,7 @@ class BaseScraper:
         if arg is None:
             arg = self.url
         try:
-            # Mimic a standard Chrome browser header
-  
+            # Mimic a standard Chrome browser header 
             if method_ is None:
                 print("sent get request")
                 result = requests.get(arg, headers=header_)

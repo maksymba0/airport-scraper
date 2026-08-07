@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
 from flight import Flight
+from cloudscraper import CloudScraper
 
 class POZ_Scraper(BaseScraper):
 
@@ -21,10 +22,12 @@ class POZ_Scraper(BaseScraper):
             url = self.url_
 
         header_ = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
         }
-        result = super().makeRequestHTML(url, method=None, headers=header_) 
+        #result = super().makeRequestHTML(url, method=None, headers=header_) 
+        scraper = CloudScraper.create_scraper()
+        result = scraper.get(self.url_) 
+        # requests.get(self.url_)
 
         return result
 
@@ -137,7 +140,7 @@ class POZ_Scraper(BaseScraper):
     def getDepartures(self):
     
         data = self.makeRequestHTML("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=departures&day=0&timeFrom=00:00&timeTo=23:59&count=10&lang=pl") 
- 
+                                    
         _data = data
  
 
@@ -174,6 +177,7 @@ class POZ_Scraper(BaseScraper):
         _data = data.text
         print(data)
 
+        print(data.text)
         data_ = data.json()
          
 

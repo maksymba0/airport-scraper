@@ -134,10 +134,10 @@ class LCJ_Scraper(BaseScraper):
         for key in trs:
 
             tds = key.find_all("td")
-            
-            time = tds[0].get_text() or ''
+                       
+            time = tds[0].get_text().split() or ''
 
-            arrivaltime_ = time
+            arrivaltime_ = time[2] #08.08.2026 - 08:25
             destination_ = tds[1].get_text() or ' '
             number = tds[2].get_text() or ' '
             status = tds[3].get_text() or ' '
@@ -172,9 +172,9 @@ class LCJ_Scraper(BaseScraper):
 
             tds = key.find_all("td")
             
-            time = tds[0].get_text() or ''
+            time = tds[0].get_text().split() or ''
 
-            arrivaltime_ = time
+            arrivaltime_ = time[2] #08.08.2026 - 08:25
             destination_ = tds[1].get_text() or ' '
             number = tds[2].get_text() or ' '
             status = tds[3].get_text() or ' '

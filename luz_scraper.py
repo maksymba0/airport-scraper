@@ -140,7 +140,7 @@ class LUZ_Scraper(BaseScraper):
             arrivaltime_ = time
             destination_ = tds[2].find("p").get_text() or ' '
             number = tds[3].get_text() or ' '
-            status = tds[5].get_text() or ' '
+            status = tds[5].get_text().split() or ' '
             flight = {
                 FlightFields.arrivalTime: arrivaltime_,
                 FlightFields.destination:destination_,
@@ -176,7 +176,7 @@ class LUZ_Scraper(BaseScraper):
             arrivaltime_ = time
             destination_ = tds[2].find("p").get_text() or ' '
             number = tds[3].get_text() or ' '
-            status = tds[5].get_text() or ' '
+            status = tds[5].get_text().split() or ' '
             flight = {
                 FlightFields.arrivalTime: arrivaltime_,
                 FlightFields.destination:destination_,
