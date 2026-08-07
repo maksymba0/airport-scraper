@@ -25,7 +25,7 @@ A Python-based tracking tool designed to gather live airport data. The goal is t
 * **UX/UI Enhancements**: Improve the web design for easier access to airport tables information, ensuring a clean, responsive layout for desktop and mobile users.
 
 ## Screenshots
-A pivot table made with the exported CSV file, showing the top 3 airlines with the highest number of flights and the airports they are related to. Made on Friday, 7th Aug.
+A pivot table made with the exported CSV file, showing the top 3 airlines with the highest number of flights and the airports they are related to. Made on Friday, 7th Aug. Top ones are: Ryanair, Wizzair, LOT
 <img width="771" height="454" alt="image" src="https://github.com/user-attachments/assets/851b44eb-1971-49ef-a8f9-52e733c596ed" />
 
 
