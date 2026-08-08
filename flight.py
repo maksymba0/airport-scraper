@@ -1,10 +1,12 @@
 class FlightFields:
     arrivalTime = "arrivalTime"
+    departureTime = "departureTime"
     destination = "destination"
     number = "flightNum"
     status = "status"
     carrier = "carrier"
     gate = "gate"
+    terminal = "terminal"
 
 class Flight:
     time_ = ""

@@ -159,6 +159,11 @@ select:focus {
     <div class="topbar">
         <h1> Airport Scraper</h1>
         <p> See real time data from multiple Polish airports in one place </p>
+        <div style="border: 3px inset black; padding: 10px;font-size: medium;"> TODO: 
+            <p style="font-weight: bold;"> improve API Backend</p>
+            <p style="font-weight: bold;"> add Cache (so that we dont overload airport webs)</p>
+            <p style="font-weight: bold;"> add Auth or Emailing   </p> 
+        </div>
     </div>
 
     <div class="filter-toolbar"> 
@@ -307,11 +312,11 @@ select:focus {
         const filtered = allFlights.filter(f => 
         {
             const matchSearch = 
-                (f.flightNum || '').toLowerCase().includes(search) ||
-                (f.destination || '').toLowerCase().includes(search) ||
-                (f.carrier || '').toLowerCase().includes(search) ||
-                (f.status || '').toLowerCase().includes(search) ||
-                (f.arrivalTime || '').toLowerCase().includes(search);
+                String(f.flightNum || '').toLowerCase().includes(search) ||
+                String(f.destination || '').toLowerCase().includes(search) ||
+                String(f.carrier || '').toLowerCase().includes(search) ||
+                String(f.status || '').toLowerCase().includes(search) ||
+                String(f.arrivalTime || '').toLowerCase().includes(search);
 
             const matchAirport = airport === 'all' || f.code === airport;
             const matchType = type === 'all' || f.type === type;
