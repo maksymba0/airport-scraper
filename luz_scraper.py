@@ -141,7 +141,7 @@ class LUZ_Scraper(BaseScraper):
             destination_ = tds[2].find("p").get_text() or ' '
             number = tds[3].get_text() or ' '
             status = tds[5].get_text().split() or ' '
-            carrierText = tds[4].find("img").get("alt");
+            carrierText = tds[4].find("img").get("alt") if tds[4].find("img") else "-"
             carrier = "-"
             if carrierText == "LO":
             

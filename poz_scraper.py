@@ -174,10 +174,7 @@ class POZ_Scraper(BaseScraper):
         print("downloading")
         data = self.makeRequestHTML()  
 
-        _data = data.text
-        print(data)
-
-        print(data.text)
+        _data = data.text 
         data_ = data.json()
          
 

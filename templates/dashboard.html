@@ -161,7 +161,7 @@ select:focus {
         <p> See real time data from multiple Polish airports in one place </p>
         <div style="border: 3px inset black; padding: 10px;font-size: medium;"> TODO: 
             <p style="font-weight: bold;"> improve API Backend</p>
-            <p style="font-weight: bold;"> add Cache (so that we dont overload airport webs)</p>
+            <p style="font-weight: bold; font;"> add Cache (so that we dont overload airport webs)</p>
             <p style="font-weight: bold;"> add Auth or Emailing   </p> 
         </div>
     </div>
@@ -172,11 +172,14 @@ select:focus {
                 id="search" class="search-box" placeholder="Search by flight number, destination, or airline..." 
                 oninput="filterTable()">
                 </input>
-                <button class="load-btn" style="width: auto;" onclick="loadData()"> 
+                <button class="load-btn" style="width: auto;" onclick="loadData(false)"> 
                     Load Data 
                 </button>
                 <button class="export-btn" style="width: auto;" onclick="exportCSV()"> 
                     Export
+                </button>
+                <button class="load-btn" style="width: auto;" onclick="loadData(true)"> 
+                    Force Load 
                 </button>
         </div>
         <div>
@@ -235,16 +238,26 @@ select:focus {
      
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    async function fetchFlights() 
+    async function fetchFlights(bForce=false) 
     {
  
             setStatus("Loading") ;
-            
-            const response = await fetch('/api/all-flights'); 
+            url = '/api/all-flights'
+
+            if(bForce)
+            {
+                url += '?refresh=true'
+            }
+
+            const response = await fetch(url); 
 
             const data = await response.json();
+            const bCached = data.cached;
+
             allFlights = data.flights;
-            setStatus("Done...")
+
+            setStatus(`Done... (${bCached == true? "from Cache" : "new"} )`)
+
             renderTable(allFlights,response.status);
     }
 
@@ -266,10 +279,12 @@ select:focus {
             }
             else if (searchResponseStatus >= 400 && searchResponseStatus < 500) 
             { 
+                setStatus(`CError #${searchResponseStatus})`)
                 html = `<p>Not found flights... <span style="color:grey"> (CError #${searchResponseStatus})</span></p>`;
             }
             else if (searchResponseStatus >= 500) 
             {
+                setStatus(`SError #${searchResponseStatus})`)
                 html = `<p>Not found flights... <span style="color:red"> (SError #${searchResponseStatus})</span></p>`;
             }
 
@@ -327,9 +342,9 @@ select:focus {
         renderTable(filtered);
     }
 
-    function loadData()
+    function loadData(bForce=false)
     {
-        fetchFlights();
+        fetchFlights(bForce);
     }
 
     function exportCSV()

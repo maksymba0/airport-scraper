@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 import home as _home
 from flight import Flight, FlightFields
 
@@ -18,17 +18,39 @@ import luz_scraper
 
 #import json as JSON
 from datetime import datetime
+import cache
+import requests
+
 app = Flask(__name__)
 
 @app.route("/api/all-flights")
 def allFlights():
+
+    bForce = request.args.get('refresh', 'false') == 'true'
+
+   
+    if not bForce:
+        cache_ = cache.load_cache()
+        if cache and cache.is_valid_cache(cache_):
+            print("loading from cache")
+            return jsonify(
+                    {
+                    "cached":True,
+                    "flights":cache_["flights"],
+                    "last_updated":cache_["timestamp"]
+                    })
+        else:
+            print("cache expired or empty. building new data")
+    else:
+        print("Force refresh data. Building")
+
 
     airports = {
             "GDN" : gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow"),
             "SZZ" : szz_scraper.SZZ_Scraper("https://airport.com.pl/loty/tablica-przylotow-odlotow/"),
             "WRO" : wro_scraper.WRO_Scraper("https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow"),
             "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
-                                        
+
             "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
             "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
             "BZG" : bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals"),
@@ -54,17 +76,16 @@ def allFlights():
         all_flights.extend(arrivals)
         all_flights.extend(departures)
 
+    cache.save_cache(all_flights)
+
     return jsonify(
         {
-        "count":len(all_flights),
+        "cached":False,
         "flights":all_flights,
         "last_updated":datetime.now().isoformat()
-        })
+        }) 
         
-
-
-
-    return ""
+ 
 @app.route("/")
 def home(): 
 

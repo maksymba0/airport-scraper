@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 
 class RZE_Scraper(BaseScraper):
 
@@ -71,11 +71,11 @@ class RZE_Scraper(BaseScraper):
         flights_text = []
         for panel in flights:
     
-            time = panel["arrivalTime"].strip() 
-            destination = panel["destination"].strip() 
-            number = panel["flightNum"].strip()
-            carrier = panel["carrier"].strip()
-            status = panel["status"].strip() 
+            time = panel[FlightFields.arrivalTime].strip() 
+            destination = panel[FlightFields.destination].strip() 
+            number = panel[FlightFields.number].strip()
+            carrier = panel[FlightFields.carrier].strip()
+            status = panel[FlightFields.status].strip() 
     
             htmlText = f"""
             <tr>
@@ -102,11 +102,11 @@ class RZE_Scraper(BaseScraper):
 
         departures_rows = []
         for flight in departures_list:
-            time = flight["arrivalTime"].strip() 
-            destination = flight["destination"].strip() 
-            carrier = flight["carrier"].strip()
-            number = flight["flightNum"].strip() 
-            status = flight["status"].strip()  
+            time = flight[FlightFields.arrivalTime].strip() 
+            destination = flight[FlightFields.destination].strip() 
+            carrier = flight[FlightFields.carrier].strip()
+            number = flight[FlightFields.number].strip() 
+            status = flight[FlightFields.status].strip()  
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
@@ -150,14 +150,14 @@ class RZE_Scraper(BaseScraper):
             arrivaltime_ = time
             destination_ = tds[2].get_text() or ' '
             number = tds[3].get_text() or ' '
-            carrier = tds[0].find("img").get("alt","")
+            carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
             status = tds[4].get_text() or ' '
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.carrier:carrier,
+                FlightFields.number:number,
+                FlightFields.status:status
             }
             flights_info.append(flight) 
         return flights_info   
@@ -184,21 +184,21 @@ class RZE_Scraper(BaseScraper):
         for tr in trs:
 
             tds = tr.find_all("td")
-            if len(tds) < 3:
+            if len(tds) < 2:
                 continue
             time = tds[1].get_text() or ''
 
             arrivaltime_ = time
             destination_ = tds[2].get_text() or ' '
             number = tds[3].get_text() or ' '
-            carrier = tds[0].find("img").get("alt","")
+            carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
             status = tds[4].get_text() or ' '
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.carrier:carrier,
+                FlightFields.number:number,
+                FlightFields.status:status
             }
             flights_info.append(flight) 
         return flights_info
