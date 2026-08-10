@@ -161,7 +161,7 @@ select:focus {
         <p> See real time data from multiple Polish airports in one place </p>
         <div style="border: 3px inset black; padding: 10px;font-size: medium;"> TODO: 
             <p style="font-weight: bold;"> improve API Backend</p>
-            <p style="font-weight: bold; font;"> add Cache (so that we dont overload airport webs)</p>
+            <p style="font-weight: bold;"> <s>add Cache (so that we dont overload airport webs)</s></p>
             <p style="font-weight: bold;"> add Auth or Emailing   </p> 
         </div>
     </div>
@@ -240,52 +240,84 @@ select:focus {
 
     async function fetchFlights(bForce=false) 
     {
- 
-            setStatus("Loading") ;
-            url = '/api/all-flights'
-
-            if(bForce)
+            try
             {
-                url += '?refresh=true'
+                setStatus("Loading") ;
+                url = '/api/all-flights'
+
+                if(bForce)
+                {
+                    url += '?refresh=true'
+                }
+
+                const response = await fetch(url); 
+                
+                if(!response.ok)
+                {
+                    const errorText = await response.text();
+                    
+                    let userMessage = `Server error ${response.status} : (${errorText})`;
+
+                    if(response.status === 500)
+                    {
+                        userMessage = "Internal error. Please try again later.";
+
+                    } else if(response.status === 404)
+                    {
+                        userMessage = "Not found. Please try again later.";
+                    }  else if(response.status === 429)
+                    {
+                        userMessage = "Too many requests. Please try again later.";
+                    }  
+                    setStatus(` ${userMessage}`);
+                    renderTable([], response.status);
+                    return;
+                }
+                let data;
+                try{
+                    data = await response.json();
+                }catch(jsonError)
+                {
+                    setStatus(" Server returned invalid data. Please try again.");
+                    renderTable([], 500);
+                    return;
+                }
+
+                const bCached = data.cached;
+
+                allFlights = data.flights;
+                if(!data || !allFlights)
+                {
+                    setStatus("Error parsing flights data (sever sent invalid data?). Please try again.");
+                    renderTable([], 500);
+                    return;    
+                }
+                setStatus(`Done... (${bCached == true? "from Cache" : "new"} )`)
+
+                renderTable(allFlights,response.status); 
+            } catch(NetworkError)
+            {
+            setStatus("Cannot connect to server. Check your network connection.");
+            renderTable([], 500);
             }
-
-            const response = await fetch(url); 
-
-            const data = await response.json();
-            const bCached = data.cached;
-
-            allFlights = data.flights;
-
-            setStatus(`Done... (${bCached == true? "from Cache" : "new"} )`)
-
-            renderTable(allFlights,response.status);
-    }
+        }
 
     function renderTable(flights, searchResponseStatus = 0) 
     {
-            const container = document.getElementById('status');
+            alert(`Error: ${searchResponseStatus}`); 
           
-            if (flights.length === 0) {
-                container.innerHTML = '<p>No flights found.</p>';
+            if (flights.length)
+            {
                 return;
             } 
             const search = document.getElementById('search').value.toLowerCase();
             const airport = document.getElementById('airportFilter').value;
             const type = document.getElementById('typeFilter').value;
             let html = `<p>Found ${flights.length} flights.</p>`;
-
-            if (searchResponseStatus === 200) { 
-                html = `<p>Found ${flights.length} flights. <span style="color:green"> (Success)</span></p>`;
-            }
-            else if (searchResponseStatus >= 400 && searchResponseStatus < 500) 
-            { 
-                setStatus(`CError #${searchResponseStatus})`)
-                html = `<p>Not found flights... <span style="color:grey"> (CError #${searchResponseStatus})</span></p>`;
-            }
-            else if (searchResponseStatus >= 500) 
-            {
-                setStatus(`SError #${searchResponseStatus})`)
-                html = `<p>Not found flights... <span style="color:red"> (SError #${searchResponseStatus})</span></p>`;
+            const statusElement = document.getElementById('status');
+                
+            if (flights.length > 0 && searchResponseStatus === 200) { 
+                html = `<p>Found ${flights.length} flights. <span style="color:green"> (Success)</span></p>`;  
             }
 
             html += `<table>
