@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
 from flight import Flight, FlightFields
+import cloudscraper as CloudScrapper
 
 class BZG_Scraper(BaseScraper):
 
@@ -136,7 +137,12 @@ class BZG_Scraper(BaseScraper):
          
          
         print("downloading")
-        data = self.makeRequestHTML() 
+        scrapper = CloudScrapper.create_scraper(browser={
+                            'browser':'chrome',
+                            'platform':'windows',
+                            'desktop':True
+                        })
+        data = scrapper.get(self.url_) 
 
         _data = data.text
 
@@ -171,10 +177,14 @@ class BZG_Scraper(BaseScraper):
     def getArrivals(self):
 
         print("downloading")
-        data = self.makeRequestHTML()  
+
+        scrapper = CloudScrapper.create_scraper()
+        data = scrapper.get(self.url_) 
+        
+        #data = self.makeRequestHTML()  
 
         _data = data.text
-
+        print(_data)
         data_ = JSON.loads(_data)
          
 
