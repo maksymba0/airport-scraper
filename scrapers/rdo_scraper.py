@@ -1,27 +1,30 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight, FlightFields
+from flight import Flight
 
-class LCJ_Scraper(BaseScraper):
+class RDO_Scraper(BaseScraper):
 
-    airportName_ = "Port Lotniczy Łódź im. Władysława Reymonta Sp. z o.o."
-    airportCode_ = "LCJ"
+    airportName_ = "Warsaw-Radom Airport"
+    airportCode_ = "RDO"
 
     def __init__(self, url):
-        super().__init__(url)
-        print(f"{self.airportCode_} |  {self.airportName_} scraper - init")
-        #super().printUrl()
+            super().__init__(url)
+            print(f"{self.airportCode_} |  {self.airportName_} scraper - init")
+            #super().printUrl()
 
-    def makeRequestHTML(self,url=None):
-  
+    def makeRequestHTML(self,url=None, headers=None, method=None, json=None):
+
+        header_ = headers or None
+        method_ = method or None
+        payload_ = json or None
         if url is None:
             url = self.url_
-
-        result = super().makeRequestHTML(url) 
-
+ 
+        result = super().makeRequestHTML(url, headers=header_,method=method_,json=payload_)
+            
         return result
 
 
@@ -33,6 +36,7 @@ class LCJ_Scraper(BaseScraper):
                         <tr style="background-color: #f2f2f2;">
                             <th style="padding: 5px;">Time</th>
                             <th style="padding: 5px;">Destination</th> 
+                            <th style="padding: 5px;">Carrier</th>
                             <th style="padding: 5px;">Flight Number</th>
                             <th style="padding: 5px;">Status</th>
                         </tr>
@@ -48,6 +52,7 @@ class LCJ_Scraper(BaseScraper):
                             <tr style="background-color: #f2f2f2;">
                                 <th style="padding: 5px;">Time</th>
                                 <th style="padding: 5px;">Destination</th> 
+                                <th style="padding: 5px;">Carrier</th>
                                 <th style="padding: 5px;">Flight Number</th>
                                 <th style="padding: 5px;">Status</th>
                             </tr>
@@ -59,6 +64,10 @@ class LCJ_Scraper(BaseScraper):
 
         flights = self.getArrivals() 
 
+        #"arrivalTime": arrivaltime_,
+        #"destination":destination_,
+        #"flightNum":number,
+        #"gate":gate
         print("Flight data: \n")
         
         table_header = self.getArrivalsTableHeader()
@@ -66,15 +75,17 @@ class LCJ_Scraper(BaseScraper):
         flights_text = []
         for panel in flights:
     
-            time = panel[FlightFields.arrivalTime].strip() 
-            destination = panel[FlightFields.destination].strip() 
-            number = panel[FlightFields.number].strip()
-            status = panel[FlightFields.status].strip() 
+            time = panel["arrivalTime"].strip() 
+            destination = panel["destination"].strip() 
+            number = panel["flightNum"].strip()
+            carrier = panel["carrier"].strip()
+            status = panel["status"].strip() 
     
             htmlText = f"""
             <tr>
                 <td style="padding:5px;">{time}</td>
                 <td style="padding:5px;">{destination}</td> 
+                <td style="padding:5px;">{carrier}</td>
                 <td style="padding:5px;">{number}</td>
                 <td style="padding:5px;">{status}</td>
             </tr>
@@ -97,6 +108,7 @@ class LCJ_Scraper(BaseScraper):
         for flight in departures_list:
             time = flight["arrivalTime"].strip() 
             destination = flight["destination"].strip() 
+            carrier = flight["carrier"].strip()
             number = flight["flightNum"].strip() 
             status = flight["status"].strip()  
     
@@ -104,6 +116,7 @@ class LCJ_Scraper(BaseScraper):
                 <tr style="background-color: #f2f2f2;">
                     <td style="padding: 5px;">{time}</td>
                     <td style="padding: 5px;">{destination}</td>
+                    <td style="padding: 5px;">{carrier}</td>
                     <td style="padding: 5px;">{number}</td>
                     <td style="padding: 5px;">{status}</td>
                 </tr>
@@ -117,102 +130,92 @@ class LCJ_Scraper(BaseScraper):
 
     def getDepartures(self):
 
-        data = self.makeRequestHTML() 
+        data = ""
+        print("downloading")
 
-        _data = data.text
+        headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Content-Type": "application/json"
+            }
+
+        payload_ = {
+            "flightNo":"",
+            "origin":"",
+            "airline":"",
+            "time":"",
+            "page":1,
+            "locale":"pl",
+            "type":"departures"
+            }
         
+        data = self.makeRequestHTML(headers=headers, method="POST", json=payload_ )  #(url=None, headers=None, method=None):
         
-        data_ = bs(_data,"html.parser")
+        data_ = data.json() 
 
-        tbody = data_.find("tbody",class_="timetableDepartures")
-
-        trs = tbody.find_all("tr")
-
-        print(f"Found {len(data_)} elements")
+        print(f"Found {len(data_["data"])} elements")
 
         flights_info = []
-        for key in trs:
-
-            tds = key.find_all("td")
-                       
-            time = tds[0].get_text().split() or ''
-
-            arrivaltime_ = time[2] #08.08.2026 - 08:25
-            destination_ = tds[1].get_text() or ' '
-            number = tds[2].get_text() or ' '
-            status = tds[3].get_text() or ' '
-            carriertext = number
-            carrier = ""
-            if "RR" in carriertext:
-                carrier = "RYANAIR"
-            elif "PC" in carriertext:
-                carrier = "PEGASUS AIRLINES"
-            elif "ENT" in carriertext:
-                carrier = "ENTER AIR"
-            elif "FR" in carriertext:
-                carrier ="RYANAIR"
-            elif "KL" in carriertext:
-                carrier = "Royal Dutch"
-            else:
-                carrier = carriertext
+        for flight in data_["data"]:
+ 
+            time = flight["scheduled_datetime_pl"].split() or ''
+            
+            arrivaltime_ = time[1]
+            destination_ = flight["destination"] or ' '
+            number = flight["flight_no"] or ' '
+            carrier = flight["airline"] or ' '
+            status = flight["status_en"] or ' '
             flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
+                "arrivalTime": arrivaltime_,
+                "destination":destination_,
+                "carrier":carrier,
+                "flightNum":number,
+                "status":status
             }
             flights_info.append(flight) 
-        return flights_info   
+        return flights_info
 
     def getArrivals(self):
 
         data = ""
         print("downloading")
-        data = self.makeRequestHTML()  
 
-        _data = data.text
- 
+        headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Content-Type": "application/json"
+            }
 
-        data_ = bs(_data,"html.parser")
+        payload_ = {
+            "flightNo":"",
+            "origin":"",
+            "airline":"",
+            "time":"",
+            "page":1,
+            "locale":"pl",
+            "type":"arrivals"
+            }
+        
+        data = self.makeRequestHTML(headers=headers, method="POST", json=payload_ )  #(url=None, headers=None, method=None):
+       
+        data_ = data.json() 
 
-        tbody = data_.find("tbody",class_="timetableArrivals")
-
-        trs = tbody.find_all("tr")
-
-        print(f"Found {len(data_)} elements")
+        print(f"Found {len(data_["data"])} elements")
 
         flights_info = []
-        for key in trs:
+        for flight in data_["data"]:
+ 
+            time = flight["scheduled_datetime_pl"].split() or ''
 
-            tds = key.find_all("td")
-            
-            time = tds[0].get_text().split() or ''
-
-            arrivaltime_ = time[2] #08.08.2026 - 08:25
-            destination_ = tds[1].get_text() or ' '
-            number = tds[2].get_text() or ' '
-            status = tds[3].get_text() or ' '
-            carriertext = number
-            carrier = ""
-            if "RR" in carriertext:
-                carrier = "RYANAIR"
-            elif "PC" in carriertext:
-                carrier = "PEGASUS AIRLINES"
-            elif "ENT" in carriertext:
-                carrier = "ENTER AIR"
-            elif "FR" in carriertext:
-                carrier ="RYANAIR"
-            elif "KL" in carriertext:
-                carrier = "Royal Dutch"
-            else:
-                carrier = carriertext
+            arrivaltime_ = time[1]
+            destination_ = flight["origin_en"] or ' '
+            number = flight["flight_no"] or ' '
+            carrier = flight["airline"] or ' '
+            status = flight["status_en"] or ' '
             flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
+                "arrivalTime": arrivaltime_,
+                "destination":destination_,
+                "carrier":carrier,
+                "flightNum":number,
+                "status":status
             }
             flights_info.append(flight) 
-        return flights_info  
+        return flights_info

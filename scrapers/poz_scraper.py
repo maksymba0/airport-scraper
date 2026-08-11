@@ -1,30 +1,34 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
 from flight import Flight
+from cloudscraper import CloudScraper
 
-class RDO_Scraper(BaseScraper):
+class POZ_Scraper(BaseScraper):
 
-    airportName_ = "Warsaw-Radom Airport"
-    airportCode_ = "RDO"
+    airportName_ = "Port Lotniczy Poznań-Ławica Sp. z o.o."
+    airportCode_ = "POZ"
 
     def __init__(self, url):
-            super().__init__(url)
-            print(f"{self.airportCode_} |  {self.airportName_} scraper - init")
-            #super().printUrl()
+        super().__init__(url)
+        print(f"{self.airportCode_} |  {self.airportName_} scraper - init")
+        #super().printUrl()
 
-    def makeRequestHTML(self,url=None, headers=None, method=None, json=None):
-
-        header_ = headers or None
-        method_ = method or None
-        payload_ = json or None
+    def makeRequestHTML(self,url=None):
+  
         if url is None:
             url = self.url_
- 
-        result = super().makeRequestHTML(url, headers=header_,method=method_,json=payload_)
-            
+
+        header_ = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+        }
+        #result = super().makeRequestHTML(url, method=None, headers=header_) 
+        scraper = CloudScraper.create_scraper()
+        result = scraper.get(self.url_) 
+        # requests.get(self.url_)
+
         return result
 
 
@@ -36,8 +40,9 @@ class RDO_Scraper(BaseScraper):
                         <tr style="background-color: #f2f2f2;">
                             <th style="padding: 5px;">Time</th>
                             <th style="padding: 5px;">Destination</th> 
-                            <th style="padding: 5px;">Carrier</th>
                             <th style="padding: 5px;">Flight Number</th>
+                            <th style="padding: 5px;">Carrier</th>
+                            <th style="padding: 5px;">Gate</th>
                             <th style="padding: 5px;">Status</th>
                         </tr>
                     </thead> 
@@ -52,8 +57,9 @@ class RDO_Scraper(BaseScraper):
                             <tr style="background-color: #f2f2f2;">
                                 <th style="padding: 5px;">Time</th>
                                 <th style="padding: 5px;">Destination</th> 
-                                <th style="padding: 5px;">Carrier</th>
                                 <th style="padding: 5px;">Flight Number</th>
+                                <th style="padding: 5px;">Carrier</th>
+                                <th style="padding: 5px;">Gate</th>
                                 <th style="padding: 5px;">Status</th>
                             </tr>
                         </thead> 
@@ -63,7 +69,6 @@ class RDO_Scraper(BaseScraper):
     def getArrivalsTable(self):
 
         flights = self.getArrivals() 
-
         #"arrivalTime": arrivaltime_,
         #"destination":destination_,
         #"flightNum":number,
@@ -78,15 +83,17 @@ class RDO_Scraper(BaseScraper):
             time = panel["arrivalTime"].strip() 
             destination = panel["destination"].strip() 
             number = panel["flightNum"].strip()
-            carrier = panel["carrier"].strip()
+            gate = panel["gate"].strip() 
             status = panel["status"].strip() 
+            carrier = panel["carrier"].strip()
     
             htmlText = f"""
             <tr>
                 <td style="padding:5px;">{time}</td>
                 <td style="padding:5px;">{destination}</td> 
-                <td style="padding:5px;">{carrier}</td>
                 <td style="padding:5px;">{number}</td>
+                <td style="padding:5px;">{carrier}</td>
+                <td style="padding:5px;">{gate}</td>
                 <td style="padding:5px;">{status}</td>
             </tr>
             """
@@ -108,16 +115,18 @@ class RDO_Scraper(BaseScraper):
         for flight in departures_list:
             time = flight["arrivalTime"].strip() 
             destination = flight["destination"].strip() 
+            number = flight["flightNum"].strip()
+            gate = flight["gate"].strip() 
+            status = flight["status"].strip() 
             carrier = flight["carrier"].strip()
-            number = flight["flightNum"].strip() 
-            status = flight["status"].strip()  
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
                     <td style="padding: 5px;">{time}</td>
                     <td style="padding: 5px;">{destination}</td>
-                    <td style="padding: 5px;">{carrier}</td>
                     <td style="padding: 5px;">{number}</td>
+                    <td style="padding: 5px;">{carrier}</td>
+                    <td style="padding: 5px;">{gate}</td>
                     <td style="padding: 5px;">{status}</td>
                 </tr>
             """
@@ -129,93 +138,67 @@ class RDO_Scraper(BaseScraper):
 
 
     def getDepartures(self):
-
-        data = ""
-        print("downloading")
-
-        headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Content-Type": "application/json"
-            }
-
-        payload_ = {
-            "flightNo":"",
-            "origin":"",
-            "airline":"",
-            "time":"",
-            "page":1,
-            "locale":"pl",
-            "type":"departures"
-            }
-        
-        data = self.makeRequestHTML(headers=headers, method="POST", json=payload_ )  #(url=None, headers=None, method=None):
-        
-        data_ = data.json() 
-
-        print(f"Found {len(data_["data"])} elements")
-
-        flights_info = []
-        for flight in data_["data"]:
+    
+        data = self.makeRequestHTML("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=departures&day=0&timeFrom=00:00&timeTo=23:59&count=10&lang=pl") 
+                                    
+        _data = data
  
-            time = flight["scheduled_datetime_pl"].split() or ''
-            
-            arrivaltime_ = time[1]
-            destination_ = flight["destination"] or ' '
-            number = flight["flight_no"] or ' '
-            carrier = flight["airline"] or ' '
-            status = flight["status_en"] or ' '
+
+        data_ = JSON.loads(_data.text)
+           
+        flights_info = []
+        for key in data_['data']: 
+
+
+            time = key['date']['label'] or ''
+
+            arrivaltime_ = time
+            destination_ = key['airport']['label'] or ' '
+            number = key['flight_id'] or ' '
+            carrier = key['airline']['label'] or ' '
+            gate = key['gate']['value'] or ' '
+            status = key['status']['value'] or ' '
             flight = {
                 "arrivalTime": arrivaltime_,
                 "destination":destination_,
-                "carrier":carrier,
                 "flightNum":number,
+                "carrier":carrier,
+                "gate":gate,
                 "status":status
             }
             flights_info.append(flight) 
-        return flights_info
+        return flights_info  
 
     def getArrivals(self):
-
-        data = ""
+ 
         print("downloading")
+        data = self.makeRequestHTML()  
 
-        headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Content-Type": "application/json"
-            }
+        _data = data.text 
+        data_ = data.json()
+         
 
-        payload_ = {
-            "flightNo":"",
-            "origin":"",
-            "airline":"",
-            "time":"",
-            "page":1,
-            "locale":"pl",
-            "type":"arrivals"
-            }
-        
-        data = self.makeRequestHTML(headers=headers, method="POST", json=payload_ )  #(url=None, headers=None, method=None):
-       
-        data_ = data.json() 
-
-        print(f"Found {len(data_["data"])} elements")
+        print(f"Found {len(data_)} elements")
 
         flights_info = []
-        for flight in data_["data"]:
- 
-            time = flight["scheduled_datetime_pl"].split() or ''
+        for key in data_['data']: 
 
-            arrivaltime_ = time[1]
-            destination_ = flight["origin_en"] or ' '
-            number = flight["flight_no"] or ' '
-            carrier = flight["airline"] or ' '
-            status = flight["status_en"] or ' '
+
+            time = key['date']['label'] or ''
+
+            arrivaltime_ = time
+            destination_ = key['airport']['label'] or ' '
+            number = key['flight_id'] or ' '
+            carrier = key['airline']['label'] or ' '
+            gate = key['gate']['value'] or ' '
+            status = key['status']['value'] or ' '
             flight = {
                 "arrivalTime": arrivaltime_,
                 "destination":destination_,
-                "carrier":carrier,
                 "flightNum":number,
+                "carrier":carrier,
+                "gate":gate,
                 "status":status
             }
             flights_info.append(flight) 
-        return flights_info
+        return flights_info  

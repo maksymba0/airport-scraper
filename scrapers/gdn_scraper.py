@@ -1,4 +1,4 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
@@ -35,6 +35,7 @@ class GDN_Scraper(BaseScraper):
                             <th style="padding: 5px;">Destination</th>
                             <th style="padding: 5px;">Carrier</th>
                             <th style="padding: 5px;">Flight Number</th>
+                            <th style="padding: 5px;">Gate</th>
                             <th style="padding: 5px;">Status</th>
                         </tr>
                     </thead> 
@@ -68,13 +69,14 @@ class GDN_Scraper(BaseScraper):
         flights_text = []
         for panel in flights:
     
-            raw_time = panel["dateTime"].strip()
+            raw_time = panel[FlightFields.time].strip()
             dtTime = datetime.fromisoformat(raw_time)
             time = dtTime.strftime("%H:%M")
-            destination = panel["origin"].strip()
-            carrier = panel["carrierName"].strip()
-            number = panel["flight"].strip()
-            status = panel["remarks"].strip() 
+            destination = panel[FlightFields.origin].strip()
+            carrier = panel[FlightFields.carrier].strip()
+            number = panel[FlightFields.flightNum].strip()
+            status = panel[FlightFields.status].strip() 
+            gate = panel[FlightFields.gate].strip() 
     
             htmlText = f"""
             <tr>
@@ -82,6 +84,7 @@ class GDN_Scraper(BaseScraper):
                 <td style="padding:5px;">{destination}</td>
                 <td style="padding:5px;">{carrier}</td>
                 <td style="padding:5px;">{number}</td>
+                <td style="padding:5px;">{gate}</td>
                 <td style="padding:5px;">{status}</td>
             </tr>
             """
@@ -101,16 +104,14 @@ class GDN_Scraper(BaseScraper):
 
         departures_rows = []
         for flight in departures_list:
-            raw_time = flight["dateTime"].strip()
+            raw_time = flight[FlightFields.time].strip()
             dtTime = datetime.fromisoformat(raw_time)
             time = dtTime.strftime("%H:%M")
-            destination = flight["destination"].strip()
-            carrier = flight["carrierName"].strip()
-            #expectedTime = flight["expectedDateTime"].strip()
-            number = flight["flight"].strip()
-            status = flight["remarks"].strip()
-            #bDomestic = flight["local"]
-            gate = flight["gate"] or ""
+            destination = flight[FlightFields.destination].strip()
+            carrier = flight[FlightFields.carrier].strip() 
+            number = flight[FlightFields.flightNum].strip()
+            status = flight[FlightFields.status].strip() 
+            gate = flight[FlightFields.gate] or ""
     
             flight = Flight(time,destination,carrier,number,status) 
     
@@ -159,24 +160,20 @@ class GDN_Scraper(BaseScraper):
 
         flights_info = []
         for flight in departures_list: 
-
+   
+            flight_ = Flight() 
             raw_time = flight["dateTime"].strip()
             dtTime = datetime.fromisoformat(raw_time)
-            time = dtTime.strftime("%H:%M")
-            destination = flight["destination"].strip()
-            carrier = flight["carrierName"].strip() 
-            number = flight["flight"].strip()
-            status = flight["remarks"].strip() 
-            gate = flight["gate"] or ""
             
-            flight_ = {
-                FlightFields.arrivalTime: time,
-                FlightFields.destination:destination,
-                FlightFields.number:number,
-                FlightFields.carrier:carrier,
-                FlightFields.gate:gate,
-                FlightFields.status:status
-            }
+            flight_.time = dtTime.strftime("%H:%M")
+            flight_.destination = flight["destination"].strip()
+            flight_.carrier = flight["carrierName"].strip() 
+            flight_.flightNum = flight["flight"].strip()
+            flight_.status = flight["remarks"].strip()  
+            flight_.terminal = flight.get("terminal") or ""
+            
+            flight_ = flight_.to_dict()
+            
             flights_info.append(flight_) 
         return flights_info 
     def getArrivals(self):
@@ -207,23 +204,53 @@ class GDN_Scraper(BaseScraper):
 
         flights_info = []
         for flight in arrivals_list: 
+    
+            flight_ = Flight()
 
             raw_time = flight["dateTime"].strip()
             dtTime = datetime.fromisoformat(raw_time)
-            time = dtTime.strftime("%H:%M")
-            destination = flight["origin"].strip()
-            carrier = flight["carrierName"].strip() 
-            number = flight["flight"].strip()
-            status = flight["remarks"].strip() 
-            gate = flight["terminal"] or ""
+
+            flight_.time = dtTime.strftime("%H:%M")
+            flight_.origin = flight["origin"].strip()
+            flight_.carrier = flight["carrierName"].strip() 
+            flight_.flightNum = flight["flight"].strip()
+            flight_.status = flight["remarks"].strip() 
+            flight_.gate = flight.get("terminal") or ""
             
-            flight_ = {
-                FlightFields.arrivalTime: time,
-                FlightFields.destination:destination,
-                FlightFields.number:number,
-                FlightFields.carrier:carrier,
-                FlightFields.gate:gate,
-                FlightFields.status:status
-            }
+            flight_ = flight_.to_dict()
+
             flights_info.append(flight_) 
         return flights_info
+
+    #   DEPARTURES
+    # {
+    # 'destination': 'KATANIA', 
+    # 'gate': '17,18', 
+    # 'autoCh': True, 
+    # 'currDisp': None, 
+    # 'landingTime': None,
+    #  'visible': True, 
+    # 'remarks': 'opózniony 22:20',
+    #  'dateTime': '2026-08-11T19:15:00+02:00',
+    #  'carrierName': 'WIZZ AIR',
+    #  'expectedDateTime': '2026-08-11T22:20:00+02:00', 
+    # 'delayedDescription': None, 
+    # 'terminal': None, 
+    # 'cFlight': None,
+    #  'local': False,
+    #  'flight': 'W6 1685',
+    #  'remarksStatus': 3}
+
+
+    #   ARRIVALS
+    # {'origin': 'OSLO GARDERMOEN', 
+    # 'remarks': 'wylądował', 
+    # 'dateTime': '2026-08-11T18:55:00+02:00', 
+    # 'carrierName': 'WIZZ AIR', 
+    # 'expectedDateTime': '2026-08-11T19:50:00+02:00', 
+    # 'delayedDescription': None, 
+    # 'terminal': None, 
+    # 'cFlight': None, 
+    # 'local': False, 
+    # 'flight': 'W6 1786',
+    #  'remarksStatus': 2}

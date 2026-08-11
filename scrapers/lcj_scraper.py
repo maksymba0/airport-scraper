@@ -1,17 +1,14 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
 from flight import Flight, FlightFields
-import cloudscraper as CloudScrapper
 
+class LCJ_Scraper(BaseScraper):
 
-
-class WRO_Scraper(BaseScraper):
-
-    airportName_ = "Port Lotniczy Wrocław SA"
-    airportCode_ = "WRO"
+    airportName_ = "Port Lotniczy Łódź im. Władysława Reymonta Sp. z o.o."
+    airportCode_ = "LCJ"
 
     def __init__(self, url):
         super().__init__(url)
@@ -30,13 +27,13 @@ class WRO_Scraper(BaseScraper):
 
     def getArrivalsTableHeader(self):
         table_header = f"""
-                <h>Arrivals:</h>
+                <h>Arrivals: {self.airportName_}</h>
                 <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                     <thead>
                         <tr style="background-color: #f2f2f2;">
                             <th style="padding: 5px;">Time</th>
                             <th style="padding: 5px;">Destination</th> 
-                            <th style="padding: 5px;">Flight Number</th> 
+                            <th style="padding: 5px;">Flight Number</th>
                             <th style="padding: 5px;">Status</th>
                         </tr>
                     </thead> 
@@ -45,13 +42,13 @@ class WRO_Scraper(BaseScraper):
         return table_header
     def getDeparturesTableHeader(self):
         table_header = f"""
-                <h>Departures:</h>
+                 <h>Departures: {self.airportName_}</h>
                     <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                         <thead>
                             <tr style="background-color: #f2f2f2;">
                                 <th style="padding: 5px;">Time</th>
                                 <th style="padding: 5px;">Destination</th> 
-                                <th style="padding: 5px;">Flight Number</th> 
+                                <th style="padding: 5px;">Flight Number</th>
                                 <th style="padding: 5px;">Status</th>
                             </tr>
                         </thead> 
@@ -60,26 +57,25 @@ class WRO_Scraper(BaseScraper):
         return table_header
     def getArrivalsTable(self):
 
-        flights = self.getArrivals()  
-        print("Flight data: \n")
-        for a in flights:
-            print(a)
-        print(flights)
+        flights = self.getArrivals() 
 
+        print("Flight data: \n")
+        
         table_header = self.getArrivalsTableHeader()
     
         flights_text = []
-        for panel in flights: 
-            time = panel["arrivalTime"].strip() 
-            destination = panel["destination"].strip() 
-            number = panel["flightNum"].strip() 
-            status = panel["status"].strip()  
+        for panel in flights:
+    
+            time = panel[FlightFields.arrivalTime].strip() 
+            destination = panel[FlightFields.destination].strip() 
+            number = panel[FlightFields.number].strip()
+            status = panel[FlightFields.status].strip() 
     
             htmlText = f"""
             <tr>
                 <td style="padding:5px;">{time}</td>
                 <td style="padding:5px;">{destination}</td> 
-                <td style="padding:5px;">{number}</td> 
+                <td style="padding:5px;">{number}</td>
                 <td style="padding:5px;">{status}</td>
             </tr>
             """
@@ -89,7 +85,6 @@ class WRO_Scraper(BaseScraper):
         table_footer = "</tbody></table>"
         
         content = table_header + table_body + table_footer
-        print(content)
     
         return content
 
@@ -103,14 +98,13 @@ class WRO_Scraper(BaseScraper):
             time = flight["arrivalTime"].strip() 
             destination = flight["destination"].strip() 
             number = flight["flightNum"].strip() 
-            status = flight["status"].strip() 
- 
+            status = flight["status"].strip()  
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
                     <td style="padding: 5px;">{time}</td>
-                    <td style="padding: 5px;">{destination}</td> 
-                    <td style="padding: 5px;">{number}</td> 
+                    <td style="padding: 5px;">{destination}</td>
+                    <td style="padding: 5px;">{number}</td>
                     <td style="padding: 5px;">{status}</td>
                 </tr>
             """
@@ -123,42 +117,31 @@ class WRO_Scraper(BaseScraper):
 
     def getDepartures(self):
 
-        print("downloading")
-        scrapper = CloudScrapper.create_scraper(browser={
-            'browser':'chrome',
-            'platform':'windows',
-            'desktop':True
-        })
-        data = scrapper.get(self.url_) 
+        data = self.makeRequestHTML() 
 
-        try:
-            try:
-                _data = bs(data,"html.parser")
-            except Exception:
-                _data = bs(data.text,"html.parser")
-        except Exception as e:
-            print(f"error: {e}")
-            return []
-
-        flightsTable = _data.find('div', id="departures")
-
-        flightsBody = flightsTable.find("table", class_="flight-table",recursive=False).find("tbody")
-
-        trs = flightsBody.find_all("tr")
-
-
-        flights = []
+        _data = data.text
         
-        for tr in trs:
-            className = tr.get("class", []) # Safely get class list
-            if "flight-info-popup-row" in className:
-                continue   
-            tds = tr.find_all("td")
-            flightTime = tds[0].get_text(strip=True)
-            airport = tds[1].find_all("div")[0].get_text(strip=True)
-            flight_no = tds[2].get_text(strip=True)
-            status = tds[3].get_text(strip=True)
-            carriertext = flight_no
+        
+        data_ = bs(_data,"html.parser")
+
+        tbody = data_.find("tbody",class_="timetableDepartures")
+
+        trs = tbody.find_all("tr")
+
+        print(f"Found {len(data_)} elements")
+
+        flights_info = []
+        for key in trs:
+
+            tds = key.find_all("td")
+                       
+            time = tds[0].get_text().split() or ''
+
+            arrivaltime_ = time[2] #08.08.2026 - 08:25
+            destination_ = tds[1].get_text() or ' '
+            number = tds[2].get_text() or ' '
+            status = tds[3].get_text() or ' '
+            carriertext = number
             carrier = ""
             if "RR" in carriertext:
                 carrier = "RYANAIR"
@@ -173,57 +156,44 @@ class WRO_Scraper(BaseScraper):
             else:
                 carrier = carriertext
             flight = {
-                FlightFields.arrivalTime: flightTime,
-                FlightFields.destination:airport,
-                FlightFields.number:flight_no, 
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number, 
                 FlightFields.status:status,
                 FlightFields.carrier:carrier
             }
-            flights.append(flight)
+            flights_info.append(flight) 
+        return flights_info   
 
-        print(f"Found {len(trs)} elements")
-        return flights 
-    
     def getArrivals(self):
 
+        data = ""
         print("downloading")
-        scrapper = CloudScrapper.create_scraper(browser={
-            'browser':'chrome',
-            'platform':'windows',
-            'desktop':True
-        })
-        data = scrapper.get(self.url_) 
-        try:
-            try:
-                _data = bs(data,"html.parser")
-            except Exception:
-                _data = bs(data.text,"html.parser")
-        except Exception as e:
-            print(f"error: {e}")
-            return []
+        data = self.makeRequestHTML()  
+
+        _data = data.text
  
 
+        data_ = bs(_data,"html.parser")
 
+        tbody = data_.find("tbody",class_="timetableArrivals")
 
-        flightsTable = _data.find('div', id="arrivals")
+        trs = tbody.find_all("tr")
 
-        flightsBody = flightsTable.find("table", class_="flight-table",recursive=False).find("tbody")
+        print(f"Found {len(data_)} elements")
 
-        trs = flightsBody.find_all("tr")
+        flights_info = []
+        for key in trs:
 
-    
-        flights = []
-        
-        for tr in trs:
-            className = tr.get("class", []) # Safely get class list
-            if "flight-info-popup-row" in className:
-                continue   
-            tds = tr.find_all("td")
-            flightTime = tds[0].get_text(strip=True)
-            airport = tds[1].find_all("div")[0].get_text(strip=True)
-            flight_no = tds[2].get_text(strip=True)
-            status = tds[3].get_text(strip=True) 
-            carriertext = flight_no
+            tds = key.find_all("td")
+            
+            time = tds[0].get_text().split() or ''
+
+            arrivaltime_ = time[2] #08.08.2026 - 08:25
+            destination_ = tds[1].get_text() or ' '
+            number = tds[2].get_text() or ' '
+            status = tds[3].get_text() or ' '
+            carriertext = number
             carrier = ""
             if "RR" in carriertext:
                 carrier = "RYANAIR"
@@ -237,15 +207,12 @@ class WRO_Scraper(BaseScraper):
                 carrier = "Royal Dutch"
             else:
                 carrier = carriertext
-
             flight = {
-                FlightFields.arrivalTime: flightTime,
-                FlightFields.destination:airport,
-                FlightFields.number:flight_no, 
+                FlightFields.arrivalTime: arrivaltime_,
+                FlightFields.destination:destination_,
+                FlightFields.number:number, 
                 FlightFields.status:status,
                 FlightFields.carrier:carrier
             }
-            flights.append(flight)
- 
-        print(f"Found {len(flights)} elements")
-        return flights 
+            flights_info.append(flight) 
+        return flights_info  

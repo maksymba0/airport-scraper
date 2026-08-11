@@ -1,29 +1,38 @@
+from dataclasses import dataclass
+from typing import Optional
+
 class FlightFields:
-    arrivalTime = "arrivalTime"
-    departureTime = "departureTime"
-    destination = "destination"
-    number = "flightNum"
-    status = "status"
-    carrier = "carrier"
-    gate = "gate"
-    terminal = "terminal"
-
+    flightNum= "flightNum",
+    time=  "time",
+    destination=  "destination",
+    origin=  "origin",
+    status=  "status",
+    carrier=  "carrier",
+    gate=  "gate",
+    terminal= "terminal",
+    type=  "type"
+@dataclass
 class Flight:
-    time_ = ""
-    route_ = ""
-    carrier_ = ""
-    number_ = ""
-    status_ = "" 
-    def __init__(self, time,route,carrier,number,status):
-        self.time_ = time
-        self.route_ = route
-        self.carrier_ = carrier
-        self.number_ = number
-        self.status_ = status
-    def __repr__(self):
-        return f"{self.time_} - {self.route_} - {self.carrier_} - {self.number_} - {self.status_}"
-    def dump():
-        print("Dumping")
-    def asString(self):
-        return f"{self.time_} - {self.route_} - {self.carrier_} - {self.number_} - {self.status_}"
 
+    flightNum: Optional[str] = None
+    time: Optional[str] = None
+    destination: Optional[str] = None
+    origin: Optional[str] = None
+    status: Optional[str] = None
+    carrier: Optional[str] = None
+    gate: Optional[str] = None
+    terminal: Optional[str] = None
+    type: Optional[str] = None
+
+    def to_dict(self):
+        return {
+            "flightNum": self.flightNum,
+            "time": self.time,
+            "destination": self.destination,
+            "origin": self.origin,
+            "status": self.status,
+            "carrier": self.carrier,
+            "gate": self.gate,
+            "terminal": self.terminal,
+            "type": self.type
+        }

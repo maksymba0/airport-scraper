@@ -221,6 +221,7 @@ select:focus {
     
     function setStatus(text)
     {
+        console.log(text)
         const container = document.getElementById('status');
         if(text === "Loading")
         {
@@ -258,6 +259,7 @@ select:focus {
                     
                     let userMessage = `Server error ${response.status} : (${errorText})`;
 
+
                     if(response.status === 500)
                     {
                         userMessage = "Internal error. Please try again later.";
@@ -269,13 +271,16 @@ select:focus {
                     {
                         userMessage = "Too many requests. Please try again later.";
                     }  
+
                     setStatus(` ${userMessage}`);
                     renderTable([], response.status);
                     return;
                 }
                 let data;
-                try{
+                try
+                {
                     data = await response.json();
+
                 }catch(jsonError)
                 {
                     setStatus(" Server returned invalid data. Please try again.");
@@ -286,34 +291,38 @@ select:focus {
                 const bCached = data.cached;
 
                 allFlights = data.flights;
+                console.log(allFlights);
                 if(!data || !allFlights)
                 {
                     setStatus("Error parsing flights data (sever sent invalid data?). Please try again.");
                     renderTable([], 500);
                     return;    
                 }
-                setStatus(`Done... (${bCached == true? "from Cache" : "new"} )`)
-
+                setStatus(`Done... (${bCached == true? "from Cache" : "new"} - ${allFlights.length} objects)`);
+              
                 renderTable(allFlights,response.status); 
-            } catch(NetworkError)
+            } 
+            catch(NetworkError)
             {
-            setStatus("Cannot connect to server. Check your network connection.");
-            renderTable([], 500);
+                setStatus(`Cannot connect to server. Check your network connection: ${NetworkError} `);
+                renderTable([], 500);
             }
         }
 
     function renderTable(flights, searchResponseStatus = 0) 
     {
-            alert(`Error: ${searchResponseStatus}`); 
+             
           
-            if (flights.length)
+            if (flights.length <= 0)
             {
+                alert(`Error: ${searchResponseStatus}`); 
                 return;
             } 
             const search = document.getElementById('search').value.toLowerCase();
             const airport = document.getElementById('airportFilter').value;
             const type = document.getElementById('typeFilter').value;
             let html = `<p>Found ${flights.length} flights.</p>`;
+            const container = document.getElementById('status');
             const statusElement = document.getElementById('status');
                 
             if (flights.length > 0 && searchResponseStatus === 200) { 
@@ -328,6 +337,8 @@ select:focus {
                     <th>Flight</th>
                     <th>Destination/Origin</th>
                     <th>Time</th>
+                    <th>Gate</th>
+                    <th>Terminal</th>
                     <th>Status</th>
                 </tr>`;
 
@@ -341,8 +352,10 @@ select:focus {
                     <td>${f.type || 'unknown'}</td>
                     <td>${f.carrier || 'N/A'}</td>
                     <td>${f.flightNum || 'N/A'}</td>
-                    <td>${f.destination || 'N/A'}</td>
-                    <td>${f.arrivalTime || 'N/A'}</td>
+                    <td>${(f.type === 'arrival' ? f.origin : f.destination) || 'N/A'}</td>
+                    <td>${f.time || 'N/A'}</td>
+                    <td>${f.gate || 'N/A'}</td>
+                    <td>${f.terminal || 'N/A'}</td>
                     <td>${f.status || 'N/A'}</td>
                 </tr>`;
             });

@@ -1,4 +1,4 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
@@ -158,18 +158,18 @@ class KRK_Scraper(BaseScraper):
         flights = jsonValues["data"]["flights"][0]
         for fl in flights: 
 
-            arrivaltime_ = fl[0]["scheduled_time"].strip() if fl[0]["scheduled_time"] else ""
-            destination_ = fl[0]["destination"].strip() if fl[0]["destination"] else ""
-            number = fl[0]["flight_no"].strip() if fl[0]["flight_no"] else ""
-            carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
-            status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "status":status
-            } 
+            flight_ = Flight()
+           
+            flight_.time = fl[0]["scheduled_time"].strip() if fl[0]["scheduled_time"] else ""
+            flight_.origin = fl[0]["origin"].strip() if fl[0]["origin"] else ""
+            flight_.destination = fl[0]["destination"].strip() if fl[0]["destination"] else ""
+            flight_.flightNum = fl[0]["flight_no"].strip() if fl[0]["flight_no"] else ""
+            flight_.carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
+            flight_.gate = fl[0]["gate_id"].strip() if fl[0]["gate_id"] else ""
+            flight_.terminal = fl[0]["terminal"].strip() if fl[0]["terminal"] else ""
+            flight_.status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
  
         return flights_info   
@@ -199,20 +199,18 @@ class KRK_Scraper(BaseScraper):
         flights = jsonValues["data"]["flights"][0]
         for fl in flights: 
 
-            arrivaltime_ = fl[0]["scheduled_time"].strip() if fl[0]["scheduled_time"] else ""
-            destination_ = fl[0]["origin"].strip() if fl[0]["origin"] else ""
-            number = fl[0]["flight_no"].strip() if fl[0]["flight_no"] else ""
-            carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
-            gate = fl[0]["origin_iata"].strip() if fl[0]["origin_iata"] else ""
-            status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
-            }
+            flight_ = Flight()
+
+            flight_.time = fl[0]["scheduled_time"].strip() if fl[0]["scheduled_time"] else ""
+            flight_.origin = fl[0]["origin"].strip() if fl[0]["origin"] else ""
+            flight_.destination = fl[0]["destination"].strip() if fl[0]["destination"] else ""
+            flight_.flightNum = fl[0]["flight_no"].strip() if fl[0]["flight_no"] else ""
+            flight_.carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
+            flight_.gate = fl[0]["gate_id"].strip() if fl[0]["gate_id"] else ""
+            flight_.terminal = fl[0]["terminal"].strip() if fl[0]["terminal"] else ""
+            flight_.status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""
+            flight = flight_.to_dict()
+            
             flights_info.append(flight)
              
         return flights_info  

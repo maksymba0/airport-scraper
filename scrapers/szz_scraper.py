@@ -1,14 +1,18 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
+import cloudscraper as CloudScrapper
 
-class SZY_Scraper(BaseScraper):
 
-    airportName_ = "PORT LOTNICZY OLSZTYN - MAZURY"
-    airportCode_ = "SZY"
+
+
+class SZZ_Scraper(BaseScraper):
+
+    airportName_ = "Port Lotniczy Szczecin Goleniów"
+    airportCode_ = "SZZ"
 
     def __init__(self, url):
         super().__init__(url)
@@ -27,14 +31,13 @@ class SZY_Scraper(BaseScraper):
 
     def getArrivalsTableHeader(self):
         table_header = f"""
-                <h>Arrivals: {self.airportName_}</h>
+                 <h>Arrivals: {self.airportName_}</h>
                 <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
                     <thead>
                         <tr style="background-color: #f2f2f2;">
                             <th style="padding: 5px;">Time</th>
                             <th style="padding: 5px;">Destination</th> 
-                            <th style="padding: 5px;">Carrier</th>
-                            <th style="padding: 5px;">Flight Number</th>
+                            <th style="padding: 5px;">Flight Number</th> 
                             <th style="padding: 5px;">Status</th>
                         </tr>
                     </thead> 
@@ -49,8 +52,7 @@ class SZY_Scraper(BaseScraper):
                             <tr style="background-color: #f2f2f2;">
                                 <th style="padding: 5px;">Time</th>
                                 <th style="padding: 5px;">Destination</th> 
-                                <th style="padding: 5px;">Carrier</th>
-                                <th style="padding: 5px;">Flight Number</th>
+                                <th style="padding: 5px;">Flight Number</th> 
                                 <th style="padding: 5px;">Status</th>
                             </tr>
                         </thead> 
@@ -60,26 +62,25 @@ class SZY_Scraper(BaseScraper):
     def getArrivalsTable(self):
 
         flights = self.getArrivals()  
-
         print("Flight data: \n")
-        
+        for a in flights:
+            print(a)
+        print(flights)
+
         table_header = self.getArrivalsTableHeader()
     
         flights_text = []
-        for panel in flights:
-    
+        for panel in flights: 
             time = panel["arrivalTime"].strip() 
             destination = panel["destination"].strip() 
-            number = panel["flightNum"].strip()
-            carrier = panel["carrier"].strip()
-            status = panel["status"].strip() 
+            number = panel["flightNum"].strip() 
+            status = panel["status"].strip()  
     
             htmlText = f"""
             <tr>
                 <td style="padding:5px;">{time}</td>
                 <td style="padding:5px;">{destination}</td> 
-                <td style="padding:5px;">{carrier}</td>
-                <td style="padding:5px;">{number}</td>
+                <td style="padding:5px;">{number}</td> 
                 <td style="padding:5px;">{status}</td>
             </tr>
             """
@@ -89,6 +90,7 @@ class SZY_Scraper(BaseScraper):
         table_footer = "</tbody></table>"
         
         content = table_header + table_body + table_footer
+        print(content)
     
         return content
 
@@ -101,16 +103,15 @@ class SZY_Scraper(BaseScraper):
         for flight in departures_list:
             time = flight["arrivalTime"].strip() 
             destination = flight["destination"].strip() 
-            carrier = flight["carrier"].strip()
             number = flight["flightNum"].strip() 
-            status = flight["status"].strip()  
+            status = flight["status"].strip() 
+ 
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
                     <td style="padding: 5px;">{time}</td>
-                    <td style="padding: 5px;">{destination}</td>
-                    <td style="padding: 5px;">{carrier}</td>
-                    <td style="padding: 5px;">{number}</td>
+                    <td style="padding: 5px;">{destination}</td> 
+                    <td style="padding: 5px;">{number}</td> 
                     <td style="padding: 5px;">{status}</td>
                 </tr>
             """
@@ -122,75 +123,38 @@ class SZY_Scraper(BaseScraper):
 
 
     def getDepartures(self):
-
-        data = self.makeRequestHTML() 
-
-        _data = data.text
-        
-        
-        data_ = bs(_data,"html.parser")
-   
-        tbody = data_.find("div",id="header-timetable").find_all("table")[1]
-
-        trs = tbody.find_all("tr")
-
-        print(f"Found {len(data_)} elements")
-
-        flights_info = []
-        for tr in trs[1:]:
-
-            tds = tr.find_all("td") 
-
-            time = tds[0].get_text().split() or ''
-
-            arrivaltime_ = time[2] 
-            destt = " ".join(tds[2].get_text().split())
-            destination_ = destt or ' '
-            text = tds[1].get_text().split()
-            number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
-            carrier = text[0]
-            status = tds[3].get_text() or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
-            }
-            flights_info.append(flight) 
-        return flights_info
-
-    def getArrivals(self):
-
         data = ""
         print("downloading")
-        data = self.makeRequestHTML()  
+        scrapper = CloudScrapper.create_scraper(browser={
+            'browser':'chrome',
+            'platform':'windows',
+            'desktop':True
+        })
+        data = scrapper.get(self.url_) 
+        try:
+            _data = bs(data.text,"html.parser")
+        except Exception as e:
+            print(f"error: {e}")
+            return []
 
-        _data = data.text
-        _data = data.text
+
+
+        flightsTable = _data.find('div', id="departuresInfo")
+
+        flightsBody = flightsTable.find("tbody")
+
+        trs = flightsBody.find_all("tr")
+
+
+        flights = []
         
-        
-        data_ = bs(_data,"html.parser")
-
-        tbody = data_.find("div",id="header-timetable").find_all("table")[0]
-
-        trs = tbody.find_all("tr")
-
-        print(f"Found {len(data_)} elements")
-
-        flights_info = []
-        for tr in trs[1:]:
-
-            tds = tr.find_all("td") 
-
-            time = tds[0].get_text().split() or ''
-            
-            arrivaltime_ = time[2] 
-            destt = " ".join(tds[2].get_text().split())
-            destination_ = destt or ' '
-            text = tds[1].get_text().split()
-            number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
-            carriertext = text[0]
+        for tr in trs: 
+            tds = tr.find_all("td")
+            flightTime = tds[0].get_text(strip=True)
+            airport = tds[2].get_text(strip=True)
+            flight_no = tds[1].get_text(strip=True)
+            status = tds[3].get_text(strip=True)
+            carriertext = flight_no
             carrier = ""
             if "RR" in carriertext:
                 carrier = "RYANAIR"
@@ -202,14 +166,69 @@ class SZY_Scraper(BaseScraper):
                 carrier ="RYANAIR"
             else:
                 carrier = carriertext
-
-            status = tds[3].get_text() or ' '
             flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
+                FlightFields.arrivalTime: flightTime,
+                FlightFields.destination:airport,
+                FlightFields.number:flight_no, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
             }
-            flights_info.append(flight) 
-        return flights_info
+            flights.append(flight)
+
+        print(f"Found {len(trs)} elements")
+        return flights 
+    def getArrivals(self):
+ 
+        print("downloading")
+        scrapper = CloudScrapper.create_scraper(browser={
+            'browser':'chrome',
+            'platform':'windows',
+            'desktop':True
+        })
+        data = scrapper.get(self.url_) 
+             
+        try:
+           _data = bs(data.text,"html.parser")
+        except Exception as e:
+            print(f"error: {e}")
+            return [] 
+
+
+        flightsTable = _data.find('div', id="arrivalsInfo")
+        
+        flightsBody = flightsTable.find("tbody")
+
+        trs = flightsBody.find_all("tr")
+
+    
+        flights = []
+        
+        for tr in trs: 
+            tds = tr.find_all("td")
+            flightTime = tds[0].get_text(strip=True)
+            airport = tds[2].get_text(strip=True)
+            flight_no = tds[1].get_text(strip=True)
+            status = tds[3].get_text(strip=True)
+            carriertext = flight_no
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "LO" in carriertext:
+                carrier = "LOT"
+            elif "W6" in carriertext:
+                carrier = "WIZZ AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            else:
+                carrier = carriertext
+            flight = {
+                FlightFields.arrivalTime: flightTime,
+                FlightFields.destination:airport,
+                FlightFields.number:flight_no, 
+                FlightFields.status:status,
+                FlightFields.carrier:carrier
+            }
+            flights.append(flight)
+        
+        print(f"Found {len(flights)} elements")
+        return flights 

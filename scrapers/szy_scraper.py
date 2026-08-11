@@ -1,15 +1,14 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
 from flight import Flight
-from cloudscraper import CloudScraper
 
-class POZ_Scraper(BaseScraper):
+class SZY_Scraper(BaseScraper):
 
-    airportName_ = "Port Lotniczy Poznań-Ławica Sp. z o.o."
-    airportCode_ = "POZ"
+    airportName_ = "PORT LOTNICZY OLSZTYN - MAZURY"
+    airportCode_ = "SZY"
 
     def __init__(self, url):
         super().__init__(url)
@@ -21,13 +20,7 @@ class POZ_Scraper(BaseScraper):
         if url is None:
             url = self.url_
 
-        header_ = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
-        }
-        #result = super().makeRequestHTML(url, method=None, headers=header_) 
-        scraper = CloudScraper.create_scraper()
-        result = scraper.get(self.url_) 
-        # requests.get(self.url_)
+        result = super().makeRequestHTML(url) 
 
         return result
 
@@ -40,9 +33,8 @@ class POZ_Scraper(BaseScraper):
                         <tr style="background-color: #f2f2f2;">
                             <th style="padding: 5px;">Time</th>
                             <th style="padding: 5px;">Destination</th> 
-                            <th style="padding: 5px;">Flight Number</th>
                             <th style="padding: 5px;">Carrier</th>
-                            <th style="padding: 5px;">Gate</th>
+                            <th style="padding: 5px;">Flight Number</th>
                             <th style="padding: 5px;">Status</th>
                         </tr>
                     </thead> 
@@ -57,9 +49,8 @@ class POZ_Scraper(BaseScraper):
                             <tr style="background-color: #f2f2f2;">
                                 <th style="padding: 5px;">Time</th>
                                 <th style="padding: 5px;">Destination</th> 
-                                <th style="padding: 5px;">Flight Number</th>
                                 <th style="padding: 5px;">Carrier</th>
-                                <th style="padding: 5px;">Gate</th>
+                                <th style="padding: 5px;">Flight Number</th>
                                 <th style="padding: 5px;">Status</th>
                             </tr>
                         </thead> 
@@ -68,11 +59,8 @@ class POZ_Scraper(BaseScraper):
         return table_header
     def getArrivalsTable(self):
 
-        flights = self.getArrivals() 
-        #"arrivalTime": arrivaltime_,
-        #"destination":destination_,
-        #"flightNum":number,
-        #"gate":gate
+        flights = self.getArrivals()  
+
         print("Flight data: \n")
         
         table_header = self.getArrivalsTableHeader()
@@ -83,17 +71,15 @@ class POZ_Scraper(BaseScraper):
             time = panel["arrivalTime"].strip() 
             destination = panel["destination"].strip() 
             number = panel["flightNum"].strip()
-            gate = panel["gate"].strip() 
-            status = panel["status"].strip() 
             carrier = panel["carrier"].strip()
+            status = panel["status"].strip() 
     
             htmlText = f"""
             <tr>
                 <td style="padding:5px;">{time}</td>
                 <td style="padding:5px;">{destination}</td> 
-                <td style="padding:5px;">{number}</td>
                 <td style="padding:5px;">{carrier}</td>
-                <td style="padding:5px;">{gate}</td>
+                <td style="padding:5px;">{number}</td>
                 <td style="padding:5px;">{status}</td>
             </tr>
             """
@@ -115,18 +101,16 @@ class POZ_Scraper(BaseScraper):
         for flight in departures_list:
             time = flight["arrivalTime"].strip() 
             destination = flight["destination"].strip() 
-            number = flight["flightNum"].strip()
-            gate = flight["gate"].strip() 
-            status = flight["status"].strip() 
             carrier = flight["carrier"].strip()
+            number = flight["flightNum"].strip() 
+            status = flight["status"].strip()  
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
                     <td style="padding: 5px;">{time}</td>
                     <td style="padding: 5px;">{destination}</td>
-                    <td style="padding: 5px;">{number}</td>
                     <td style="padding: 5px;">{carrier}</td>
-                    <td style="padding: 5px;">{gate}</td>
+                    <td style="padding: 5px;">{number}</td>
                     <td style="padding: 5px;">{status}</td>
                 </tr>
             """
@@ -138,67 +122,94 @@ class POZ_Scraper(BaseScraper):
 
 
     def getDepartures(self):
-    
-        data = self.makeRequestHTML("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=departures&day=0&timeFrom=00:00&timeTo=23:59&count=10&lang=pl") 
-                                    
-        _data = data
- 
 
-        data_ = JSON.loads(_data.text)
-           
-        flights_info = []
-        for key in data_['data']: 
+        data = self.makeRequestHTML() 
 
+        _data = data.text
+        
+        
+        data_ = bs(_data,"html.parser")
+   
+        tbody = data_.find("div",id="header-timetable").find_all("table")[1]
 
-            time = key['date']['label'] or ''
-
-            arrivaltime_ = time
-            destination_ = key['airport']['label'] or ' '
-            number = key['flight_id'] or ' '
-            carrier = key['airline']['label'] or ' '
-            gate = key['gate']['value'] or ' '
-            status = key['status']['value'] or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
-            }
-            flights_info.append(flight) 
-        return flights_info  
-
-    def getArrivals(self):
- 
-        print("downloading")
-        data = self.makeRequestHTML()  
-
-        _data = data.text 
-        data_ = data.json()
-         
+        trs = tbody.find_all("tr")
 
         print(f"Found {len(data_)} elements")
 
         flights_info = []
-        for key in data_['data']: 
+        for tr in trs[1:]:
 
+            tds = tr.find_all("td") 
 
-            time = key['date']['label'] or ''
+            time = tds[0].get_text().split() or ''
 
-            arrivaltime_ = time
-            destination_ = key['airport']['label'] or ' '
-            number = key['flight_id'] or ' '
-            carrier = key['airline']['label'] or ' '
-            gate = key['gate']['value'] or ' '
-            status = key['status']['value'] or ' '
+            arrivaltime_ = time[2] 
+            destt = " ".join(tds[2].get_text().split())
+            destination_ = destt or ' '
+            text = tds[1].get_text().split()
+            number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
+            carrier = text[0]
+            status = tds[3].get_text() or ' '
             flight = {
                 "arrivalTime": arrivaltime_,
                 "destination":destination_,
-                "flightNum":number,
                 "carrier":carrier,
-                "gate":gate,
+                "flightNum":number,
                 "status":status
             }
             flights_info.append(flight) 
-        return flights_info  
+        return flights_info
+
+    def getArrivals(self):
+
+        data = ""
+        print("downloading")
+        data = self.makeRequestHTML()  
+
+        _data = data.text
+        _data = data.text
+        
+        
+        data_ = bs(_data,"html.parser")
+
+        tbody = data_.find("div",id="header-timetable").find_all("table")[0]
+
+        trs = tbody.find_all("tr")
+
+        print(f"Found {len(data_)} elements")
+
+        flights_info = []
+        for tr in trs[1:]:
+
+            tds = tr.find_all("td") 
+
+            time = tds[0].get_text().split() or ''
+            
+            arrivaltime_ = time[2] 
+            destt = " ".join(tds[2].get_text().split())
+            destination_ = destt or ' '
+            text = tds[1].get_text().split()
+            number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
+            carriertext = text[0]
+            carrier = ""
+            if "RR" in carriertext:
+                carrier = "RYANAIR"
+            elif "LO" in carriertext:
+                carrier = "LOT"
+            elif "W6" in carriertext:
+                carrier = "WIZZ AIR"
+            elif "FR" in carriertext:
+                carrier ="RYANAIR"
+            else:
+                carrier = carriertext
+
+            status = tds[3].get_text() or ' '
+            flight = {
+                "arrivalTime": arrivaltime_,
+                "destination":destination_,
+                "carrier":carrier,
+                "flightNum":number,
+                "status":status
+            }
+            flights_info.append(flight) 
+        return flights_info

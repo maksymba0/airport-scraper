@@ -1,14 +1,14 @@
-from basescraper import BaseScraper
+from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight, FlightFields
+from flight import Flight
 
-class WAW_Scraper(BaseScraper):
+class KTW_Scraper(BaseScraper):
 
-    airportName_ = "Warsaw Chopin Airport"
-    airportCode_ = "WAW"
+    airportName_ = "Katowice Airport"
+    airportCode_ = "KTW"
 
     def __init__(self, url):
         super().__init__(url)
@@ -51,6 +51,7 @@ class WAW_Scraper(BaseScraper):
                                 <th style="padding: 5px;">Time</th>
                                 <th style="padding: 5px;">Destination</th> 
                                 <th style="padding: 5px;">Flight Number</th>
+                                <th style="padding: 5px;">Carrier</th>
                                 <th style="padding: 5px;">Gate</th>
                                 <th style="padding: 5px;">Status</th>
                             </tr>
@@ -72,12 +73,12 @@ class WAW_Scraper(BaseScraper):
         flights_text = []
         for panel in flights:
     
-            time = panel[FlightFields.arrivalTime].strip() 
-            destination = panel[FlightFields.destination].strip() 
-            number = panel[FlightFields.number].strip()
-            gate = panel[FlightFields.gate].strip() 
-            status = panel[FlightFields.status].strip() 
-            carrier = panel[FlightFields.carrier].strip()
+            time = panel["arrivalTime"].strip() 
+            destination = panel["destination"].strip() 
+            number = panel["flightNum"].strip()
+            gate = panel["gate"].strip() 
+            status = panel["status"].strip() 
+            carrier = panel["carrier"].strip()
     
             htmlText = f"""
             <tr>
@@ -105,19 +106,19 @@ class WAW_Scraper(BaseScraper):
 
         departures_rows = []
         for flight in departures_list:
-            time = flight[FlightFields.arrivalTime].strip()  
-            destination = flight[FlightFields.destination].strip()
-            carrier = flight[FlightFields.carrier].strip() 
-            number = flight[FlightFields.number].strip()
-            status = flight[FlightFields.status].strip() 
-            gate = flight[FlightFields.gate] or "" 
+            time = flight["arrivalTime"].strip() 
+            destination = flight["destination"].strip() 
+            number = flight["flightNum"].strip()
+            gate = flight["gate"].strip() 
+            status = flight["status"].strip() 
+            carrier = flight["carrier"].strip()
     
             htmlText = f"""
                 <tr style="background-color: #f2f2f2;">
                     <td style="padding: 5px;">{time}</td>
                     <td style="padding: 5px;">{destination}</td>
-                    <td style="padding: 5px;">{carrier}</td>
                     <td style="padding: 5px;">{number}</td>
+                    <td style="padding: 5px;">{carrier}</td>
                     <td style="padding: 5px;">{gate}</td>
                     <td style="padding: 5px;">{status}</td>
                 </tr>
@@ -130,81 +131,73 @@ class WAW_Scraper(BaseScraper):
 
 
     def getDepartures(self):
-    
-        data = self.makeRequestHTML("https://lotnisko-chopina.pl/pl/przyloty-i-odloty/?operation=d") 
-        try:
-            _data = bs(data,"html.parser")
-        except Exception:
-            _data = bs(data.text,"html.parser")
-        except Exception as e:
-            print(f"error: {e}")
-            return []
 
+        dateToday = datetime.today().strftime("%Y-%m-%d")
+        data = self.makeRequestHTML(f"https://www.katowice-airport.com/pl/api/flight-board/list?direction=1&date={dateToday}&time_from=00:00&time_to=23:59") 
 
-        flights_list = _data.find('ul', class_="flights-list")
+        _data = data
+ 
 
-        flights = flights_list.find_all("li",class_="arrivals-departures-tables") 
-
-        print(f"Found {len(flights)} elements")
-
+        data_ = JSON.loads(_data.text)
+           
         flights_info = []
-        for li in flights[1:]: 
+        for key in data_['data']: 
 
-            arrivaltime_ = t.get_text(strip=True) if (t := li.select_one(".column-time.arrivals-col")) else ""
-            destination_ = t.get_text(strip=True) if (t := li.select_one(".column-origin-destination")) else ""
-            number = t.get_text(strip=True) if (t := li.select_one(".column-flight-no")) else ""
-            carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""
-            gate = t.get_text(strip=True) if (t := li.select_one(".column-gate")) else ""
-            status = t.get_text(strip=True) if (t := li.select_one(".column-status")) else ""
+
+            time = key['scheduled_time'] or ''
+
+            arrivaltime_ = time
+            destination_ = key['airport'] or ' '
+            number = key['flight_number'] or ' '
+            carrier = key['airline_name'] or ' '
+            gate = key['boarding_gate'] or ' '
+            status = key['status'] or ' '
             flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number,
-                FlightFields.carrier:carrier,
-                FlightFields.gate:gate,
-                FlightFields.status:status
+                "arrivalTime": arrivaltime_,
+                "destination":destination_,
+                "flightNum":number,
+                "carrier":carrier,
+                "gate":gate,
+                "status":status
             }
-            flights_info.append(flight)
-        #flights_info_text = " \n".join(flights_info)
-        #print(flights_info_text) 
+            flights_info.append(flight) 
         return flights_info  
-        
+
     def getArrivals(self):
 
-        print("downloading")
-        data = self.makeRequestHTML("https://lotnisko-chopina.pl/pl/przyloty-i-odloty/?operation=a") 
-        try:
-            try:
-                _data = bs(data,"html.parser")
-            except Exception:
-                _data = bs(data.text,"html.parser")
-        except Exception as e:
-            print(f"error: {e}")
-            return []
+        data = ""
+        print("downloading") 
+        dateToday = datetime.today().strftime("%Y-%m-%d")
+        data = self.makeRequestHTML(f"https://www.katowice-airport.com/pl/api/flight-board/list?direction=2&date={dateToday}&time_from=00:00&time_to=23:59")  
 
+        _data = data.text
+ 
 
-        flights_list = _data.find('ul', class_="flights-list")
+        data_ = JSON.loads(_data)
+         
 
-        flights = flights_list.find_all("li",class_="arrivals-departures-tables") 
-
-        print(f"Found {len(flights)} elements")
+        print(f"Found {len(data_)} elements")
 
         flights_info = []
-        for li in flights[1:]: 
+        for key in data_['data']: 
 
-            arrivaltime_ = t.get_text(strip=True) if (t := li.select_one(".column-time.arrivals-col")) else ""
-            destination_ = t.get_text(strip=True) if (t := li.select_one(".column-origin-destination")) else ""
-            number = t.get_text(strip=True) if (t := li.select_one(".column-flight-no")) else ""
-            carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""
-            gate = t.get_text(strip=True) if (t := li.select_one(".column-gate")) else ""
-            status = t.get_text(strip=True) if (t := li.select_one(".column-status")) else ""
+
+            time = key['scheduled_time'] or ''
+            
+            arrivaltime_ = time
+            destination_ = key['airport'] or ' '
+            number = key['flight_number'] or ' '
+            carrier = key['airline_name'] or ' '
+            gate = key['boarding_gate'] or ' '
+            status = key['status'] or ' '
+
             flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number,
-                FlightFields.carrier:carrier,
-                FlightFields.gate:gate,
-                FlightFields.status:status
+                "arrivalTime": arrivaltime_,
+                "destination":destination_,
+                "flightNum":number,
+                "carrier":carrier,
+                "gate":gate,
+                "status":status
             }
             flights_info.append(flight) 
         return flights_info  
