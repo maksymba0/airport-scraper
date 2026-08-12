@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime
-from flight import Flight
+from flight import Flight, FlightFields
 
 class KTW_Scraper(BaseScraper):
 
@@ -73,12 +73,12 @@ class KTW_Scraper(BaseScraper):
         flights_text = []
         for panel in flights:
     
-            time = panel["arrivalTime"].strip() 
-            destination = panel["destination"].strip() 
-            number = panel["flightNum"].strip()
-            gate = panel["gate"].strip() 
-            status = panel["status"].strip() 
-            carrier = panel["carrier"].strip()
+            time = panel[FlightFields.time].strip() 
+            destination = panel[FlightFields.origin].strip() 
+            number = panel[FlightFields.flightNum].strip()
+            gate = panel[FlightFields.terminal].strip() 
+            status = panel[FlightFields.status].strip() 
+            carrier = panel[FlightFields.carrier].strip()
     
             htmlText = f"""
             <tr>
@@ -106,7 +106,7 @@ class KTW_Scraper(BaseScraper):
 
         departures_rows = []
         for flight in departures_list:
-            time = flight["arrivalTime"].strip() 
+            time = flight[Flight].strip() 
             destination = flight["destination"].strip() 
             number = flight["flightNum"].strip()
             gate = flight["gate"].strip() 
@@ -146,20 +146,19 @@ class KTW_Scraper(BaseScraper):
 
             time = key['scheduled_time'] or ''
 
-            arrivaltime_ = time
-            destination_ = key['airport'] or ' '
-            number = key['flight_number'] or ' '
-            carrier = key['airline_name'] or ' '
-            gate = key['boarding_gate'] or ' '
-            status = key['status'] or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
-            }
+            flight_ = Flight()
+            
+            time = key['scheduled_time'] or ''
+            
+            flight_.arrivaltime_ = time
+            flight_.origin = key['airport'] or ' '
+            flight_.number = key['flight_number'] or ' '
+            flight_.carrier = key['airline_name'] or ' '
+            flight_.gate = key['boarding_gate'] or ' '
+            flight_.status = key['status'] or ' '
+
+
+            flight =  flight_.to_dict()
             flights_info.append(flight) 
         return flights_info  
 
@@ -182,22 +181,19 @@ class KTW_Scraper(BaseScraper):
         for key in data_['data']: 
 
 
+            flight_ = Flight()
+            
             time = key['scheduled_time'] or ''
             
-            arrivaltime_ = time
-            destination_ = key['airport'] or ' '
-            number = key['flight_number'] or ' '
-            carrier = key['airline_name'] or ' '
-            gate = key['boarding_gate'] or ' '
-            status = key['status'] or ' '
+            flight_.arrivaltime_ = time
+            flight_.origin = key['airport'] or ' '
+            flight_.number = key['flight_number'] or ' '
+            flight_.carrier = key['airline_name'] or ' '
+            flight_.terminal = key['boarding_gate'] or ' '
+            flight_.status = key['status'] or ' '
 
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
-            }
+
+            flight =  flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info  

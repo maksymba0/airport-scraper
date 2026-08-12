@@ -142,21 +142,17 @@ class SZY_Scraper(BaseScraper):
             tds = tr.find_all("td") 
 
             time = tds[0].get_text().split() or ''
-
-            arrivaltime_ = time[2] 
+            flight_ = Flight()
+            
+            flight_.time = time[2] 
             destt = " ".join(tds[2].get_text().split())
-            destination_ = destt or ' '
+            flight_.destination = destt or ' '
             text = tds[1].get_text().split()
-            number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
-            carrier = text[0]
-            status = tds[3].get_text() or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
-            }
+            flight_.flightNum = f"{text[1]} {text[2]}".replace("(","").replace(")","")
+            flight_.carrier = text[0]
+            flight_.status = tds[3].get_text() or ' '
+            flight = flight_.to_dict()
+            
             flights_info.append(flight) 
         return flights_info
 
@@ -184,32 +180,28 @@ class SZY_Scraper(BaseScraper):
             tds = tr.find_all("td") 
 
             time = tds[0].get_text().split() or ''
-            
-            arrivaltime_ = time[2] 
-            destt = " ".join(tds[2].get_text().split())
-            destination_ = destt or ' '
-            text = tds[1].get_text().split()
-            number = f"{text[1]} {text[2]}".replace("(","").replace(")","")
-            carriertext = text[0]
-            carrier = ""
-            if "RR" in carriertext:
-                carrier = "RYANAIR"
-            elif "LO" in carriertext:
-                carrier = "LOT"
-            elif "W6" in carriertext:
-                carrier = "WIZZ AIR"
-            elif "FR" in carriertext:
-                carrier ="RYANAIR"
-            else:
-                carrier = carriertext
 
-            status = tds[3].get_text() or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
-            }
+            flight_ = Flight()
+
+            flight_.time = time[2] 
+            destt = " ".join(tds[2].get_text().split())
+            flight_.origin = destt or ' '
+            text = tds[1].get_text().split()
+            flight_.flightNum = f"{text[1]} {text[2]}".replace("(","").replace(")","")
+            carriertext = text[0]
+            flight_.carrier = ""
+            if "RR" in carriertext:
+                flight_.carrier = "RYANAIR"
+            elif "LO" in carriertext:
+                flight_.carrier = "LOT"
+            elif "W6" in carriertext:
+                flight_.carrier = "WIZZ AIR"
+            elif "FR" in carriertext:
+                flight_.carrier ="RYANAIR"
+            else:
+                flight_.carrier = carriertext
+
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info

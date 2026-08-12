@@ -158,19 +158,16 @@ class RDO_Scraper(BaseScraper):
         for flight in data_["data"]:
  
             time = flight["scheduled_datetime_pl"].split() or ''
-            
-            arrivaltime_ = time[1]
-            destination_ = flight["destination"] or ' '
-            number = flight["flight_no"] or ' '
-            carrier = flight["airline"] or ' '
-            status = flight["status_en"] or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
-            }
+
+            flight_ = Flight()
+
+            flight_.time = time[1]
+            flight_.destination = flight["destination"] or ' '
+            flight_.flightNum = flight["flight_no"] or ' '
+            flight_.carrier = flight["airline"] or ' '
+            flight_.status = flight["status_en"] or ' '
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info
 
@@ -205,17 +202,14 @@ class RDO_Scraper(BaseScraper):
  
             time = flight["scheduled_datetime_pl"].split() or ''
 
-            arrivaltime_ = time[1]
-            destination_ = flight["origin_en"] or ' '
-            number = flight["flight_no"] or ' '
-            carrier = flight["airline"] or ' '
-            status = flight["status_en"] or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "carrier":carrier,
-                "flightNum":number,
-                "status":status
-            }
+            flight_ = Flight()
+
+            flight_.time = time[1]
+            flight_.origin = flight["origin_en"] or ' '
+            flight_.flightNum = flight["flight_no"] or ' '
+            flight_.carrier = flight["airline"] or ' '
+            flight_.status = flight["status_en"] or ' '
+            flight = flight_.to_dict()
+            
             flights_info.append(flight) 
         return flights_info

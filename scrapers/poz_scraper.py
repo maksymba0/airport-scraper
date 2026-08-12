@@ -151,21 +151,16 @@ class POZ_Scraper(BaseScraper):
 
 
             time = key['date']['label'] or ''
+            flight_ = Flight()
 
-            arrivaltime_ = time
-            destination_ = key['airport']['label'] or ' '
-            number = key['flight_id'] or ' '
-            carrier = key['airline']['label'] or ' '
-            gate = key['gate']['value'] or ' '
-            status = key['status']['value'] or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
-            }
+            flight_.time = time
+            flight_.destination = key['airport']['label'] or ' '
+            flight_.flightNum = key['flight_id'] or ' '
+            flight_.carrier = key['airline']['label'] or ' '
+            flight_.gate = key['gate']['value'] or ' '
+            flight_.status = key['status']['value'] or ' '
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info  
 
@@ -173,32 +168,25 @@ class POZ_Scraper(BaseScraper):
  
         print("downloading")
         data = self.makeRequestHTML()  
-
-        _data = data.text 
+ 
         data_ = data.json()
-         
-
+          
         print(f"Found {len(data_)} elements")
 
         flights_info = []
-        for key in data_['data']: 
-
-
+        for key in data_['data']:  
+            
             time = key['date']['label'] or ''
 
-            arrivaltime_ = time
-            destination_ = key['airport']['label'] or ' '
-            number = key['flight_id'] or ' '
-            carrier = key['airline']['label'] or ' '
-            gate = key['gate']['value'] or ' '
-            status = key['status']['value'] or ' '
-            flight = {
-                "arrivalTime": arrivaltime_,
-                "destination":destination_,
-                "flightNum":number,
-                "carrier":carrier,
-                "gate":gate,
-                "status":status
-            }
+            flight_ = Flight()
+            
+            flight_.time = time
+            flight_.origin = key['airport']['label'] or ' '
+            flight_.flightNum = key['flight_id'] or ' '
+            flight_.carrier = key['airline']['label'] or ' '
+            flight_.gate = key['gate']['value'] or ' '
+            flight_.status = key['status']['value'] or ' '
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info  

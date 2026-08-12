@@ -136,32 +136,26 @@ class LUZ_Scraper(BaseScraper):
             tds = key.find_all("div",recursive=False)
             
             time = tds[0].get_text() or ''
-
-            arrivaltime_ = time
-            destination_ = tds[2].find("p").get_text() or ' '
-            number = tds[3].get_text() or ' '
-            status = tds[5].get_text().split() or ' '
+            flight_ = Flight()
+            flight_.time = time
+            flight_.destination = tds[2].find("p").get_text() or ' '
+            flight_.flightNum = tds[3].get_text() or ' '
+            flight_.status = tds[5].get_text().split() or ' '
             carrierText = tds[4].find("img").get("alt") if tds[4].find("img") else "-"
-            carrier = "-"
+            flight_.carrier = "-"
             if carrierText == "LO":
             
-                carrier = "LOT"
+                flight_.carrier = "LOT"
             elif carrierText == "W6":
-                carrier = "WIZZ AIR"
+                flight_.carrier = "WIZZ AIR"
             elif carrierText == "FR":
-                carrier = "RYANAIR"
+                flight_.carrier = "RYANAIR"
             elif carrierText == "E4":
-                carrier ="ENTER AIR"
+                flight_.carrier ="ENTER AIR"
             else:
-                carrier = carrierText
+                flight_.carrier = carrierText
             
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.carrier:carrier,
-                FlightFields.number:number,
-                FlightFields.status:status
-            }
+            flight = flight_.to_dict()
             
             flights_info.append(flight) 
         return flights_info   
@@ -187,31 +181,26 @@ class LUZ_Scraper(BaseScraper):
             tds = key.find_all("div",recursive=False)
             
             time = tds[0].get_text() or ''
+            flight_ = Flight()
 
-            arrivaltime_ = time
-            destination_ = tds[2].find("p").get_text() or ' '
-            number = tds[3].get_text() or ' '
-            status = tds[5].get_text().split() or ' '
+            flight_.time = time
+            flight_.origin = tds[2].find("p").get_text() or ' '
+            flight_.flightNum = tds[3].get_text() or ' '
+            flight_.status = tds[5].get_text().split() or ' '
             carrierText = tds[4].find("img").get("alt") if tds[4].find("img") else "-";
-            carrier = "-"
+            flight_.carrier = "-"
             if carrierText == "LO":
             
-                carrier = "LOT"
+                flight_.carrier = "LOT"
             elif carrierText == "W6":
-                carrier = "WIZZ AIR"
+                flight_.carrier = "WIZZ AIR"
             elif carrierText == "FR":
-                carrier = "RYANAIR"
+                flight_.carrier = "RYANAIR"
             elif carrierText == "E4":
-                carrier ="ENTER AIR"
+                flight_.carrier ="ENTER AIR"
             else:
-                carrier = carrierText
+                flight_.carrier = carrierText
             
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.carrier:carrier,
-                FlightFields.number:number,
-                FlightFields.status:status
-            }
+            flight = flight_.to_dict()
             flights_info.append(flight) 
         return flights_info  

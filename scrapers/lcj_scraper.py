@@ -136,33 +136,30 @@ class LCJ_Scraper(BaseScraper):
             tds = key.find_all("td")
                        
             time = tds[0].get_text().split() or ''
+            flight = Flight()
+             
+            flight.time = time[2] #08.08.2026 - 08:25
+            flight.destination = tds[1].get_text() or ' '
+            flight.flightNum = tds[2].get_text() or ' '
+            flight.status = tds[3].get_text() or ' '
+            carriertext = flight.flightNum
 
-            arrivaltime_ = time[2] #08.08.2026 - 08:25
-            destination_ = tds[1].get_text() or ' '
-            number = tds[2].get_text() or ' '
-            status = tds[3].get_text() or ' '
-            carriertext = number
-            carrier = ""
+            flight.carrier = ""
             if "RR" in carriertext:
-                carrier = "RYANAIR"
+                flight.carrier = "RYANAIR"
             elif "PC" in carriertext:
-                carrier = "PEGASUS AIRLINES"
+                flight.carrier = "PEGASUS AIRLINES"
             elif "ENT" in carriertext:
-                carrier = "ENTER AIR"
+                flight.carrier = "ENTER AIR"
             elif "FR" in carriertext:
-                carrier ="RYANAIR"
+                flight.carrier ="RYANAIR"
             elif "KL" in carriertext:
-                carrier = "Royal Dutch"
+                flight.carrier = "Royal Dutch"
             else:
-                carrier = carriertext
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
-            }
-            flights_info.append(flight) 
+                flight.carrier = carriertext
+
+            flight_ = flight.to_dict()
+            flights_info.append(flight_) 
         return flights_info   
 
     def getArrivals(self):
@@ -189,30 +186,28 @@ class LCJ_Scraper(BaseScraper):
             
             time = tds[0].get_text().split() or ''
 
-            arrivaltime_ = time[2] #08.08.2026 - 08:25
-            destination_ = tds[1].get_text() or ' '
-            number = tds[2].get_text() or ' '
-            status = tds[3].get_text() or ' '
-            carriertext = number
-            carrier = ""
+            flight = Flight()
+
+            flight.time = time[2] #08.08.2026 - 08:25
+            flight.origin = tds[1].get_text() or ' '
+            flight.flightNum = tds[2].get_text() or ' '
+            flight.status = tds[3].get_text() or ' '
+            carriertext = flight.flightNum
+            flight.carrier = ""
             if "RR" in carriertext:
-                carrier = "RYANAIR"
+                flight.carrier = "RYANAIR"
             elif "PC" in carriertext:
-                carrier = "PEGASUS AIRLINES"
+                flight.carrier = "PEGASUS AIRLINES"
             elif "ENT" in carriertext:
-                carrier = "ENTER AIR"
+                flight.carrier = "ENTER AIR"
             elif "FR" in carriertext:
-                carrier ="RYANAIR"
+                flight.carrier ="RYANAIR"
             elif "KL" in carriertext:
-                carrier = "Royal Dutch"
+                flight.carrier = "Royal Dutch"
             else:
-                carrier = carriertext
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
-            }
-            flights_info.append(flight) 
+                flight.carrier = carriertext
+
+            flight_ = flight.to_dict()
+
+            flights_info.append(flight_) 
         return flights_info  

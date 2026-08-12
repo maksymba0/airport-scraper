@@ -147,18 +147,15 @@ class RZE_Scraper(BaseScraper):
                 continue
             time = tds[1].get_text() or ''
 
-            arrivaltime_ = time
-            destination_ = tds[2].get_text() or ' '
-            number = tds[3].get_text() or ' '
-            carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
-            status = tds[4].get_text() or ' '
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.carrier:carrier,
-                FlightFields.number:number,
-                FlightFields.status:status
-            }
+            flight_ = Flight()
+
+            flight_.time = time
+            flight_.destination = tds[2].get_text() or ' '
+            flight_.flightNum = tds[3].get_text() or ' '
+            flight_.carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
+            flight_.status = tds[4].get_text() or ' '
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info   
 
@@ -188,17 +185,14 @@ class RZE_Scraper(BaseScraper):
                 continue
             time = tds[1].get_text() or ''
 
-            arrivaltime_ = time
-            destination_ = tds[2].get_text() or ' '
-            number = tds[3].get_text() or ' '
-            carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
-            status = tds[4].get_text() or ' '
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.carrier:carrier,
-                FlightFields.number:number,
-                FlightFields.status:status
-            }
+            flight_ = Flight()
+
+            flight_.time = time
+            flight_.origin = tds[2].get_text() or ' '
+            flight_.flightNum = tds[3].get_text() or ' '
+            flight_.carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
+            flight_.status = tds[4].get_text() or ' ' 
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info

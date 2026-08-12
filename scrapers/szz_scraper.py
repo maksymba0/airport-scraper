@@ -150,7 +150,10 @@ class SZZ_Scraper(BaseScraper):
         
         for tr in trs: 
             tds = tr.find_all("td")
-            flightTime = tds[0].get_text(strip=True)
+
+            flight_ = Flight()
+
+            flight_.time = tds[0].get_text(strip=True)
             airport = tds[2].get_text(strip=True)
             flight_no = tds[1].get_text(strip=True)
             status = tds[3].get_text(strip=True)
