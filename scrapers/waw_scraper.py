@@ -192,13 +192,15 @@ class WAW_Scraper(BaseScraper):
             carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""
             gate = t.get_text(strip=True) if (t := li.select_one(".column-gate")) else ""
             status = t.get_text(strip=True) if (t := li.select_one(".column-status")) else ""
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number,
-                FlightFields.carrier:carrier,
-                FlightFields.gate:gate,
-                FlightFields.status:status
-            }
+            flight_ = Flight()
+
+            flight_.carrier = carrier
+            flight_.time = arrivaltime_
+            flight_.origin = destination_
+            flight_.flightNum = number
+            flight_.status = status
+            flight_.gate = gate
+            flight = flight_.to_dict()  
+        
             flights_info.append(flight) 
         return flights_info  

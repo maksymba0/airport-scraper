@@ -48,6 +48,17 @@ def allFlights():
     airports = {
             "GDN" : gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow"),
             "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
+            "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
+            "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
+            #"BZG" : bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals"), #Disabled BZG temporarily due to clouidfare issues
+            "KTW" : ktw_scraper.KTW_Scraper("None"), #its okay, let it be None
+            "LCJ" : lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl"),
+            "RZE" : rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty"),
+            "RDO" : rdo_scraper.RDO_Scraper("https://www.lotniskowarszawa-radom.pl/api/search-flight"),
+            "SZY" : szy_scraper.SZY_Scraper("https://mazuryairport.pl/"),
+            "LUZ" : luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/")
+
+
             
     }
     all_flights = []

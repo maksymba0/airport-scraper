@@ -226,7 +226,7 @@ class SZZ_Scraper(BaseScraper):
                 carrier = carriertext
             flight = {
                 FlightFields.arrivalTime: flightTime,
-                FlightFields.destination:airport,
+                FlightFields.origin:airport,
                 FlightFields.number:flight_no, 
                 FlightFields.status:status,
                 FlightFields.carrier:carrier

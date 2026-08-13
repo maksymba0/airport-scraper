@@ -172,13 +172,16 @@ class WRO_Scraper(BaseScraper):
                 carrier = "Royal Dutch"
             else:
                 carrier = carriertext
-            flight = {
-                FlightFields.arrivalTime: flightTime,
-                FlightFields.destination:airport,
-                FlightFields.number:flight_no, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
-            }
+            flight_ = Flight()
+            
+            flight_.time= flightTime
+            flight_.destination = airport
+            flight_.flightNum = flight_no
+            flight_.carrier = carrier
+            flight_.status = status 
+
+            flight = flight_.to_dict()  
+
             flights.append(flight)
 
         print(f"Found {len(trs)} elements")
@@ -237,14 +240,17 @@ class WRO_Scraper(BaseScraper):
                 carrier = "Royal Dutch"
             else:
                 carrier = carriertext
+            flight_ = Flight()
 
-            flight = {
-                FlightFields.arrivalTime: flightTime,
-                FlightFields.destination:airport,
-                FlightFields.number:flight_no, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
-            }
+            flight_.time= flightTime
+            flight_.origin = airport
+            flight_.flightNum = flight_no
+            flight_.carrier = carrier
+            flight_.status = status 
+
+            flight = flight_.to_dict() 
+ 
+            
             flights.append(flight)
  
         print(f"Found {len(flights)} elements")
