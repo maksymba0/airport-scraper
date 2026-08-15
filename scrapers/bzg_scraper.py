@@ -157,21 +157,17 @@ class BZG_Scraper(BaseScraper):
 
             time = key['scheduledTime']
 
-            arrivaltime_ = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%H:%M") or ""
-            destination_ = key['airportNameEn'] or ' '
-            number = key['flightNumber'] or ' '
-            carrier = key['airlineName'] or ' '
-            gate = key['gateNumbers'] or ' '
-            status = key['statusEn'] or ' '
-            flight = {
-                 FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number,
-                FlightFields.carrier:carrier,
-                FlightFields.gate:gate,
-                FlightFields.status:status
-            }
+            flight_ = Flight()
+            
+            flight_.time = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%H:%M") or ""
+            flight_.origin = key['airportNameEn'] or ' '
+            flight_.flightNum = key['flightNumber'] or ' '
+            flight_.carrier = key['airlineName'] or ' '
+            flight_.gate = key['gateNumbers'] or ' '
+            flight_.status = key['statusEn'] or ' '
+            flight = flight_.to_dict()
             flights_info.append(flight) 
+            
         return flights_info  
     
     def getArrivals(self):
@@ -195,20 +191,15 @@ class BZG_Scraper(BaseScraper):
 
 
             time = key['scheduledTime']
+            flight_ = Flight()
 
-            arrivaltime_ = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%H:%M") or ""
-            destination_ = key['airportNameEn'] or ' '
-            number = key['flightNumber'] or ' '
-            carrier = key['airlineName'] or ' '
-            gate = key['gateNumbers'] or ' '
-            status = key['statusEn'] or ' '
-            flight = {
-                FlightFields.arrivalTime: arrivaltime_,
-                FlightFields.destination:destination_,
-                FlightFields.number:number,
-                FlightFields.carrier:carrier,
-                FlightFields.gate:gate,
-                FlightFields.status:status
-            }
+            flight_.time = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%H:%M") or ""
+            flight_.origin = key['airportNameEn'] or ' '
+            flight_.flightNum = key['flightNumber'] or ' '
+            flight_.carrier = key['airlineName'] or ' '
+            flight_.gate = key['gateNumbers'] or ' '
+            flight_.status = key['statusEn'] or ' '
+            flight = flight_.to_dict()
+
             flights_info.append(flight) 
         return flights_info  

@@ -152,30 +152,25 @@ class SZZ_Scraper(BaseScraper):
             tds = tr.find_all("td")
 
             flight_ = Flight()
-
+            
             flight_.time = tds[0].get_text(strip=True)
-            airport = tds[2].get_text(strip=True)
-            flight_no = tds[1].get_text(strip=True)
-            status = tds[3].get_text(strip=True)
-            carriertext = flight_no
-            carrier = ""
+            flight_.destination = tds[2].get_text(strip=True)
+            flight_.flightNum = tds[1].get_text(strip=True)
+            flight_.status = tds[3].get_text(strip=True)
+            carriertext = flight_.flightNum
+            flight_.carrier = ""
             if "RR" in carriertext:
-                carrier = "RYANAIR"
+                flight_.carrier = "RYANAIR"
             elif "LO" in carriertext:
-                carrier = "LOT"
+                flight_.carrier = "LOT"
             elif "W6" in carriertext:
-                carrier = "WIZZ AIR"
+                flight_.carrier = "WIZZ AIR"
             elif "FR" in carriertext:
-                carrier ="RYANAIR"
+                flight_.carrier ="RYANAIR"
             else:
-                carrier = carriertext
-            flight = {
-                FlightFields.arrivalTime: flightTime,
-                FlightFields.destination:airport,
-                FlightFields.number:flight_no, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
-            }
+                flight_.carrier = carriertext
+
+            flight = flight_.to_dict()
             flights.append(flight)
 
         print(f"Found {len(trs)} elements")
@@ -208,29 +203,26 @@ class SZZ_Scraper(BaseScraper):
         
         for tr in trs: 
             tds = tr.find_all("td")
-            flightTime = tds[0].get_text(strip=True)
-            airport = tds[2].get_text(strip=True)
-            flight_no = tds[1].get_text(strip=True)
-            status = tds[3].get_text(strip=True)
-            carriertext = flight_no
-            carrier = ""
+            flight_ = Flight()
+            flight_.time = tds[0].get_text(strip=True)
+            flight_.destination = tds[2].get_text(strip=True)
+            flight_.flightNum = tds[1].get_text(strip=True)
+            flight_.status = tds[3].get_text(strip=True)
+            carriertext = flight_.flightNum
+            flight_.carrier = ""
             if "RR" in carriertext:
-                carrier = "RYANAIR"
+                flight_.carrier = "RYANAIR"
             elif "LO" in carriertext:
-                carrier = "LOT"
+                flight_.carrier = "LOT"
             elif "W6" in carriertext:
-                carrier = "WIZZ AIR"
+                flight_.carrier = "WIZZ AIR"
             elif "FR" in carriertext:
-                carrier ="RYANAIR"
+                flight_.carrier ="RYANAIR"
             else:
-                carrier = carriertext
-            flight = {
-                FlightFields.arrivalTime: flightTime,
-                FlightFields.origin:airport,
-                FlightFields.number:flight_no, 
-                FlightFields.status:status,
-                FlightFields.carrier:carrier
-            }
+                flight_.carrier = carriertext
+
+            flight = flight_.to_dict()
+
             flights.append(flight)
         
         print(f"Found {len(flights)} elements")
