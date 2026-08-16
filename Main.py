@@ -24,10 +24,11 @@ from services.flight_service import FlightService as FlightService
 
 app = Flask(__name__)
 
-@app.route("/api/all-flights")
+@app.route("/api/get_flights")
 def allFlights():
     force_refresh_ = request.args.get('refresh',False)
-    return FlightService.get_all_flights(force_refresh=force_refresh_)
+    airports_ = request.args.get('airports','all')
+    return FlightService.get_flights(airports=airports_,force_refresh=force_refresh_)
         
  
 @app.route("/")

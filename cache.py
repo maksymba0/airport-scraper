@@ -42,15 +42,19 @@ def is_valid_cache(cache_data):
     except ValueError:
         return False
     
-def get_flights_data(airport_name = None):
+def get_flights_data(airport_code = None):
     cache = load_cache()
-    get_custom_airport = airport_name or False 
+    get_custom_airport = airport_code if (airport_code is not None and airport_code != 'all') else None 
     if not cache:
-        return False
+        print("[cache.py]: couldn't load cache")
+        return []
     is_valid = is_valid_cache(cache)
+    if not is_valid:
+        print("[cache.py]: loaded invalid cache")
+        return []
     if get_custom_airport:
         data = cache.get("flights",[])
-        return [f for f in data if f.get("airport") == airport_name]
+        return [f for f in data if f.get("code") == airport_code]
     return cache.get("flights",[])
 
 

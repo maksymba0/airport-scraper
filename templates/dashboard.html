@@ -244,11 +244,25 @@ select:focus {
             try
             {
                 setStatus("Loading") ;
-                url = '/api/all-flights'
+                url = '/api/get_flights'
+ 
+                // do we want to get data for all airports or just one specific?
+                airport = document.getElementById('airportFilter').value; // returns ex. 'all','gdn', 'szz'
+               
+                params = []
 
                 if(bForce)
                 {
-                    url += '?refresh=true'
+                    params.push('refresh=true');
+                }
+                if(airport != 'all')
+                {
+                    params.push(`airports=${airport}`)
+                }
+
+                if(params.length > 0)
+                {
+                    url += '?' + params.join('&')
                 }
 
                 const response = await fetch(url); 
@@ -315,7 +329,7 @@ select:focus {
           
             if (flights.length <= 0)
             {
-                alert(`Error: ${searchResponseStatus}`); 
+                //alert(`Error: ${searchResponseStatus}`); 
                 return;
             } 
             const search = document.getElementById('search').value.toLowerCase();
