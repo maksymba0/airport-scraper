@@ -141,6 +141,9 @@ class KTW_Scraper(BaseScraper):
         data_ = JSON.loads(_data.text)
            
         flights_info = []
+        
+        dateNow = datetime.today().strftime("%d/%m/%Y")
+
         for key in data_['data']: 
 
 
@@ -149,8 +152,9 @@ class KTW_Scraper(BaseScraper):
             flight_ = Flight()
             
             time = key['scheduled_time'] or ''
-            
-            flight_.arrivaltime_ = time
+
+            flight_.date = dateNow
+            flight_.time = time
             flight_.origin = key['airport'] or ' '
             flight_.number = key['flight_number'] or ' '
             flight_.carrier = key['airline_name'] or ' '
@@ -178,14 +182,16 @@ class KTW_Scraper(BaseScraper):
         print(f"Found {len(data_)} elements")
 
         flights_info = []
+        dateNow = datetime.today().strftime("%d/%m/%Y")
         for key in data_['data']: 
 
 
             flight_ = Flight()
             
             time = key['scheduled_time'] or ''
-            
-            flight_.arrivaltime_ = time
+
+            flight_.date = dateNow
+            flight_.time = time
             flight_.origin = key['airport'] or ' '
             flight_.number = key['flight_number'] or ' '
             flight_.carrier = key['airline_name'] or ' '

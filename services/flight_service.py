@@ -99,6 +99,7 @@ class FlightService:
 
         airports = {
                 "SZZ" : szz_scraper.SZZ_Scraper("https://airport.com.pl/loty/tablica-przylotow-odlotow/"),
+                                                #https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow
                 "WRO" : wro_scraper.WRO_Scraper("https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow"),
                 "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
                 "GDN" : gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow"),

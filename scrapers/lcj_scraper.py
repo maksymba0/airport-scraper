@@ -139,6 +139,7 @@ class LCJ_Scraper(BaseScraper):
             flight = Flight()
              
             flight.time = time[2] #08.08.2026 - 08:25
+            flight.date = datetime.strptime(time[0],"%d.%m.%Y").strftime("%d/%m/%Y")
             flight.destination = tds[1].get_text() or ' '
             flight.flightNum = tds[2].get_text() or ' '
             flight.status = tds[3].get_text() or ' '
@@ -189,6 +190,7 @@ class LCJ_Scraper(BaseScraper):
             flight = Flight()
 
             flight.time = time[2] #08.08.2026 - 08:25
+            flight.date = datetime.strptime(time[0],"%d.%m.%Y").strftime("%d/%m/%Y")
             flight.origin = tds[1].get_text() or ' '
             flight.flightNum = tds[2].get_text() or ' '
             flight.status = tds[3].get_text() or ' '

@@ -164,7 +164,7 @@ class GDN_Scraper(BaseScraper):
             flight_ = Flight() 
             raw_time = flight["dateTime"].strip()
             dtTime = datetime.fromisoformat(raw_time)
-            
+            flight_.date = dtTime.strftime("%d/%m/%Y")
             flight_.time = dtTime.strftime("%H:%M")
             flight_.destination = flight["destination"].strip()
             flight_.carrier = flight["carrierName"].strip() 
@@ -209,7 +209,7 @@ class GDN_Scraper(BaseScraper):
 
             raw_time = flight["dateTime"].strip()
             dtTime = datetime.fromisoformat(raw_time)
-
+            flight_.date = dtTime.strftime("%d/%m/%Y")
             flight_.time = dtTime.strftime("%H:%M")
             flight_.origin = flight["origin"].strip()
             flight_.carrier = flight["carrierName"].strip() 

@@ -159,7 +159,8 @@ class KRK_Scraper(BaseScraper):
         for fl in flights: 
 
             flight_ = Flight()
-           
+
+            flight_.date = fl[0]["scheduled_date"].strip() if fl[0]["scheduled_date"] else ""
             flight_.time = fl[0]["scheduled_time"].strip() if fl[0]["scheduled_time"] else ""
             flight_.origin = fl[0]["origin"].strip() if fl[0]["origin"] else ""
             flight_.destination = fl[0]["destination"].strip() if fl[0]["destination"] else ""
@@ -201,6 +202,7 @@ class KRK_Scraper(BaseScraper):
 
             flight_ = Flight()
 
+            flight_.date = fl[0]["scheduled_date"].strip() if fl[0]["scheduled_date"] else ""
             flight_.time = fl[0]["scheduled_time"].strip() if fl[0]["scheduled_time"] else ""
             flight_.origin = fl[0]["origin"].strip() if fl[0]["origin"] else ""
             flight_.destination = fl[0]["destination"].strip() if fl[0]["destination"] else ""

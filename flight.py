@@ -3,6 +3,7 @@ from typing import Optional
 
 class FlightFields:
     flightNum= "flightNum",
+    date = "date",
     time=  "time",
     destination=  "destination",
     origin=  "origin",
@@ -15,6 +16,7 @@ class FlightFields:
 class Flight:
 
     flightNum: Optional[str] = None
+    date: Optional[str] = None
     time: Optional[str] = None
     destination: Optional[str] = None
     origin: Optional[str] = None
@@ -27,6 +29,7 @@ class Flight:
     def to_dict(self):
         return {
             "flightNum": self.flightNum,
+            "date": self.date,
             "time": self.time,
             "destination": self.destination,
             "origin": self.origin,

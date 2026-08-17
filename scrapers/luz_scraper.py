@@ -139,6 +139,7 @@ class LUZ_Scraper(BaseScraper):
             flight_ = Flight()
             flight_.time = time
             flight_.destination = tds[2].find("p").get_text() or ' '
+            flight_.date = tds[1].get_text() or ' '
             flight_.flightNum = tds[3].get_text() or ' '
             flight_.status = tds[5].get_text().split() or ' '
             carrierText = tds[4].find("img").get("alt") if tds[4].find("img") else "-"
@@ -184,6 +185,7 @@ class LUZ_Scraper(BaseScraper):
             flight_ = Flight()
 
             flight_.time = time
+            flight_.date = tds[1].get_text() or ' '
             flight_.origin = tds[2].find("p").get_text() or ' '
             flight_.flightNum = tds[3].get_text() or ' '
             flight_.status = tds[5].get_text().split() or ' '

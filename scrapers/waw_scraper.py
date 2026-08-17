@@ -2,7 +2,7 @@ from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
-from datetime import datetime
+from datetime import datetime, timedelta
 from flight import Flight, FlightFields
 
 class WAW_Scraper(BaseScraper):
@@ -148,11 +148,24 @@ class WAW_Scraper(BaseScraper):
         print(f"Found {len(flights)} elements")
 
         flights_info = []
+
+        today = datetime.today()
+        currentdate = today
+        previous = None
+
         for li in flights[1:]: 
 
             flight = Flight()
-            
+
             flight.time = t.get_text(strip=True) if (t := li.select_one(".column-time.arrivals-col")) else ""
+
+            timeobj = datetime.strptime(flight.time,"%H:%M").time()
+
+            if previous is not None and timeobj < currentdate.strptime("%H:%M"):
+                currentdate += timedelta(days=1)
+
+            flight.date = datetime.combine(currentdate,timeobj).strftime("%d/%m/%Y")
+
             flight.destination = t.get_text(strip=True) if (t := li.select_one(".column-origin-destination")) else ""
             flight.flightNum = t.get_text(strip=True) if (t := li.select_one(".column-flight-no")) else ""
             flight.carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""
@@ -184,6 +197,10 @@ class WAW_Scraper(BaseScraper):
         print(f"Found {len(flights)} elements")
 
         flights_info = []
+        today = datetime.today()
+        currentdate = today
+        previous = None
+
         for li in flights[1:]: 
 
             arrivaltime_ = t.get_text(strip=True) if (t := li.select_one(".column-time.arrivals-col")) else ""
@@ -193,6 +210,13 @@ class WAW_Scraper(BaseScraper):
             gate = t.get_text(strip=True) if (t := li.select_one(".column-gate")) else ""
             status = t.get_text(strip=True) if (t := li.select_one(".column-status")) else ""
             flight_ = Flight()
+
+            timeobj = datetime.strptime(arrivaltime_,"%H:%M").time()
+
+            if previous is not None and timeobj < currentdate.strptime("%H:%M"):
+                currentdate += timedelta(days=1)
+
+            flight_.date = datetime.combine(currentdate,timeobj).strftime("%d/%m/%Y")
 
             flight_.carrier = carrier
             flight_.time = arrivaltime_

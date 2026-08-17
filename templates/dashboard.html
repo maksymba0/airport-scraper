@@ -350,6 +350,7 @@ select:focus {
                     <th>Airline</th>
                     <th>Flight</th>
                     <th>Destination/Origin</th>
+                    <th>Date</th>
                     <th>Time</th>
                     <th>Gate</th>
                     <th>Terminal</th>
@@ -367,6 +368,7 @@ select:focus {
                     <td>${f.carrier || 'N/A'}</td>
                     <td>${f.flightNum || 'N/A'}</td>
                     <td>${(f.type === 'arrival' ? f.origin : f.destination) || 'N/A'}</td>
+                    <td>${f.date || 'N/A'}</td>
                     <td>${f.time || 'N/A'}</td>
                     <td>${f.gate || 'N/A'}</td>
                     <td>${f.terminal || 'N/A'}</td>
@@ -387,17 +389,18 @@ select:focus {
         {
             const matchSearch = 
                 String(f.flightNum || '').toLowerCase().includes(search) ||
-                String(f.destination || '').toLowerCase().includes(search) ||
+                String(f.type === 'arrival' ? f.origin : f.destination || '').toLowerCase().includes(search) ||
                 String(f.carrier || '').toLowerCase().includes(search) ||
+                String(f.date || '').toLowerCase().includes(search) ||
                 String(f.status || '').toLowerCase().includes(search) ||
-                String(f.arrivalTime || '').toLowerCase().includes(search);
+                String(f.time || '').toLowerCase().includes(search);
 
             const matchAirport = airport === 'all' || f.code === airport;
             const matchType = type === 'all' || f.type === type;
             
             return matchSearch && matchAirport && matchType
 
-        }); 
+        },[]); 
         renderTable(filtered);
     }
 
@@ -408,7 +411,7 @@ select:focus {
 
     function exportCSV()
     {
-        let csvContent = "Airport,Type,Airline,Flight Number,Destination/Origin,Time,Status\n";
+        let csvContent = "Airport,Type,Airline,Flight Number,Destination/Origin,Date,Time,Status\n";
         
         allFlights.forEach(f => 
         { 
@@ -418,7 +421,8 @@ select:focus {
                 `${f.carrier}`,
                 `${f.flightNum}`,
                 `${f.destination}`,
-                `${f.arrivalTime}`,
+                `${f.date}`,
+                `${f.time}`,
                 `${f.status}`
             ].join(",")
             csvContent += row + "\n";

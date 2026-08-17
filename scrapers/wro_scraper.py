@@ -2,7 +2,7 @@ from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
-from datetime import datetime
+from datetime import datetime, timedelta
 from flight import Flight, FlightFields
 import cloudscraper as CloudScrapper
 
@@ -148,13 +148,25 @@ class WRO_Scraper(BaseScraper):
 
 
         flights = []
-        
+
+        today = datetime.today()
+        currentdate = today
+        previous = None
+
         for tr in trs:
             className = tr.get("class", []) # Safely get class list
             if "flight-info-popup-row" in className:
                 continue   
             tds = tr.find_all("td")
             flightTime = tds[0].get_text(strip=True)
+
+            timeobj = datetime.strptime(flightTime,"%H:%M").time()
+
+            if previous is not None and previous < timeobj:
+                currentdate += timedelta(days=1)
+
+            flightdate_ = datetime.combine(currentdate, timeobj).strftime("%d/%m/%Y")
+
             airport = tds[1].find_all("div")[0].get_text(strip=True)
             flight_no = tds[2].get_text(strip=True)
             status = tds[3].get_text(strip=True)
@@ -176,6 +188,7 @@ class WRO_Scraper(BaseScraper):
             
             flight_.time= flightTime
             flight_.destination = airport
+            flight_.date = flightdate_
             flight_.flightNum = flight_no
             flight_.carrier = carrier
             flight_.status = status 
@@ -210,19 +223,31 @@ class WRO_Scraper(BaseScraper):
 
         flightsTable = _data.find('div', id="arrivals")
 
+        
         flightsBody = flightsTable.find("table", class_="flight-table",recursive=False).find("tbody")
 
         trs = flightsBody.find_all("tr")
 
     
         flights = []
-        
+        today = datetime.today()
+        currentdate = today
+        previous = None
         for tr in trs:
             className = tr.get("class", []) # Safely get class list
             if "flight-info-popup-row" in className:
                 continue   
             tds = tr.find_all("td")
+
             flightTime = tds[0].get_text(strip=True)
+
+            timeobj = datetime.strptime(flightTime,"%H:%M").time()
+
+            if previous is not None and previous < timeobj:
+                currentdate += timedelta(days=1)
+
+            flightdate_ = datetime.combine(currentdate, timeobj).strftime("%d/%m/%Y")
+
             airport = tds[1].find_all("div")[0].get_text(strip=True)
             flight_no = tds[2].get_text(strip=True)
             status = tds[3].get_text(strip=True) 
@@ -243,6 +268,7 @@ class WRO_Scraper(BaseScraper):
             flight_ = Flight()
 
             flight_.time= flightTime
+            flight_.date = flightdate_
             flight_.origin = airport
             flight_.flightNum = flight_no
             flight_.carrier = carrier

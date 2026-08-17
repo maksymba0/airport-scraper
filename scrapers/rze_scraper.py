@@ -2,7 +2,7 @@ from scrapers.basescraper import BaseScraper
 import requests
 from bs4 import BeautifulSoup as bs
 import json as JSON
-from datetime import datetime
+from datetime import datetime, timedelta
 from flight import Flight, FlightFields
 
 class RZE_Scraper(BaseScraper):
@@ -139,6 +139,9 @@ class RZE_Scraper(BaseScraper):
 
         print(f"Found {len(data_)} elements")
 
+        today = datetime.now().date()
+        current_date = today
+        previous_time = None
         flights_info = []
         for tr in trs:
 
@@ -147,7 +150,17 @@ class RZE_Scraper(BaseScraper):
                 continue
             time = tds[1].get_text() or ''
 
+            
+            time_obj = datetime.strptime(time, "%H:%M").time()
+ 
+            if previous_time is not None and time_obj < previous_time:
+                current_date += timedelta(days=1)
+            flight_datetime = datetime.combine(current_date, time_obj).strftime("%d/%m/%Y")
+            previous_time = time_obj
+
             flight_ = Flight()
+
+            flight_.date = flight_datetime
 
             flight_.time = time
             flight_.destination = tds[2].get_text() or ' '
@@ -178,6 +191,11 @@ class RZE_Scraper(BaseScraper):
         print(f"Found {len(data_)} elements")
 
         flights_info = []
+
+        today = datetime.now().date()
+        current_date = today
+        previous_time = None
+
         for tr in trs:
 
             tds = tr.find_all("td")
@@ -185,8 +203,17 @@ class RZE_Scraper(BaseScraper):
                 continue
             time = tds[1].get_text() or ''
 
+            time_obj = datetime.strptime(time, "%H:%M").time()
+ 
+            if previous_time is not None and time_obj < previous_time:
+                current_date += timedelta(days=1)
+            flight_datetime = datetime.combine(current_date, time_obj).strftime("%d/%m/%Y")
+
+            previous_time = time_obj
+
             flight_ = Flight()
 
+            flight_.date = flight_datetime
             flight_.time = time
             flight_.origin = tds[2].get_text() or ' '
             flight_.flightNum = tds[3].get_text() or ' '
