@@ -185,7 +185,7 @@ class SZY_Scraper(BaseScraper):
             flight_ = Flight()
 
             flight_.time = time[2] 
-            flight_.date = time[0].replace('.','/') 
+            flight_.date = time[0].replace('.','/').replace('-','/') 
             destt = " ".join(tds[2].get_text().split())
             flight_.origin = destt or ' '
             text = tds[1].get_text().split()

@@ -142,6 +142,8 @@ select:focus {
     border-color: #2b6cb0;
 }
 
+
+
 .row-darkish {
     background-color: #43474d;
     color: #ffffff;            
@@ -150,6 +152,21 @@ select:focus {
     background-color: #585b60;
     color: #ffffff;             
 }
+.row-text-yellowish {
+  border-left: 5px solid #f1c40f; /* Clear visual indicator */
+  background-color: rgba(241, 196, 15); /* Very subtle tint */
+}
+
+.row-text-blueish {
+  border-left: 5px solid #3498db;
+  background-color: rgba(52, 152, 219 );
+}
+
+.row-text-redish {
+  border-left: 5px solid #e74c3c;
+  background-color: rgba(231, 76, 60);
+}
+
 </style>
 </head>
 
@@ -204,6 +221,7 @@ select:focus {
                     <option value="arrival">Arrival</option>
                     <option value="departure">Departure</option>
                 </select>
+                 
         </div>
     </div>
     <div id="status">
@@ -361,7 +379,29 @@ select:focus {
 
             flights.forEach((f,i) => 
             {
-                const bgClass = (i % 2 === 0) ? 'row-lightish' : 'row-darkish';
+                let bgClass = (i % 2 === 0) ? 'row-lightish' : 'row-darkish';
+                let shadowColour = "row-text-yellowish"; 
+                 
+                let whenFlight = isFlightPastNowFuture(f)
+                 
+                if(whenFlight == 'today')
+                {
+                    // today
+                    //shadowColour = 'row-text-yellowish'
+                }else if (whenFlight == 'future')
+                {
+                    // future
+                    shadowColour = 'row-text-blueish';
+                } 
+                else
+                {
+                    // past
+                    shadowColour = 'row-text-redish';
+                } 
+
+                bgClass += ` ${shadowColour}`;
+                
+                console.log(bgClass)
                 html += `<tr class="${bgClass}">
                     <td><strong>${f.code || '??'}</strong></td>
                     <td>${f.type || 'unknown'}</td>
@@ -378,7 +418,42 @@ select:focus {
             html += `</table>`;
             container.innerHTML = html;
     }
+    function isFlightPastNowFuture(flight)
+    {
+        let dateDate = flight.date;
+        let time = flight.time; // 00:00
+        const dateString = dateDate.split('/');
+        const timeString = time.split(':');
 
+        const hour = parseInt(timeString[0],10);
+        const minutes = parseInt(timeString[1],10);
+
+        const day = parseInt(dateString[0],10);
+        const month = parseInt(dateString[1],10)-1;
+        const year = parseInt(dateString[2],10);
+        const flightdate = new Date(year,month,day);
+        
+        const today = new Date();
+        const currentHour = today.getHours();
+        const currentMinute = today.getMinutes();
+
+        today.setHours(0,0,0,0);
+        if(flightdate.getTime() == today.getTime() ) // TODAY
+        { 
+            if(currentHour >= hour && currentMinute >= minutes)
+                return 'past'
+            else
+                return 'today'
+        }
+        else if (flightdate.getTime() > today.getTime()) // FUTURE
+        { 
+            return 'future';
+        } 
+        else //PAST
+        { 
+            return 'past';
+        } 
+    }
     function filterTable() 
     {
         const search = document.getElementById('search').value.toLowerCase();
