@@ -184,21 +184,7 @@ select:focus {
     </div>
 
     <div class="filter-toolbar"> 
-        <div>
-                <input style="width:350px;" type="text" 
-                id="search" class="search-box" placeholder="Search by flight number, destination, or airline..." 
-                oninput="filterTable()">
-                </input>
-                <button class="load-btn" style="width: auto;" onclick="loadData(false)"> 
-                    Load Data 
-                </button>
-                <button class="export-btn" style="width: auto;" onclick="exportCSV()"> 
-                    Export
-                </button>
-                <button class="load-btn" style="width: auto;" onclick="loadData(true)"> 
-                    Force Load 
-                </button>
-        </div>
+         
         <div>
                 <select id="airportFilter" onchange="filterTable()">
                     <option value="all">All Airports</option>
@@ -217,11 +203,34 @@ select:focus {
                     <option value="LUZ">Lublin (LUZ)</option> 
                 </select>
                 <select id="typeFilter" onchange="filterTable()">
-                    <option value="all">All</option>
+                    <option value="all">Arrivals and Departures</option>
                     <option value="arrival">Arrival</option>
                     <option value="departure">Departure</option>
                 </select>
+                <fieldset>
+                    <legend>Show flights hapenning</legend>
+                    <div id="filterRow">
+                        <input id="showSoon" type="checkbox" value="today" checked onclick="filterTable()">Soon</input>
+                        <input id="showPast" type="checkbox" value="past" checked onclick="filterTable()">Past</input>
+                        <input id="showFuture" type="checkbox" value="future" checked onclick="filterTable()">Future</input> 
+                    </div>
+                </fieldset>
                  
+        </div>
+        <div>
+                <input style="width:350px;" type="text" 
+                id="search" class="search-box" placeholder="Search by flight number, destination, or airline..." 
+                oninput="filterTable()">
+                </input>
+                <button class="load-btn" style="width: auto;" onclick="loadData(false)"> 
+                    Load Data 
+                </button>
+                <button class="export-btn" style="width: auto;" onclick="exportCSV()"> 
+                    Export
+                </button>
+                <button class="load-btn" style="width: auto;" onclick="loadData(true)"> 
+                    Force Load 
+                </button>
         </div>
     </div>
     <div id="status">
@@ -323,7 +332,6 @@ select:focus {
                 const bCached = data.cached;
 
                 allFlights = data.flights;
-                console.log(allFlights);
                 if(!data || !allFlights)
                 {
                     setStatus("Error parsing flights data (sever sent invalid data?). Please try again.");
@@ -401,7 +409,6 @@ select:focus {
 
                 bgClass += ` ${shadowColour}`;
                 
-                console.log(bgClass)
                 html += `<tr class="${bgClass}">
                     <td><strong>${f.code || '??'}</strong></td>
                     <td>${f.type || 'unknown'}</td>
@@ -431,6 +438,7 @@ select:focus {
         const day = parseInt(dateString[0],10);
         const month = parseInt(dateString[1],10)-1;
         const year = parseInt(dateString[2],10);
+
         const flightdate = new Date(year,month,day);
         
         const today = new Date();
@@ -440,10 +448,16 @@ select:focus {
         today.setHours(0,0,0,0);
         if(flightdate.getTime() == today.getTime() ) // TODAY
         { 
-            if(currentHour >= hour && currentMinute >= minutes)
+            
+        
+            if(currentHour == hour && currentMinute < minutes) // flight about to happen soon ex. less than an hour
+            {
+                return 'today'
+            }
+            if(currentHour >= hour) // flight already happened ex. hour ago
                 return 'past'
             else
-                return 'today'
+                return 'today' // flight in the future, more than 1 hour from now
         }
         else if (flightdate.getTime() > today.getTime()) // FUTURE
         { 
@@ -459,7 +473,26 @@ select:focus {
         const search = document.getElementById('search').value.toLowerCase();
         const airport = document.getElementById('airportFilter').value;
         const type = document.getElementById('typeFilter').value.toLowerCase();
-        
+        //const timefilter = document.getElementById('timeFilter').value; // 'all', 'future', 'past'
+
+        const showSoon = document.getElementById("showSoon").checked;
+        const showPast = document.getElementById("showPast").checked;
+        const showFuture = document.getElementById("showFuture").checked;
+
+        const displayTimeFlights = [];
+        if(showSoon)
+        {
+            displayTimeFlights.push('today');
+        }
+        if(showPast)
+        {
+            displayTimeFlights.push('past');
+        }
+        if(showFuture)
+        {
+            displayTimeFlights.push('future');
+        }
+
         const filtered = allFlights.filter(f => 
         {
             const matchSearch = 
@@ -470,10 +503,13 @@ select:focus {
                 String(f.status || '').toLowerCase().includes(search) ||
                 String(f.time || '').toLowerCase().includes(search);
 
+            const time = isFlightPastNowFuture(f);
             const matchAirport = airport === 'all' || f.code === airport;
             const matchType = type === 'all' || f.type === type;
+              
+            const matchTime =  displayTimeFlights.length === 0 || displayTimeFlights.includes(time); 
             
-            return matchSearch && matchAirport && matchType
+            return matchSearch && matchAirport && matchType && matchTime;
 
         },[]); 
         renderTable(filtered);
