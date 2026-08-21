@@ -260,10 +260,34 @@ select:focus {
     </button>    
 </div>
 <script>
-
+    
+    // CONSTANTS, ARRAYS, GLOBALS
+    const REFRESH_INTERVAL_MS = 600000; // 10m
     let allFlights = []
     let filteredFlights = []
     let filtertimeout = null;
+    let fetchDataInterval = null;
+
+
+    document.addEventListener('DOMContentLoaded', function()
+    {
+        fetchFlights();
+        startAutoRefresh();
+    })
+    // FUNCS
+    function startAutoRefresh()
+    {
+        if(fetchDataInterval)
+        {
+             clearInterval(fetchDataInterval)   
+        }
+        fetchDataInterval = setInterval(function()
+        {
+            console.log("Sending GET request");
+            fetchFlights();
+        },REFRESH_INTERVAL_MS);
+
+    }
 
     document.getElementById('search').addEventListener('input',function()
     {
