@@ -7,10 +7,9 @@
 
 body{
 font-family: system-ui, -apple-system;
-background-color: rgb(192, 183, 170);
+background-color: rgb(0, 0, 0);
 color: #262626;
-margin: 0;
-padding: 20px;
+margin: 0; 
 }
 .topbar
 {
@@ -181,83 +180,167 @@ select:focus {
     z-index: 5;
 
 }
+.navbar {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0d1117;
+    padding: 10px 20px;
+    border-bottom: 1px solid #30363d;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.nav-brand {
+    color:white;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: larger;
+    font-weight: 900;
+    font-size: 40px;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+.nav-links a {
+    color: #c9d1d9;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-color: #d8deda;
+    border-style: solid;
+}
+.nav-links a.active {
+    background-color: #21262d;
+    color: #58a6ff;
+}
+.nav-links a:hover {
+    background-color: #414a58;
+}
 
+
+.pagefooter
+{
+    background-color: black;
+    display: flex;
+    justify-content: center;
+}
+.pagefooter h1
+{
+    color:white;
+}
+.pagefooter-author
+{
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-style: normal;
+    font-variant: normal;
+    font-size: larger;
+    font-weight: 500;
+}
+.view {
+    display: none;
+}
+.view.active {
+    display: block;
+}
 </style>
 </head>
 
 <body>
-<div class="container">
-    
-    <div class="topbar">
-        <h1> Airport Scraper</h1>
-        <p> See real time data from multiple Polish airports in one place </p>
-        <div style="visibility: collapse; border: 3px inset black; padding: 10px;font-size: medium;"> TODO: 
-            <p style="font-weight: bold;"> improve API Backend</p>
-            <p style="font-weight: bold;"> <s>add Cache (so that we dont overload airport webs)</s></p>
-            <p style="font-weight: bold;"> add Auth or Emailing   </p> 
-        </div>
-    </div>
+<nav class="navbar">
+        <div class="nav-brand">Airport Scraper</div>
+        <p style="color:white;font-size: small;"> See real time data from multiple Polish airports in one place </p>
+        <ul class="nav-links">
+            <li><a href="#" data-page="flights" class="nav-link active">Flights</a></li>
+            <li>><a href="#" data-page="stats" class="nav-link active">Statistics</a></li>
+            <li><a href="#" data-page="about" class="nav-link active">About</a></li>
+        </ul>
+</nav>
 
-    <div class="filter-toolbar"> 
-         
-        <div>
-                <select id="airportFilter" onchange="filterTable()">
-                    <option value="all">All Airports</option>
-                    <option value="GDN">Gdańsk (GDN)</option>
-                    <option value="SZZ">Szczecin (SZZ)</option>
-                    <option value="WRO">Wrocław (WRO)</option>
-                    <option value="KRK">Kraków (KRK)</option>
-                    <option value="POZ">Poznań (POZ)</option>
-                    <option value="WAW">Warszawa Chopin (WAW)</option>
-                    <option value="BZG">Bydgoszcz (BZG)</option>
-                    <option value="KTW">Katowice (KTW)</option>
-                    <option value="LCJ">Łódź (LCJ)</option>
-                    <option value="RZE">Rzeszów (RZE)</option>
-                    <option value="RDO">Warszawa Radom (RDO)</option>
-                    <option value="SZY">Olsztyn (SZY)</option>
-                    <option value="LUZ">Lublin (LUZ)</option> 
-                </select>
-                <select id="typeFilter" onchange="filterTable()">
-                    <option value="all">Arrivals and Departures</option>
-                    <option value="arrival">Arrival</option>
-                    <option value="departure">Departure</option>
-                </select>
-                <fieldset>
-                    <legend>Show flights hapenning</legend>
-                    <div id="filterRow">
-                        <input id="showSoon" type="checkbox" value="today" checked onclick="filterTable()">Soon</input>
-                        <input id="showPast" type="checkbox" value="past" checked onclick="filterTable()">Past</input>
-                        <input id="showFuture" type="checkbox" value="future" checked onclick="filterTable()">Future</input> 
-                    </div>
-                </fieldset>
-                 
+<div class="container">
+
+    <div id="view-flights" class="view active"> 
+        <div class="filter-toolbar">      
+            <div>
+                    <select id="airportFilter" onchange="filterTable()">
+                        <option value="all">All Airports</option>
+                        <option value="GDN">Gdańsk (GDN)</option>
+                        <option value="SZZ">Szczecin (SZZ)</option>
+                        <option value="WRO">Wrocław (WRO)</option>
+                        <option value="KRK">Kraków (KRK)</option>
+                        <option value="POZ">Poznań (POZ)</option>
+                        <option value="WAW">Warszawa Chopin (WAW)</option>
+                        <option value="BZG">Bydgoszcz (BZG)</option>
+                        <option value="KTW">Katowice (KTW)</option>
+                        <option value="LCJ">Łódź (LCJ)</option>
+                        <option value="RZE">Rzeszów (RZE)</option>
+                        <option value="RDO">Warszawa Radom (RDO)</option>
+                        <option value="SZY">Olsztyn (SZY)</option>
+                        <option value="LUZ">Lublin (LUZ)</option> 
+                    </select>
+                    <select id="typeFilter" onchange="filterTable()">
+                        <option value="all">Arrivals and Departures</option>
+                        <option value="arrival">Arrival</option>
+                        <option value="departure">Departure</option>
+                    </select>
+                    <fieldset>
+                        <legend>Show flights hapenning</legend>
+                        <div id="filterRow">
+                            <input id="showSoon" type="checkbox" value="today" checked onclick="filterTable()">Soon</input>
+                            <input id="showPast" type="checkbox" value="past" checked onclick="filterTable()">Past</input>
+                            <input id="showFuture" type="checkbox" value="future" checked onclick="filterTable()">Future</input> 
+                        </div>
+                    </fieldset>
+                    
+            </div>
+            <div>
+                    <input style="width:350px;" type="text" 
+                    id="search" class="search-box" placeholder="Search by flight number, destination, or airline...">
+                    </input>
+                    <button class="load-btn" style="width: auto;" onclick="loadData(false)"> 
+                        Load Data 
+                    </button>
+                    <button class="export-btn" style="width: auto;" onclick="exportCSV()"> 
+                        Export
+                    </button>
+                    <button class="load-btn" style="width: auto;" onclick="loadData(true)"> 
+                        Force Load 
+                    </button>
+            </div>
         </div>
-        <div>
-                <input style="width:350px;" type="text" 
-                id="search" class="search-box" placeholder="Search by flight number, destination, or airline...">
-                </input>
-                <button class="load-btn" style="width: auto;" onclick="loadData(false)"> 
-                    Load Data 
-                </button>
-                <button class="export-btn" style="width: auto;" onclick="exportCSV()"> 
-                    Export
-                </button>
-                <button class="load-btn" style="width: auto;" onclick="loadData(true)"> 
-                    Force Load 
-                </button>
-        </div>
-    </div>
 
      
 
-    <div id="status">
-        <p> Click 'Load Data' </p>
+        <div id="status">
+            <p> Click 'Load Data' </p>
+        </div>
+        <button id="scrollTopBtn" style="display:none; position:fixed; 
+            bottom:30px; right:30px; z-index:100; padding:18px 22px; border-radius:60%; 
+            background:#58a6ff; color:white; border:none; cursor:pointer;">
+            ↑
+        </button>    
+        </div>
+        <!-- Stats page-->
+    <div id="view-stats" class="view hidden"> 
+        <h2> Statistics </h2>
     </div>
-     <button id="scrollTopBtn" style="display:none; position:fixed; 
-    bottom:30px; right:30px; z-index:100; padding:18px 22px; border-radius:60%; 
-    background:#58a6ff; color:white; border:none; cursor:pointer;">
-    ↑
-    </button>    
+
+    <!-- About page-->
+    <div id="view-about" class="view hidden"> 
+        <h2> About </h2>
+    </div>
+    </div>
+     
+    
+
+    <div class="pagefooter">
+
+        <h1> by 
+            <a class="pagefooter-author" target="_blank" href="https://github.com/maksymba0">maksymba0</a>
+            - 2026
+        </h1>
+    </div>
 </div>
 <script>
     
@@ -271,10 +354,51 @@ select:focus {
 
     document.addEventListener('DOMContentLoaded', function()
     {
-        fetchFlights();
+        //fetchFlights();
         startAutoRefresh();
     })
+
+    document.querySelectorAll('.nav-link').forEach(link =>
+    {
+        link.addEventListener('click',function(e)
+        {
+            e.preventDefault();
+            switchView(link.dataset.page)
+        })
+    }
+    )
     // FUNCS
+
+    function switchView(pageName)
+    {
+        document.querySelectorAll(".view").forEach(v => 
+        {
+            v.classList.remove('active');
+        });
+
+        const targetView = document.getElementById(`view-${pageName}`);
+        if(targetView)
+        {
+            targetView.classList.add('active');
+        }
+
+        document.querySelectorAll('nav-link').forEach(link =>
+        {
+            link.classList.remove('active');
+            if(link.dataset.page == pageName)
+            {
+                link.classList.add('active');
+            }
+        });
+
+        if(pageName == 'stats')
+        {
+            // todo: add draw chart here
+        }
+    }
+
+
+
     function startAutoRefresh()
     {
         if(fetchDataInterval)
