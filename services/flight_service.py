@@ -72,7 +72,7 @@ class FlightService:
             "flights":all_flights,
             "last_updated":datetime.now().isoformat()
             }) 
-    
+ 
     @staticmethod
     def get_flights(force_refresh: bool = False, airports : str = "all") -> dict:
         

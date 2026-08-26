@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <title>Airport Scraper</title>
 
 <style>
@@ -240,6 +241,7 @@ select:focus {
 }
 .view {
     display: none;
+    align-content: center;
 }
 .view.active {
     display: block;
@@ -324,6 +326,10 @@ select:focus {
         <!-- Stats page-->
     <div id="view-stats" class="view hidden"> 
         <h2> Statistics </h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h1> Flights per airport</h1>
+            <canvas id="airportChart"></canvas>
+        </div>   
     </div>
 
     <!-- About page-->
@@ -350,6 +356,7 @@ select:focus {
     let filteredFlights = []
     let filtertimeout = null;
     let fetchDataInterval = null;
+    let airportChart = null; // reference to the chart instance
 
 
     document.addEventListener('DOMContentLoaded', function()
@@ -393,6 +400,7 @@ select:focus {
 
         if(pageName == 'stats')
         {
+            renderStatistics();
             // todo: add draw chart here
         }
     }
@@ -747,6 +755,81 @@ select:focus {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+    function getFlightsPerAirport()
+    {
+        if(!allFlights || allFlights.length <= 0)
+        {
+            return null;
+        }
+        const counts = {};
+        for (let flight of allFlights)
+        {
+            const code = flight.code;
+            if(counts[code] === undefined)
+            {
+                counts[code] = 0;
+            }
+            counts[code] = ( counts[code] || 0) +1; 
+        }
+        
+        // {"GDN":42,"KRK":41,...} 
+        const keys = Object.keys(counts);
+        const vals = Object.values(counts);
+
+        let obj = {keys,vals};
+
+        const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+
+        const labels = sorted.map(item => item[0]);
+        const values = sorted.map(item => item[1]);
+        console.log({labels,values});
+        return {labels,values};
+    }
+    function renderStatistics()
+    {
+        const data = getFlightsPerAirport();
+        if(data === null)
+        {
+         return;   
+        }
+        
+        const ctx = document.getElementById('airportChart').getContext('2d');
+        if (airportChart) {
+            airportChart.destroy();
+        }
+        
+        airportChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Number of Flights',
+                data: data.values,
+                backgroundColor: '#58a6ff',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#484e54' }
+                },
+                x: {
+                    ticks: { color: '#484e54' }
+                }
+            }
+        }
+    });
+
+        console.log(data);
+
     }
 </script>
 
