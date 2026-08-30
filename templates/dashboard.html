@@ -543,6 +543,7 @@ select:focus {
                 const bCached = data.cached;
 
                 allFlights = data.flights;
+                
                 if(!data || !allFlights)
                 {
                     setStatus("Error parsing flights data (sever sent invalid data?). Please try again.");
@@ -640,9 +641,10 @@ select:focus {
     {
         let dateDate = flight.date;
         let time = flight.time; // 00:00
+         
         const dateString = dateDate.split('/');
         const timeString = time.split(':');
-
+        
         const hour = parseInt(timeString[0],10);
         const minutes = parseInt(timeString[1],10);
 
@@ -736,40 +738,44 @@ select:focus {
     {
         let csvContent = "Airport,Type,Airline,Flight Number,Destination/Origin,Date,Time,Gate, Terminal, Status\n";
         
+        if(filteredFlights.length <= 0)
+        {
+          filteredFlights = allFlights;   
+        }
         filteredFlights.forEach(f => 
         { 
 
             let row = [`${f.code || ''}`,
-                `${f.type}`,
-                `${f.carrier}`,
-                `${f.flightNum}`,
-                `${f.destination}`,
-                `${f.date}`,
-                `${f.time}`,
-                `${f.gate}`,
-                `${f.terminal}`,
-                `${f.status}`
+                `${f.type|| ''}`,
+                `${f.carrier|| ''}`,
+                `${f.flightNum|| ''}`,
+                `${f.destination|| ''}`,
+                `${f.date|| ''}`,
+                `${f.time|| ''}`,
+                `${f.gate|| ''}`,
+                `${f.terminal|| ''}`,
+                `${f.status|| ''}`
             ].join(",")
             csvContent += row + "\n";
-        });
-
+        }); 
         const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;'});
         const url = URL.createObjectURL(blob)
         const link = document.createElement("a");
-        link.setAttribute("href",url);
-        link.setAttribute("download",`airport_flight_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `airport_flight_${new Date().toISOString().split('T')[0]}.csv`);
+    
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
     function getFlightsPerAirport()
     {
-        if(!allFlights || allFlights.length <= 0)
+        if(!filteredFlights || filteredFlights.length <= 0)
         {
             return null;
         }
         const counts = {};
-        for (let flight of allFlights)
+        for (const flight of filteredFlights)
         {
             const code = flight.code;
             if(counts[code] === undefined)
@@ -823,11 +829,15 @@ select:focus {
             const rawCarrier = flight.carrier;
 
             const carrier = normalizationMap[rawCarrier] || rawCarrier.trim();
+            if(flight.carrier !== carrier)
+            {
+                flight.carrier = carrier;
+            }
             if(counts[carrier] === undefined)
             {
                 counts[carrier] = 0;
             }
-            counts[carrier] = ( counts[carrier] || 0) +1; 
+            counts[carrier] = ( counts[carrier] || 0) +1;
         }
         
         // {"GDN":42,"KRK":41,...} 

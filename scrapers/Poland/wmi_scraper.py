@@ -23,111 +23,7 @@ class WMI_Scraper(BaseScraper):
 
         result = super().makeRequestHTML(url) 
 
-        return result
-
-
-    def getArrivalsTableHeader(self):
-        table_header = f"""
-                 <h>Arrivals: {self.airportName_}</h>
-                <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
-                    <thead>
-                        <tr style="background-color: #f2f2f2;">
-                            <th style="padding: 5px;">Time</th>
-                            <th style="padding: 5px;">Destination</th> 
-                            <th style="padding: 5px;">Flight Number</th>
-                            <th style="padding: 5px;">Carrier</th>
-                            <th style="padding: 5px;">Gate</th>
-                            <th style="padding: 5px;">Status</th>
-                        </tr>
-                    </thead> 
-                    <tbody>
-                """
-        return table_header
-    def getDeparturesTableHeader(self):
-        table_header = f"""
-                 <h>Departures: {self.airportName_}</h>
-                    <table border="1" style="border-collapse: collapse; width=100%; text-align:left;">
-                        <thead>
-                            <tr style="background-color: #f2f2f2;">
-                                <th style="padding: 5px;">Time</th>
-                                <th style="padding: 5px;">Destination</th> 
-                                <th style="padding: 5px;">Flight Number</th>
-                                <th style="padding: 5px;">Gate</th>
-                                <th style="padding: 5px;">Status</th>
-                            </tr>
-                        </thead> 
-                        <tbody>
-                """
-        return table_header
-    def getArrivalsTable(self):
-
-        flights = self.getArrivals() 
-        #"arrivalTime": arrivaltime_,
-        #"destination":destination_,
-        #"flightNum":number,
-        #"gate":gate
-        print("Flight data: \n")
-        
-        table_header = self.getArrivalsTableHeader()
-    
-        flights_text = []
-        for panel in flights:
-    
-            time = panel[FlightFields.arrivalTime].strip() 
-            destination = panel[FlightFields.destination].strip() 
-            number = panel[FlightFields.number].strip()
-            gate = panel[FlightFields.gate].strip() 
-            status = panel[FlightFields.status].strip() 
-            carrier = panel[FlightFields.carrier].strip()
-    
-            htmlText = f"""
-            <tr>
-                <td style="padding:5px;">{time}</td>
-                <td style="padding:5px;">{destination}</td> 
-                <td style="padding:5px;">{number}</td>
-                <td style="padding:5px;">{carrier}</td>
-                <td style="padding:5px;">{gate}</td>
-                <td style="padding:5px;">{status}</td>
-            </tr>
-            """
-    
-            flights_text.append(htmlText) 
-        table_body = "".join(flights_text)
-        table_footer = "</tbody></table>"
-        
-        content = table_header + table_body + table_footer
-    
-        return content
-
-    def getDeparturesAsTable(self):
-        departures_list = self.getDepartures()
-
-        topHeader = self.getDeparturesTableHeader()
-
-        departures_rows = []
-        for flight in departures_list:
-            time = flight[FlightFields.arrivalTime].strip()  
-            destination = flight[FlightFields.destination].strip()
-            carrier = flight[FlightFields.carrier].strip() 
-            number = flight[FlightFields.number].strip()
-            status = flight[FlightFields.status].strip() 
-            gate = flight[FlightFields.gate] or "" 
-    
-            htmlText = f"""
-                <tr style="background-color: #f2f2f2;">
-                    <td style="padding: 5px;">{time}</td>
-                    <td style="padding: 5px;">{destination}</td>
-                    <td style="padding: 5px;">{carrier}</td>
-                    <td style="padding: 5px;">{number}</td>
-                    <td style="padding: 5px;">{gate}</td>
-                    <td style="padding: 5px;">{status}</td>
-                </tr>
-            """
-            departures_rows.append(htmlText)
-        departures_text = "".join(departures_rows)
-        htmlfooter = "</tbody></table>"
-        content = topHeader + departures_text + htmlfooter
-        return content 
+        return result 
 
 
     def getDepartures(self):
@@ -170,6 +66,8 @@ class WMI_Scraper(BaseScraper):
             flight = Flight()
 
             flight.time = header.text.strip();
+            match = re.search(r'(\d{2}:\d{2})', flight.time)
+            flight.time = match.group(1) if match else flight.time
 
             timeobj = datetime.strptime(flight.time,"%H:%M").time()
 
@@ -230,6 +128,8 @@ class WMI_Scraper(BaseScraper):
             flight = Flight()
 
             flight.time = header.text.strip();
+            match = re.search(r'(\d{2}:\d{2})', flight.time)
+            flight.time = match.group(1) if match else flight.time
             print(flight.time)
 
             timeobj = datetime.strptime(flight.time,"%H:%M").time()
