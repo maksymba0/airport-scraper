@@ -16,12 +16,12 @@ A Python-based tracking tool designed to gather live airport data. The goal is t
 | **RDO** | Warsaw-Radom Airport | Radom |
 | **LCJ** | Port Lotniczy Łódź | Łódź |
 | **WAW** | Warsaw Chopin Airport | Warsaw |
+| **WMI** | Warsaw Modlin Airport | Nowy Dwór Mazowiecki |
 | **SZY** | Port Lotniczy Olsztyn-Mazury | Olsztyn |
 | **BZG** | Port Lotniczy Bydgoszcz | Bydgoszcz |
 
 ## Future Plans
 * Add support for tracking more regional and international airports.
-* Implement a background scheduler to automatically fetch updates at specific intervals.
 * **UX/UI Enhancements**: Improve the web design for easier access to airport tables information, ensuring a clean, responsive layout for desktop and mobile users.
 
 ## Screenshots
@@ -30,10 +30,15 @@ A pivot table made with the exported CSV file, showing the top 3 airlines with t
 
 
 Page display now
-<img width="1902" height="856" alt="image" src="https://github.com/user-attachments/assets/f1fb02b2-8525-4b19-b5cc-43f8d5df39f0" />
+<img width="1896" height="678" alt="image" src="https://github.com/user-attachments/assets/4ea17b90-08c1-4f6d-9004-a2e880e55541" />
+<img width="1881" height="856" alt="image" src="https://github.com/user-attachments/assets/0c08f081-c6b9-4d41-bf87-12dd9ebd6236" />
+
+
 
 
 Page display before
+<img width="1902" height="856" alt="image" src="https://github.com/user-attachments/assets/f1fb02b2-8525-4b19-b5cc-43f8d5df39f0" />
+
 <img width="1223" height="646" alt="image" src="https://github.com/user-attachments/assets/e4b289f6-fde0-451b-9014-dc427802f9a7" />
 
 <img width="1537" height="721" alt="image" src="https://github.com/user-attachments/assets/f2227d51-5cd1-4ee3-9baf-2ccf6e8890de" />
