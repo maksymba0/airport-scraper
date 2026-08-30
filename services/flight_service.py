@@ -9,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from flight import Flight, FlightFields
 from cache import load_cache, save_cache, is_valid_cache, get_flights_data
 
-from scrapers import bzg_scraper,gdn_scraper,krk_scraper,ktw_scraper,lcj_scraper,luz_scraper,poz_scraper,rdo_scraper,rze_scraper,szy_scraper,szz_scraper,waw_scraper,wro_scraper 
+from scrapers import wmi_scraper,bzg_scraper,gdn_scraper,krk_scraper,ktw_scraper,lcj_scraper,luz_scraper,poz_scraper,rdo_scraper,rze_scraper,szy_scraper,szz_scraper,waw_scraper,wro_scraper 
 
 class FlightService:
 
@@ -40,6 +40,7 @@ class FlightService:
                 "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
                 "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
                 "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
+                "WMI" : wmi_scraper.WMI_Scraper(""),
                 #"BZG" : bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals"), #Disabled BZG temporarily due to clouidfare issues
                 "KTW" : ktw_scraper.KTW_Scraper("None"), #its okay, let it be None
                 "LCJ" : lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl"),
@@ -106,6 +107,7 @@ class FlightService:
                 "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
                 "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
                 "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
+                "WMI" : wmi_scraper.WMI_Scraper(""),
                 #"BZG" : bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals"), #Disabled BZG temporarily due to clouidfare issues
                 "KTW" : ktw_scraper.KTW_Scraper("None"), #its okay, let it be None
                 "LCJ" : lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl"),

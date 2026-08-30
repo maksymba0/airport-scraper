@@ -273,6 +273,7 @@ select:focus {
                         <option value="KRK">Kraków (KRK)</option>
                         <option value="POZ">Poznań (POZ)</option>
                         <option value="WAW">Warszawa Chopin (WAW)</option>
+                        <option value="WMI">Warszawa Modlin (WMI)</option>
                         <option value="BZG">Bydgoszcz (BZG)</option>
                         <option value="KTW">Katowice (KTW)</option>
                         <option value="LCJ">Łódź (LCJ)</option>
@@ -797,10 +798,31 @@ select:focus {
         {
             return null;
         }
+        const normalizationMap = {
+            "RYANAIR":"Ryanair",
+            "Buzz / Ryanair Sun":"Ryanair",
+            "RYANAIR SUN":"Ryanair",
+            "Ryanair Sun":"Ryanair",
+            "Ryanair (Polska)":"Ryanair",
+            "BUZZ":"Ryanair",
+            "WIZZ AIR":"Wizz Air",
+            "PLL LOT": "LOT",
+            "Polskie Linie Lotnicze LOT":"LOT",
+            "easyjet Europe":"EasyJet",
+            "ENTER AIR":"Enter Air",
+            "EASYJET":"EasyJet",
+            "EasyJet Switzerland":"EasyJet",
+            "WIZZ AIR MALTA":"Wizz Air",
+            "Eurowings":"",
+            "Norwegian":"",
+            "Pegasus":"",
+        }
         const counts = {};
         for (let flight of allFlights)
         {
-            const carrier = flight.carrier;
+            const rawCarrier = flight.carrier;
+
+            const carrier = normalizationMap[rawCarrier] || rawCarrier.trim();
             if(counts[carrier] === undefined)
             {
                 counts[carrier] = 0;
@@ -816,8 +838,19 @@ select:focus {
 
         const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
 
-        const labels = sorted.map(item => item[0]);
-        const values = sorted.map(item => item[1]);
+        topTen = sorted.slice(0,10);
+        other = sorted.slice(10);
+        if(other.length > 0)
+        {
+            sum = 0;
+            other.forEach(item => {
+                sum += item[1];
+            });
+            topTen.push(['other',sum]);
+        }
+
+        const labels = topTen.map(item => item[0]);
+        const values = topTen.map(item => item[1]);
         console.log({labels,values});
         return {labels,values};
     }

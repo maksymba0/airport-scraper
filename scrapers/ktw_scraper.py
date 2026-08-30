@@ -155,8 +155,8 @@ class KTW_Scraper(BaseScraper):
 
             flight_.date = dateNow
             flight_.time = time
-            flight_.origin = key['airport'] or ' '
-            flight_.number = key['flight_number'] or ' '
+            flight_.destination = key['airport'] or ' '
+            flight_.flightNum = key['flight_number'] or ' '
             flight_.carrier = key['airline_name'] or ' '
             flight_.gate = key['boarding_gate'] or ' '
             flight_.status = key['status'] or ' '
@@ -193,7 +193,7 @@ class KTW_Scraper(BaseScraper):
             flight_.date = dateNow
             flight_.time = time
             flight_.origin = key['airport'] or ' '
-            flight_.number = key['flight_number'] or ' '
+            flight_.flightNum = key['flight_number'] or ' '
             flight_.carrier = key['airline_name'] or ' '
             flight_.terminal = key['boarding_gate'] or ' '
             flight_.status = key['status'] or ' '
