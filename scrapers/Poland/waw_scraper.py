@@ -51,9 +51,12 @@ class WAW_Scraper(BaseScraper):
 
         for li in flights[1:]: 
 
-            flight = Flight()
+            flight = Flight() 
 
             flight.time = t.get_text(strip=True) if (t := li.select_one(".column-time.arrivals-col")) else ""
+
+            if flight.time is "":
+                continue
 
             timeobj = datetime.strptime(flight.time,"%H:%M").time()
 
@@ -100,6 +103,8 @@ class WAW_Scraper(BaseScraper):
         for li in flights[1:]: 
 
             arrivaltime_ = t.get_text(strip=True) if (t := li.select_one(".column-time.arrivals-col")) else ""
+            if arrivaltime_ is "":
+                            continue
             destination_ = t.get_text(strip=True) if (t := li.select_one(".column-origin-destination")) else ""
             number = t.get_text(strip=True) if (t := li.select_one(".column-flight-no")) else ""
             carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""

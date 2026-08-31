@@ -68,6 +68,7 @@ class FlightService:
             all_flights.extend(arrivals)
             all_flights.extend(departures) 
 
+         
         save_cache(all_flights)
         return jsonify(
             {
@@ -91,6 +92,7 @@ class FlightService:
             if cache_ and is_valid_cache(cache_):
                 print("loading from cache")
                 flights = get_flights_data(airportcode)
+                save_to_db(flights)
                 return jsonify(
                         {
                         "cached":True,
@@ -145,3 +147,42 @@ class FlightService:
                 "flights":flights_,
                 "last_updated":cache_["timestamp"]
                 })
+import database.flights_db as DB
+
+def save_to_db(flights):
+    
+    print('Attempting to save flights to DB')
+    conn = DB.get_db_connection()
+    cursor = conn.cursor()
+    if not conn:
+        print('Unable to save flights to DB -- No DB connection')
+        return
+    if(len(flights) <= 0):
+        print('Couldnt save Flights to DB as Object is empty.')
+        return False
+
+    for flight in flights:
+        airport = flight['code']
+        type = flight['type']
+        flight_number = flight['flightNum']
+        carrier = flight['carrier']
+        destination = flight['destination'] or flight['origin']
+        date = datetime.strptime(flight['date'].replace('-','/'),"%d/%m/%Y").date()
+        #date = datetime.strftime(_date,'%Y-%m-%d')
+        time = flight['time']
+        gate = flight['gate']
+        terminal = flight['terminal']
+        status = flight['status']
+        cursor.execute("""
+        INSERT INTO flights 
+        (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status) 
+        VALUES 
+        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""",
+        (airport,type,carrier,flight_number,destination,date,time,gate,terminal,status))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    print(f"Successfully saved flights to DB (saved {len(flights)} objects")
+
+    
