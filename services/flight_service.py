@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 import sys
 import os
+import psycopg2
 from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
@@ -92,7 +93,6 @@ class FlightService:
             if cache_ and is_valid_cache(cache_):
                 print("loading from cache")
                 flights = get_flights_data(airportcode)
-                save_to_db(flights)
                 return jsonify(
                         {
                         "cached":True,
@@ -137,7 +137,9 @@ class FlightService:
             all_flights.extend(arrivals)
             all_flights.extend(departures) 
 
+        save_to_db(all_flights)
         save_cache(all_flights)
+        
         cache_ = load_cache()
         flights_ = get_flights_data(airportcode)
 
@@ -177,12 +179,20 @@ def save_to_db(flights):
         INSERT INTO flights 
         (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status) 
         VALUES 
-        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);""",
+        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        ON CONFLICT (flight_number,airline,date,airport,type)
+        DO NOTHING;""",
         (airport,type,carrier,flight_number,destination,date,time,gate,terminal,status))
 
     conn.commit()
+
+    cursor.execute("SELECT COUNT(*) FROM flights;")
+    rez = cursor.fetchone()[0]
+
+
+
     cursor.close()
     conn.close()
-    print(f"Successfully saved flights to DB (saved {len(flights)} objects")
+    print(f"Successfully saved flights to DB (saved {len(flights)} flights | Table has {rez} objects")
 
     
