@@ -93,6 +93,7 @@ class FlightService:
             if cache_ and is_valid_cache(cache_):
                 print("loading from cache")
                 flights = get_flights_data(airportcode)
+                save_to_db(flights)
                 return jsonify(
                         {
                         "cached":True,
@@ -155,14 +156,14 @@ def save_to_db(flights):
     
     print('Attempting to save flights to DB')
     conn = DB.get_db_connection()
-    cursor = conn.cursor()
     if not conn:
         print('Unable to save flights to DB -- No DB connection')
         return
+    cursor = conn.cursor()
     if(len(flights) <= 0):
         print('Couldnt save Flights to DB as Object is empty.')
         return False
-
+    addedFlights = 0
     for flight in flights:
         airport = flight['code']
         type = flight['type']
@@ -175,14 +176,18 @@ def save_to_db(flights):
         gate = flight['gate']
         terminal = flight['terminal']
         status = flight['status']
-        cursor.execute("""
+        query = """
         INSERT INTO flights 
         (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status) 
         VALUES 
         (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
         ON CONFLICT (flight_number,airline,date,airport,type)
-        DO NOTHING;""",
+        DO NOTHING
+        RETURNING id;"""
+        cursor.execute(query,
         (airport,type,carrier,flight_number,destination,date,time,gate,terminal,status))
+        if cursor.fetchone():
+            addedFlights += 1
 
     conn.commit()
 
@@ -193,6 +198,6 @@ def save_to_db(flights):
 
     cursor.close()
     conn.close()
-    print(f"Successfully saved flights to DB (saved {len(flights)} flights | Table has {rez} objects")
+    print(f"Successfully saved {addedFlights} flights to Database | Table has {rez} objects")
 
     
