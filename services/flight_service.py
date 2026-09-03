@@ -3,6 +3,7 @@ from typing import Optional
 import sys
 import os
 import psycopg2
+
 from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
@@ -10,21 +11,24 @@ from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flight import Flight, FlightFields
-from cache import load_cache, save_cache, is_valid_cache, get_flights_data
+from cache import load_cache, save_cache, is_valid_cache, get_flights_data, get_flights_dataDB, save_cacheDB
 
 from scrapers.Poland import wro_scraper 
 
 class FlightService:
 
     @staticmethod
+    @DeprecationWarning
     def get_all_flights(force_refresh: bool = False) -> dict:
 
         b_force = False if force_refresh is None else force_refresh 
 
         if not b_force:
+
+            #flights = get_db()
             cache_ = load_cache()
             if cache_ and is_valid_cache(cache_):
-                print("loading from cache")
+                print("loading saved objects")
                 return jsonify(
                         {
                         "cached":True,
@@ -68,15 +72,18 @@ class FlightService:
                 flight["type"] = "departure"   
             all_flights.extend(arrivals)
             all_flights.extend(departures) 
-
-         
-        save_cache(all_flights)
+        cache_
+        save_to_db(all_flights)
+        #save_cache(all_flights)
         return jsonify(
             {
             "cached":False,
             "flights":all_flights,
             "last_updated":datetime.now().isoformat()
             }) 
+
+
+
  
     @staticmethod
     def get_flights(force_refresh: bool = False, airports : str = "all") -> dict:
@@ -89,44 +96,43 @@ class FlightService:
         airportcode = airports        
         if not b_force:
             cache_ = load_cache()
-
-            if cache_ and is_valid_cache(cache_):
-                print("loading from cache")
-                flights = get_flights_data(airportcode)
-                save_to_db(flights)
-                return jsonify(
-                        {
-                        "cached":True,
-                        "flights":flights,
-                        "last_updated":cache_["timestamp"]
-                        })
+            if is_valid_cache(cache_): # up to date?
+                flights = get_db(None,airportcode)    
+                if flights:
+                    flights_ = get_flights_dataDB(flights,airportcode)
+                    return jsonify(
+                                            {
+                                            "cached":True,
+                                            "flights":flights_, 
+                                            "last_updated":cache_["timestamp"]
+                                            }) 
+                print('Unable to get flights from DB. Generating new ones')
             else:
-                print("cache expired or empty. building new data")
-
-        airports = {
-                "SZZ" : szz_scraper.SZZ_Scraper("https://airport.com.pl/loty/tablica-przylotow-odlotow/"),
-                                                #https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow
-                "WRO" : wro_scraper.WRO_Scraper("https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow"),
-                "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
-                "GDN" : gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow"),
-                "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
-                "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
-                "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
-                "WMI" : wmi_scraper.WMI_Scraper(""),
-                "BZG" : bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals"), #Disabled BZG temporarily due to clouidfare issues
-                "KTW" : ktw_scraper.KTW_Scraper("None"), #its okay, let it be None
-                "LCJ" : lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl"),
-                "RZE" : rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty"),
-                "RDO" : rdo_scraper.RDO_Scraper("https://www.lotniskowarszawa-radom.pl/api/search-flight"),
-                "SZY" : szy_scraper.SZY_Scraper("https://mazuryairport.pl/"),
-                "LUZ" : luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/")     
-            }
-
+                print("cache DB expired. creating new ones")    
+        
+        airports_ = {
+                        "SZZ" : szz_scraper.SZZ_Scraper("https://airport.com.pl/loty/tablica-przylotow-odlotow/"),
+                                                        #https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow
+                        "WRO" : wro_scraper.WRO_Scraper("https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow"),
+                        "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
+                        "GDN" : gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow"),
+                        "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
+                        "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
+                        "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
+                        "WMI" : wmi_scraper.WMI_Scraper(""),
+                        "BZG" : bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals"), #Disabled BZG temporarily due to clouidfare issues
+                        "KTW" : ktw_scraper.KTW_Scraper("None"), #its okay, let it be None
+                        "LCJ" : lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl"),
+                        "RZE" : rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty"),
+                        "RDO" : rdo_scraper.RDO_Scraper("https://www.lotniskowarszawa-radom.pl/api/search-flight"),
+                        "SZY" : szy_scraper.SZY_Scraper("https://mazuryairport.pl/"),
+                        "LUZ" : luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/") 
+                        }
 
 
         
         all_flights = []
-        for code, scraper in airports.items():
+        for code, scraper in airports_.items():
             arrivals = scraper.getArrivals()
             departures = scraper.getDepartures()
             for flight in arrivals:
@@ -139,18 +145,66 @@ class FlightService:
             all_flights.extend(departures) 
 
         save_to_db(all_flights)
-        save_cache(all_flights)
+        save_cacheDB()
         
-        cache_ = load_cache()
-        flights_ = get_flights_data(airportcode)
-
+        #cache_ = load_cache()
+        flights_ = get_flights_dataDB(all_flights,airportcode)
+        date = datetime.today().isoformat();
         return jsonify(
                 {
                 "cached":True,
                 "flights":flights_,
-                "last_updated":cache_["timestamp"]
+                "last_updated":date
                 })
+
+    
 import database.flights_db as DB
+
+def get_db(date, airport):
+
+    if not date:
+        date = datetime.today().strftime('%Y-%m-%d')
+    if airport == 'all':
+        airport = None
+    conn = DB.get_db_connection()
+    if not conn:
+        print('Unable to obtain flights to DB -- No DB connection')
+        return
+    cursor = conn.cursor()
+
+    print(f"searching for flights from {date} for airport {airport}")
+
+    query = """SELECT * FROM flights WHERE Date = %s AND airport = COALESCE(%s, airport);"""
+    print(query)
+
+    cursor.execute(query, (date, airport))
+
+    DBflights = cursor.fetchall();
+    flights = []
+    for obj in DBflights:
+        print(obj)
+        flight = Flight()
+        flight.date = obj['date'].strftime('%d/%m/%Y')
+        flight.carrier = obj['airline']
+        flight.type = obj['type']
+        if flight.type == 'arrival':
+            flight.origin = obj['destination']
+        else:
+            flight.destination = obj['destination']
+        flight.gate = obj['gate']
+        flight.flightNum = obj['flight_number']
+        flight.status = obj['status']
+        flight.time = obj['scheduled_time'].strftime('%H:%M')
+        flight.terminal = obj['terminal']
+        flight.was_delayed = obj['was_delayed']
+        flights.append(flight)
+
+    print(f"loaded {len(flights)} flights from db cache")
+    cursor.close()
+    conn.close()
+
+    return flights
+
 
 def save_to_db(flights):
     
@@ -175,17 +229,22 @@ def save_to_db(flights):
         time = flight['time']
         gate = flight['gate']
         terminal = flight['terminal']
-        status = flight['status']
+        status = flight['status'] or ' ' 
+        was_delayed = 'delay' in status or 'opó' in status
+
+
+
+
         query = """
         INSERT INTO flights 
-        (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status) 
+        (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status, was_delayed) 
         VALUES 
-        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s)
         ON CONFLICT (flight_number,airline,date,airport,type)
         DO NOTHING
         RETURNING id;"""
         cursor.execute(query,
-        (airport,type,carrier,flight_number,destination,date,time,gate,terminal,status))
+        (airport,type,carrier,flight_number,destination,date,time,gate,terminal,status, was_delayed))
         if cursor.fetchone():
             addedFlights += 1
 

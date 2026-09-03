@@ -11,7 +11,8 @@ class FlightFields:
     carrier=  "carrier",
     gate=  "gate",
     terminal= "terminal",
-    type=  "type"
+    type=  "type",
+    was_delayed= "was_delayed"
 @dataclass
 class Flight:
 
@@ -25,6 +26,7 @@ class Flight:
     gate: Optional[str] = None
     terminal: Optional[str] = None
     type: Optional[str] = None
+    was_delayed: Optional[bool] = False
 
     def to_dict(self):
         return {
@@ -37,5 +39,6 @@ class Flight:
             "carrier": self.carrier,
             "gate": self.gate,
             "terminal": self.terminal,
-            "type": self.type
+            "type": self.type,
+            "was_delayed" : self.was_delayed
         }

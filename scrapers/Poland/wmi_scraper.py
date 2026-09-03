@@ -130,7 +130,7 @@ class WMI_Scraper(BaseScraper):
             flight.time = header.text.strip();
             match = re.search(r'(\d{2}:\d{2})', flight.time)
             flight.time = match.group(1) if match else flight.time
-            print(flight.time)
+             
 
             timeobj = datetime.strptime(flight.time,"%H:%M").time()
 

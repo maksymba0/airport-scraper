@@ -17,7 +17,7 @@ def load_cache():
     except (json.JSONDecodeError, IOError):
         return None
     
-
+@DeprecationWarning
 def save_cache(flights_data, airport_name=None):
     print("Saving to cache")
     data = {
@@ -26,7 +26,13 @@ def save_cache(flights_data, airport_name=None):
         "flights":flights_data
     }
     with open(CACHE_FILE,"w", encoding="utf-8") as _file:
-        json.dump(data, _file, indent=2, ensure_ascii=False)      
+        json.dump(data, _file, indent=2, ensure_ascii=False)  
+def save_cacheDB():
+    data = {
+             "timestamp" : datetime.now().isoformat()
+         }
+    with open(CACHE_FILE,"w", encoding="utf-8") as _file:
+        json.dump(data, _file, indent=2, ensure_ascii=False)  
 
 def is_valid_cache(cache_data):
     print("cache validation...")
@@ -41,7 +47,26 @@ def is_valid_cache(cache_data):
         return elapsed.total_seconds() < (CACHE_DUR_MINUTES * 60)
     except ValueError:
         return False
-    
+
+
+
+def get_flights_dataDB(flights,airport_code = None):
+     
+    cache = load_cache()
+    get_custom_airport = airport_code if (airport_code is not None and airport_code != 'all') else None 
+    if not flights:
+        print("[cache.py]: couldn't load cache")
+        return []
+    is_valid = is_valid_cache(cache)
+    if not is_valid:
+        print("[cache.py]: loaded invalid cache")
+        return []
+    if get_custom_airport:
+        return [f for f in flights if f.get("code") == airport_code]
+    return flights
+
+
+@DeprecationWarning    
 def get_flights_data(airport_code = None):
     cache = load_cache()
     get_custom_airport = airport_code if (airport_code is not None and airport_code != 'all') else None 

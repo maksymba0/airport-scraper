@@ -40,7 +40,7 @@ class GDN_Scraper(BaseScraper):
     
         PData = JSON.loads(rawData) 
         
-        print("Keys found in data:", PData.keys()) 
+        #print("Keys found in data:", PData.keys()) 
         # ['arrivals', 'departures', 'locale', 'fetchedDate', 'securityWaitTime', 'isMainPage', 'ticketsLink']
     
         departures = PData.get('departures')
@@ -85,7 +85,7 @@ class GDN_Scraper(BaseScraper):
         PData = JSON.loads(rawData)
  
       
-        print("Keys found in data:", PData.keys()) 
+       # print("Keys found in data:", PData.keys()) 
         # ['arrivals', 'departures', 'locale', 'fetchedDate', 'securityWaitTime', 'isMainPage', 'ticketsLink']
     
         arrivals = PData.get('arrivals')
