@@ -11,6 +11,7 @@ class FlightFields:
     carrier=  "carrier",
     gate=  "gate",
     terminal= "terminal",
+    airport='airport',
     type=  "type",
     was_delayed= "was_delayed"
 @dataclass
@@ -18,6 +19,7 @@ class Flight:
 
     flightNum: Optional[str] = None
     date: Optional[str] = None
+    airport: Optional[str] = None
     time: Optional[str] = None
     destination: Optional[str] = None
     origin: Optional[str] = None
@@ -33,6 +35,7 @@ class Flight:
             "flightNum": self.flightNum,
             "date": self.date,
             "time": self.time,
+            "airport": self.airport,
             "destination": self.destination,
             "origin": self.origin,
             "status": self.status,

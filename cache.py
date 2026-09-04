@@ -62,7 +62,7 @@ def get_flights_dataDB(flights,airport_code = None):
         print("[cache.py]: loaded invalid cache")
         return []
     if get_custom_airport:
-        return [f for f in flights if f.get("code") == airport_code]
+        return [f for f in flights if f.get("airport") == airport_code]
     return flights
 
 

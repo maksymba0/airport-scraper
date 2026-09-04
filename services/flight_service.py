@@ -182,10 +182,14 @@ def get_db(date, airport):
     DBflights = cursor.fetchall();
     flights = []
     for obj in DBflights:
-        print(obj)
+
         flight = Flight()
+
+        print(obj)
+
         flight.date = obj['date'].strftime('%d/%m/%Y')
         flight.carrier = obj['airline']
+        flight.airport = obj['airport']
         flight.type = obj['type']
         if flight.type == 'arrival':
             flight.origin = obj['destination']
@@ -251,7 +255,7 @@ def save_to_db(flights):
     conn.commit()
 
     cursor.execute("SELECT COUNT(*) FROM flights;")
-    rez = cursor.fetchone()[0]
+    rez = cursor.fetchone()['count']
 
 
 
