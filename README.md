@@ -30,6 +30,9 @@ A pivot table made with the exported CSV file, showing the top 3 airlines with t
 
 
 Page display now
+
+<img width="1117" height="577" alt="image" src="https://github.com/user-attachments/assets/f9c138ec-51d3-4467-9df9-1e37df122328" />
+* (Data may not be accurate)
 <img width="1896" height="678" alt="image" src="https://github.com/user-attachments/assets/4ea17b90-08c1-4f6d-9004-a2e880e55541" />
 <img width="1881" height="856" alt="image" src="https://github.com/user-attachments/assets/0c08f081-c6b9-4d41-bf87-12dd9ebd6236" />
 
