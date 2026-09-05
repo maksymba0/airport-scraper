@@ -16,7 +16,11 @@ def allFlights():
     airports_ = request.args.get('airports','all')
     return FlightService.get_flights(airports=airports_,force_refresh=force_refresh_)
         
- 
+@app.route("/api/get_statistics")
+def statistics():
+    type_ = request.args.get('type')
+    return FlightService.request_stats(type_)
+
 @app.route("/")
 def home(): 
 

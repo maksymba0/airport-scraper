@@ -14,6 +14,7 @@ from flight import Flight, FlightFields
 from cache import load_cache, save_cache, is_valid_cache, get_flights_data, get_flights_dataDB, save_cacheDB
 
 from scrapers.Poland import wro_scraper 
+import database.flights_db as DB
 
 class FlightService:
 
@@ -157,8 +158,54 @@ class FlightService:
                 "last_updated":date
                 })
 
+
+ 
     
-import database.flights_db as DB
+    @staticmethod
+    def request_stats(type = ""):
+
+        if not type:
+            return []
+
+        conn = DB.get_db_connection()
+        cursor = conn.cursor()
+         
+        if type == 'delay':
+            print('getting delays')
+            query = """SELECT airport, COUNT(airport) AS count
+            FROM flights
+            WHERE was_delayed = 'TRUE'
+            GROUP BY airport
+            ORDER BY count DESC;
+            """
+            cursor.execute(query)
+
+            tuple = cursor.fetchall() # [(value0,value1),(value0,value1),... ]
+
+            cursor.close()
+            conn.close()
+
+            result = []
+
+            for obj in tuple:
+                print(obj)
+                result.append({'airport':obj['airport'],'count':obj['count']})
+            sorts = sorted(result,key=lambda x: x['count'],reverse=True)
+
+            labels = [x['airport'] for x in sorts]
+            values = [x['count'] for x in sorts] 
+             
+
+            return {'labels':labels,'values':values}
+
+        
+        return ''
+
+
+def stats_delay():
+        
+    return
+
 
 def get_db(date, airport):
 
@@ -190,6 +237,7 @@ def get_db(date, airport):
         flight.date = obj['date'].strftime('%d/%m/%Y')
         flight.carrier = obj['airline']
         flight.airport = obj['airport']
+        flight.code = obj['airport']
         flight.type = obj['type']
         if flight.type == 'arrival':
             flight.origin = obj['destination']

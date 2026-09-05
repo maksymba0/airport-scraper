@@ -335,6 +335,10 @@ select:focus {
             <h1> Airline per airport</h1>
             <canvas id="airportPieChart"></canvas>
         </div> 
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h1> Delay per airport (Overall)</h1>
+            <canvas id="airportBarChart_Delay"></canvas>
+        </div> 
     </div>
 
     <!-- About page-->
@@ -362,6 +366,7 @@ select:focus {
     let filtertimeout = null;
     let fetchDataInterval = null;
     let airportBarChart = null; // reference to the chart instance - BAR CHART - flights per airport
+    let airportBarChart_Delay = null; // reference to the chart instance - BAR CHART - airport per delay
     let airportPieChart = null; // reference to the chart instance - Pie CHART - per airline
 
 
@@ -543,6 +548,7 @@ select:focus {
                 const bCached = data.cached;
 
                 allFlights = data.flights;
+                filteredFlights = allFlights;
                 
                 if(!data || !allFlights)
                 {
@@ -622,7 +628,7 @@ select:focus {
                 bgClass += ` ${shadowColour}`;
                 
                 html += `<tr class="${bgClass}">
-                    <td><strong>${f.code || '??'}</strong></td>
+                    <td><strong>${f.airport || '??'}</strong></td>
                     <td>${f.type || 'unknown'}</td>
                     <td>${f.carrier || 'N/A'}</td>
                     <td>${f.flightNum || 'N/A'}</td>
@@ -717,7 +723,7 @@ select:focus {
                 String(f.time || '').toLowerCase().includes(search);
 
             const time = isFlightPastNowFuture(f);
-            const matchAirport = airport === 'all' || f.code === airport;
+            const matchAirport = airport === 'all' || f.airport === airport;
             const matchType = type === 'all' || f.type === type;
               
             const matchTime =  displayTimeFlights.length === 0 || displayTimeFlights.includes(time); 
@@ -745,7 +751,7 @@ select:focus {
         filteredFlights.forEach(f => 
         { 
 
-            let row = [`${f.code || ''}`,
+            let row = [`${f.airport || ''}`,
                 `${f.type|| ''}`,
                 `${f.carrier|| ''}`,
                 `${f.flightNum|| ''}`,
@@ -768,16 +774,57 @@ select:focus {
         link.click();
         document.body.removeChild(link);
     }
+    async function getDelaysPerAirport()
+    {
+        // here were gonna need a func that returns just two things: airportCode, delayCount.
+        // make api request
+        const url = '/api/get_statistics?type=delay';
+
+        const response = await fetch(url); 
+                
+        if(!response.ok)
+        {
+            const errorText = await response.text();
+            
+            let userMessage = `Server error ${response.status} : (${errorText})`; 
+            if(response.status === 500)
+            {
+                userMessage = "Internal error. Please try again later.";
+
+            } else if(response.status === 404)
+            {
+                userMessage = "Not found. Please try again later.";
+            }  else if(response.status === 429)
+            {
+                userMessage = "Too many requests. Please try again later.";
+            }  
+
+            console.log(` ${userMessage}`); 
+            return;
+        }
+  
+        const data = await response.json();
+ 
+        const labels = data.labels;//Object.keys(data);
+        const values = data.values;// Object.values(data); 
+         
+        console.log({labels,values})
+        return {labels,values}; 
+
+    }
     function getFlightsPerAirport()
     {
         if(!filteredFlights || filteredFlights.length <= 0)
         {
+            
+            console.log('filteredFlights is 0');
             return null;
         }
         const counts = {};
+        console.log(filteredFlights);
         for (const flight of filteredFlights)
         {
-            const code = flight.code;
+            const code = flight.airport;
             if(counts[code] === undefined)
             {
                 counts[code] = 0;
@@ -787,9 +834,7 @@ select:focus {
         
         // {"GDN":42,"KRK":41,...} 
         const keys = Object.keys(counts);
-        const vals = Object.values(counts);
-
-        let obj = {keys,vals};
+        const vals = Object.values(counts); 
 
         const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]);
 
@@ -819,9 +864,9 @@ select:focus {
             "EASYJET":"EasyJet",
             "EasyJet Switzerland":"EasyJet",
             "WIZZ AIR MALTA":"Wizz Air",
-            "Eurowings":"",
-            "Norwegian":"",
-            "Pegasus":"",
+            "Eurowings":"Eurowings",
+            "Norwegian":"Norwegian",
+            "Pegasus":"Pegasus",
         }
         const counts = {};
         for (let flight of allFlights)
@@ -865,27 +910,100 @@ select:focus {
         return {labels,values};
     }
 
-    function renderStatistics()
+    async function renderStatistics()
     {
-        const flightsPerAirport = getFlightsPerAirport();
-        const airlinesPerAirport = getFlightsPerAirline();
-        if(flightsPerAirport === null || airlinesPerAirport === null)
+        const flightsPerAirport = await getFlightsPerAirport();
+        const airlinesPerAirport = await getFlightsPerAirline();
+        const delaysPerAirport = await getDelaysPerAirport();
+        if(flightsPerAirport === null || airlinesPerAirport === null || delaysPerAirport === null )
         {
+            console.log('Error rendering statistics: Received bad data from Server (lfights,airlines,delays)');
             return;   
         }
         
         const ctx = document.getElementById('airportBarChart').getContext('2d');
+
         if (airportBarChart) {
             airportBarChart.destroy();
+        } 
+
+        airportBarChart = new Chart(ctx, 
+        {
+            type: 'bar',
+            data: {
+                labels: flightsPerAirport.labels,
+                datasets: [{
+                    label: 'Number of Flights',
+                    data: flightsPerAirport.values,
+                    backgroundColor: '#58a6ff',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#484e54' }
+                    },
+                    x: {
+                        ticks: { color: '#484e54' }
+                    }
+                }
+            }
+        });
+
+        const vtx = document.getElementById('airportPieChart').getContext('2d');
+
+        if (airportPieChart) {
+                airportPieChart.destroy();
         }
-        
-        airportBarChart = new Chart(ctx, {
+        const colors = [
+            '#58a6ff', '#ff6b6b', '#ffd93d', '#6bcf7f', '#a66cff',
+            '#ff9f43', '#00d2d3', '#ff9ff3', '#feca57', '#54a0ff'
+        ];
+
+        airportPieChart = new Chart(vtx, {
+            type: 'pie',
+            data: {
+                labels: airlinesPerAirport.labels,
+                datasets: [{
+                    label: 'Number of Flights',
+                    data: airlinesPerAirport.values,
+                    // Then, when creating the dataset:
+                    backgroundColor: colors.slice(0, airlinesPerAirport.labels.length), 
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: 
+                    {
+                        display: true, 
+                        position: 'right'}
+                },
+                
+            }
+        }); 
+
+    const airportchartDelay = document.getElementById('airportBarChart_Delay').getContext('2d');
+
+        if (airportBarChart_Delay) {
+            airportBarChart_Delay.destroy();
+        } 
+        console.log(`using these for table: ${delaysPerAirport}`)
+        airportBarChart_Delay = new Chart(airportchartDelay, {
         type: 'bar',
         data: {
-            labels: flightsPerAirport.labels,
+            labels: delaysPerAirport.labels,
             datasets: [{
-                label: 'Number of Flights',
-                data: flightsPerAirport.values,
+                label: 'Number of Delays',
+                data: delaysPerAirport.values,
                 backgroundColor: '#58a6ff',
                 borderRadius: 4
             }]
@@ -907,41 +1025,8 @@ select:focus {
             }
         }
     });
-    const vtx = document.getElementById('airportPieChart').getContext('2d');
-        if (airportPieChart) {
-            airportPieChart.destroy();
-        }
-    const colors = [
-        '#58a6ff', '#ff6b6b', '#ffd93d', '#6bcf7f', '#a66cff',
-        '#ff9f43', '#00d2d3', '#ff9ff3', '#feca57', '#54a0ff'
-    ];
-    airportPieChart = new Chart(vtx, {
-        type: 'pie',
-        data: {
-            labels: airlinesPerAirport.labels,
-            datasets: [{
-                label: 'Number of Flights',
-                data: airlinesPerAirport.values,
-                // Then, when creating the dataset:
-                backgroundColor: colors.slice(0, airlinesPerAirport.labels.length), 
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: 
-                {
-                     display: true, 
-                     position: 'right'}
-            },
-             
-        }
-    });
 
-        console.log(data);
-
-    }
+}
 </script>
 
 </body>
