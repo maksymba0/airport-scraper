@@ -51,7 +51,9 @@ def is_valid_cache(cache_data):
 
 
 def get_flights_dataDB(flights,airport_code = None):
-     
+    if not flights:
+        print('empty flights')
+        return
     cache = load_cache()
     get_custom_airport = airport_code if (airport_code is not None and airport_code != 'all') else None 
     if not flights:
@@ -62,7 +64,8 @@ def get_flights_dataDB(flights,airport_code = None):
         print("[cache.py]: loaded invalid cache")
         return []
     if get_custom_airport:
-        return [f for f in flights if f.get("airport") == airport_code]
+        print(flights) 
+        return [f for f in flights if f.airport == airport_code]
     return flights
 
 

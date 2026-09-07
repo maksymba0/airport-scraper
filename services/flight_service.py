@@ -133,14 +133,14 @@ class FlightService:
 
         
         all_flights = []
-        for code, scraper in airports_.items():
+        for airport, scraper in airports_.items():
             arrivals = scraper.getArrivals()
             departures = scraper.getDepartures()
             for flight in arrivals:
-                flight["code"] = code
+                flight["airport"] = airport
                 flight["type"] = "arrival"
             for flight in departures:
-                flight["code"] = code
+                flight["airport"] = airport
                 flight["type"] = "departure"   
             all_flights.extend(arrivals)
             all_flights.extend(departures) 
@@ -197,7 +197,33 @@ class FlightService:
              
 
             return {'labels':labels,'values':values}
-
+        if type == 'flightperairports':
+                    print('getting per airport data')
+                    query = """SELECT airport, COUNT(airport) AS count
+                    FROM flights
+                    GROUP BY airport
+                    ORDER BY count DESC;
+                    """
+                    cursor.execute(query)
+        
+                    tuple = cursor.fetchall() # [(value0,value1),(value0,value1),... ]
+        
+                    cursor.close()
+                    conn.close()
+        
+                    result = []
+        
+                    for obj in tuple:
+                        print(obj)
+                        result.append({'airport':obj['airport'],'count':obj['count']})
+                    sorts = sorted(result,key=lambda x: x['count'],reverse=True)
+        
+                    labels = [x['airport'] for x in sorts]
+                    values = [x['count'] for x in sorts] 
+                    return {'labels':labels,'values':values}
+                     
+        
+                    
         
         return ''
 
@@ -271,7 +297,7 @@ def save_to_db(flights):
         return False
     addedFlights = 0
     for flight in flights:
-        airport = flight['code']
+        airport = flight['airport']
         type = flight['type']
         flight_number = flight['flightNum']
         carrier = flight['carrier']
