@@ -8,8 +8,9 @@
 
 body{
 font-family: system-ui, -apple-system;
-background-color: rgb(0, 0, 0);
-color: #262626;
+background: #0b1220;
+color: #e5edf7;
+min-height: 100vh;
 margin: 0; 
 }
 .topbar
@@ -145,12 +146,12 @@ select:focus {
 
 
 .row-darkish {
-    background-color: #43474d;
-    color: #ffffff;            
+    background: #0f172a;
+    color: #e5edf7;            
 }
 .row-lightish {
-    background-color: #585b60;
-    color: #ffffff;             
+    background: #111c30;
+    color: #e5edf7;             
 }
 .row-text-yellowish {
   border-left: 5px solid #f1c40f; /* Clear visual indicator */
@@ -170,13 +171,13 @@ select:focus {
 .filter-bar {
     position: sticky;
     top: 0;
-    background-color: #585b60;
+    background: #111827;
     z-index: 10;
     padding: 10px 0;
 }
 .filter-bar thead{
     position: sticky;
-    background-color: gray;
+    background: #172033;
     top: 1px;  
     z-index: 5;
 
@@ -185,7 +186,8 @@ select:focus {
     display:flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #0d1117;
+    background: rgba(11,18,32,.96);
+    backdrop-filter: blur(12px);
     padding: 10px 20px;
     border-bottom: 1px solid #30363d;
     position: sticky;
@@ -194,10 +196,11 @@ select:focus {
 }
 .nav-brand {
     color:white;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: larger;
     font-weight: 900;
-    font-size: 40px;
+    font-size: 26px;
+    letter-spacing: -.8px;
 }
 .nav-links {
     list-style: none;
@@ -209,15 +212,15 @@ select:focus {
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 6px;
-    border-color: #d8deda;
-    border-style: solid;
+    border: 1px solid transparent;
 }
 .nav-links a.active {
-    background-color: #21262d;
-    color: #58a6ff;
+    background: #17243a;
+    color: #7dd3fc;
+    border-color: #263b59;
 }
 .nav-links a:hover {
-    background-color: #414a58;
+    background: #172033;
 }
 
 
@@ -246,13 +249,96 @@ select:focus {
 .view.active {
     display: block;
 }
+
+/* === Dashboard redesign === */
+body { line-height: 1.5; }
+.navbar { gap: 24px; }
+.navbar > p { color:#94a3b8 !important; margin:0; flex:1; }
+.nav-links { margin:0; padding:0; }
+.container { margin-top: 26px; margin-bottom: 26px; }
+.filter-toolbar {
+    background:#0f172a;
+    border:1px solid #243044;
+    border-radius:14px;
+    padding:16px;
+    align-items:center;
+    justify-content:space-between;
+}
+.filter-toolbar > div { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+select, .search-box {
+    background:#0b1220;
+    color:#e5edf7;
+    border:1px solid #334155;
+    border-radius:10px;
+}
+.search-box { min-height: 42px; box-sizing:border-box; }
+.load-btn, .export-btn {
+    border-radius:10px;
+    min-height:42px;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.load-btn { background:#0284c7; }
+.load-btn:hover { background:#0369a1 !important; transform:translateY(-2px); box-shadow:0 8px 18px rgba(2,132,199,.25); }
+.export-btn { background:#16a34a; }
+fieldset { border:1px solid #334155; border-radius:10px; color:#94a3b8; }
+legend { padding:0 6px; }
+#status > p { color:#94a3b8; }
+table { overflow:hidden; border:1px solid #243044; border-radius:14px; }
+th { text-align:left; padding:14px 12px; color:#94a3b8; font-size:.76rem; letter-spacing:.06em; text-transform:uppercase; }
+td { padding:14px 12px; border-top:1px solid #1f2b3d; }
+tr { transition:background .15s ease, transform .15s ease; }
+tbody tr:hover { background:#1a2940 !important; }
+td:first-child strong {
+    background:#17243a; color:#7dd3fc; padding:5px 8px; border-radius:7px; letter-spacing:.04em;
+}
+td:nth-child(4) { font-weight:700; color:#f8fafc; }
+td:nth-child(7) { font-size:1.05rem; font-weight:700; color:#f8fafc; }
+.pagefooter { background:transparent; padding:10px 20px 28px; }
+.pagefooter h1 { font-size:.9rem; color:#64748b; font-weight:500; }
+.pagefooter a { color:#7dd3fc; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; }
+.chart-card, .summary-card {
+    background:#0f172a; border:1px solid #243044; border-radius:16px; padding:20px;
+}
+.summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+.summary-card .label { color:#94a3b8; font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; }
+.summary-card .value { font-size:1.8rem; font-weight:800; margin-top:6px; color:#f8fafc; }
+.live-dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e; box-shadow:0 0 12px #22c55e; margin-right:7px; }
+@media (max-width: 850px) {
+  .navbar { flex-wrap:wrap; }
+  .navbar > p { order:3; flex-basis:100%; }
+  .nav-brand { font-size:22px; }
+  .container { margin:12px; padding:16px; }
+  .summary-grid { grid-template-columns:repeat(2,1fr); }
+  .filter-toolbar { align-items:stretch; }
+  .filter-toolbar > div { width:100%; }
+  .search-box, .filter-toolbar input[style] { width:100% !important; }
+  table { display:block; overflow-x:auto; white-space:nowrap; }
+}
+
+.refresh-indicator {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+
+    background: #111827;
+    border: 1px solid #243044;
+    border-radius: 12px;
+
+    padding: 10px 15px;
+
+    color: #94a3b8;
+    font-size: 13px;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,.3);
+}
 </style>
 </head>
 
 <body>
 <nav class="navbar">
         <div class="nav-brand">Airport Scraper</div>
-        <p style="color:white;font-size: small;"> See real time data from multiple Polish airports in one place </p>
+        <p><span class="live-dot"></span>LIVE · Polish airport flight data</p>
         <ul class="nav-links">
             <li><a href="#" data-page="flights" class="nav-link active">Flights</a></li>
             <li>><a href="#" data-page="stats" class="nav-link active">Statistics</a></li>
@@ -262,7 +348,15 @@ select:focus {
 
 <div class="container">
 
-    <div id="view-flights" class="view active"> 
+    <div id="view-flights" class="view active">
+        <div class="summary-grid" id="summaryGrid">
+            <div class="summary-card"><div class="label">Total flights</div><div class="value" id="totalFlights">—</div></div>
+            <div class="summary-card"><div class="label">Departures</div><div class="value" id="totalDepartures">—</div></div>
+            <div class="summary-card"><div class="label">Arrivals</div><div class="value" id="totalArrivals">—</div></div>
+            <div class="summary-card"><div class="label">Delayed</div><div class="value" id="totalDelayed">—</div></div>
+            <div class="summary-card"><div class="label">Cancelled</div><div class="value" id="totalCancelled">—</div></div>
+        </div>
+
         <div class="filter-toolbar">      
             <div>
                     <select id="airportFilter" onchange="filterTable()">
@@ -326,18 +420,22 @@ select:focus {
         </div>
         <!-- Stats page-->
     <div id="view-stats" class="view hidden"> 
-        <h2> Statistics </h2>
-        <div style="max-width: 800px; margin: 0 auto;">
+        <h2>Statistics</h2><p style="color:#94a3b8">A quick overview of the currently loaded flight data.</p><div class="stats-grid">
+        <div class="chart-card">
             <h1> Flights per airport</h1>
             <canvas id="airportBarChart"></canvas>
         </div>   
-        <div style="max-width: 800px; margin: 0 auto;">
+        <div class="chart-card">
             <h1> Airline per airport</h1>
             <canvas id="airportPieChart"></canvas>
         </div> 
-        <div style="max-width: 800px; margin: 0 auto;">
+        <div class="chart-card">
             <h1> Delay per airport (Overall)</h1>
             <canvas id="airportBarChart_Delay"></canvas>
+        </div> 
+        <div class="chart-card">
+            <h1> Cancellation per airline (Overall)</h1>
+            <canvas id="airportBarChart_Cancellation"></canvas>
         </div> 
     </div>
 
@@ -357,10 +455,17 @@ select:focus {
         </h1>
     </div>
 </div>
+<div id="refreshIndicator" class="refresh-indicator">
+    ↻ Refresh data in <strong id="refreshCountdown">10:00</strong>
+</div>
+
 <script>
     
     // CONSTANTS, ARRAYS, GLOBALS
     const REFRESH_INTERVAL_MS = 600000; // 10m
+    let refreshCountdown = REFRESH_INTERVAL_MS / 1000;
+    let refreshCountdownInterval = null;
+
     let allFlights = []
     let filteredFlights = []
     let filtertimeout = null;
@@ -368,12 +473,13 @@ select:focus {
     let airportBarChart = null; // reference to the chart instance - BAR CHART - flights per airport
     let airportBarChart_Delay = null; // reference to the chart instance - BAR CHART - airport per delay
     let airportPieChart = null; // reference to the chart instance - Pie CHART - per airline
+    let airportBarChart_Cancellation = null;
 
 
     document.addEventListener('DOMContentLoaded', function()
     {
         //fetchFlights();
-        startAutoRefresh();
+        startRefreshCountdown();
     })
 
     document.querySelectorAll('.nav-link').forEach(link =>
@@ -386,6 +492,44 @@ select:focus {
     }
     )
     // FUNCS
+
+
+    function startRefreshCountdown() {
+        // Clear an existing countdown
+        if (refreshCountdownInterval) {
+            clearInterval(refreshCountdownInterval);
+        }
+
+        refreshCountdown = REFRESH_INTERVAL_MS / 1000;
+
+        const countdownElement = document.getElementById('refreshCountdown');
+
+        function updateCountdown() {
+            if (!countdownElement) return;
+
+            const minutes = Math.floor(refreshCountdown / 60);
+            const seconds = refreshCountdown % 60;
+
+            countdownElement.textContent =
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (refreshCountdown <= 0) {
+                clearInterval(refreshCountdownInterval);
+                countdownElement.textContent = 'Refreshing…';
+                
+                return;
+            }
+
+            refreshCountdown--;
+        }
+
+        // Update immediately
+        updateCountdown();
+
+        // Then update every second
+        refreshCountdownInterval = setInterval(updateCountdown, 1000);
+    }
+
 
     function switchView(pageName)
     {
@@ -400,7 +544,7 @@ select:focus {
             targetView.classList.add('active');
         }
 
-        document.querySelectorAll('nav-link').forEach(link =>
+        document.querySelectorAll('.nav-link').forEach(link =>
         {
             link.classList.remove('active');
             if(link.dataset.page == pageName)
@@ -418,19 +562,16 @@ select:focus {
 
 
 
-    function startAutoRefresh()
+    function startAutoRefresh() 
     {
-        if(fetchDataInterval)
-        {
-             clearInterval(fetchDataInterval)   
-        }
-        fetchDataInterval = setInterval(function()
-        {
-            console.log("Sending GET request");
-            fetchFlights();
-        },REFRESH_INTERVAL_MS);
+    clearInterval(autoRefreshInterval);
+    autoRefreshInterval = setInterval(() => {
+        fetchFlights();
+        startRefreshCountdown();
+    }, REFRESH_INTERVAL_MS);
 
-    }
+        startRefreshCountdown();
+    }   
 
     document.getElementById('search').addEventListener('input',function()
     {
@@ -567,6 +708,20 @@ select:focus {
             }
         }
 
+
+    function updateSummary(flights) {
+        const total = flights.length;
+        const departures = flights.filter(f => f.type === 'departure').length;
+        const arrivals = flights.filter(f => f.type === 'arrival').length;
+        const delayed = flights.filter(f => String(f.status || '').toLowerCase().includes('delay')).length;
+        const cancelled = flights.filter(f => String(f.status || '').toLowerCase().includes('cancelled') || String(f.status || '').toLowerCase().includes('odw')).length;
+        document.getElementById('totalFlights').textContent = total.toLocaleString();
+        document.getElementById('totalDepartures').textContent = departures.toLocaleString();
+        document.getElementById('totalArrivals').textContent = arrivals.toLocaleString();
+        document.getElementById('totalDelayed').textContent = delayed.toLocaleString();
+        document.getElementById('totalCancelled').textContent = cancelled.toLocaleString();
+    }
+
     function renderTable(flights, searchResponseStatus = 0) 
     {
              
@@ -582,6 +737,7 @@ select:focus {
             let html = `<p>Found ${flights.length} flights.</p>`;
             const container = document.getElementById('status');
             const statusElement = document.getElementById('status');
+            updateSummary(flights);
                 
             if (flights.length > 0 && searchResponseStatus === 200) { 
                 html = `<p>Found ${flights.length} flights. <span style="color:green"> (Success)</span></p>`;  
@@ -774,6 +930,41 @@ select:focus {
         link.click();
         document.body.removeChild(link);
     }
+    async function getCancellationPerAirline()
+    {
+         const url = '/api/get_statistics?type=cancellation';
+
+        const response = await fetch(url); 
+                
+        if(!response.ok)
+        {
+            const errorText = await response.text();
+            
+            let userMessage = `Server error ${response.status} : (${errorText})`; 
+            if(response.status === 500)
+            {
+                userMessage = "Internal error. Please try again later.";
+
+            } else if(response.status === 404)
+            {
+                userMessage = "Not found. Please try again later.";
+            }  else if(response.status === 429)
+            {
+                userMessage = "Too many requests. Please try again later.";
+            }  
+
+            console.log(` ${userMessage}`); 
+            return;
+        }
+  
+        const data = await response.json();
+ 
+        const labels = data.labels;//Object.keys(data);
+        const values = data.values;// Object.values(data); 
+         
+        console.log({labels,values})
+        return {labels,values}; 
+    }
     async function getDelaysPerAirport()
     {
         // here were gonna need a func that returns just two things: airportCode, delayCount.
@@ -915,7 +1106,11 @@ select:focus {
         const flightsPerAirport = await getFlightsPerAirport();
         const airlinesPerAirport = await getFlightsPerAirline();
         const delaysPerAirport = await getDelaysPerAirport();
-        if(flightsPerAirport === null || airlinesPerAirport === null || delaysPerAirport === null )
+        const cancellationPerAirline = await getCancellationPerAirline();
+
+        if(flightsPerAirport === null || 
+        airlinesPerAirport === null || 
+        delaysPerAirport === null )
         {
             console.log('Error rendering statistics: Received bad data from Server (lfights,airlines,delays)');
             return;   
@@ -995,8 +1190,7 @@ select:focus {
 
         if (airportBarChart_Delay) {
             airportBarChart_Delay.destroy();
-        } 
-        console.log(`using these for table: ${delaysPerAirport}`)
+        }  
         airportBarChart_Delay = new Chart(airportchartDelay, {
         type: 'bar',
         data: {
@@ -1004,6 +1198,40 @@ select:focus {
             datasets: [{
                 label: 'Number of Delays',
                 data: delaysPerAirport.values,
+                backgroundColor: '#58a6ff',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#484e54' }
+                },
+                x: {
+                    ticks: { color: '#484e54' }
+                }
+            }
+        }
+    });
+
+    const airportchartCancellation = document.getElementById('airportBarChart_Cancellation').getContext('2d');
+
+        if (airportBarChart_Delay) {
+            airportBarChart_Delay.destroy();
+        }  
+        airportBarChart_Cancellation = new Chart(airportchartCancellation, {
+        type: 'bar',
+        data: {
+            labels: cancellationPerAirline.labels,
+            datasets: [{
+                label: 'Number of cancellations',
+                data: cancellationPerAirline.values,
                 backgroundColor: '#58a6ff',
                 borderRadius: 4
             }]

@@ -168,8 +168,37 @@ class FlightService:
             return []
 
         conn = DB.get_db_connection()
+        if not conn:
+            print('Failed request stats: Error connecting to DB')
+            return []
         cursor = conn.cursor()
-         
+        if type == 'cancellation':
+            print('getting cancellations')
+            query = """SELECT airline, COUNT(airline) AS count
+            FROM flights
+            WHERE status ILIKE '%odw%' OR status ILIKE '%cance%'
+            GROUP BY airline
+            ORDER BY count DESC;
+            """
+            cursor.execute(query)
+
+            tuple = cursor.fetchall() # [(value0,value1),(value0,value1),... ]
+
+            cursor.close()
+            conn.close()
+
+            result = []
+
+            for obj in tuple:
+                print(obj)
+                result.append({'airline':obj['airline'],'count':obj['count']})
+            sorts = sorted(result,key=lambda x: x['count'],reverse=True)
+
+            labels = [x['airline'] for x in sorts]
+            values = [x['count'] for x in sorts] 
+            
+
+            return {'labels':labels,'values':values}
         if type == 'delay':
             print('getting delays')
             query = """SELECT airport, COUNT(airport) AS count
