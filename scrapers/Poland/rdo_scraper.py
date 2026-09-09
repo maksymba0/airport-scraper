@@ -70,6 +70,8 @@ class RDO_Scraper(BaseScraper):
             flight_.flightNum = flight["flight_no"] or ' '
             flight_.carrier = flight["airline"] or ' '
             flight_.status = flight["status_en"] or ' '
+            flight_.country = 'PL'
+
             flight = flight_.to_dict()
 
             flights_info.append(flight) 
@@ -116,6 +118,8 @@ class RDO_Scraper(BaseScraper):
             flight_.flightNum = flight["flight_no"] or ' '
             flight_.carrier = flight["airline"] or ' '
             flight_.status = flight["status_en"] or ' '
+            flight_.country = 'PL'
+            
             flight = flight_.to_dict()
             
             flights_info.append(flight) 

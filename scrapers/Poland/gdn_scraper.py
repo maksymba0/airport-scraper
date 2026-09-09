@@ -64,6 +64,7 @@ class GDN_Scraper(BaseScraper):
             flight_.flightNum = flight["flight"].strip()
             flight_.status = flight["remarks"].strip()  
             flight_.terminal = flight.get("terminal") or ""
+            flight_.country = 'PL'            
             
             flight_ = flight_.to_dict()
             
@@ -109,7 +110,8 @@ class GDN_Scraper(BaseScraper):
             flight_.flightNum = flight["flight"].strip()
             flight_.status = flight["remarks"].strip() 
             flight_.gate = flight.get("terminal") or ""
-            
+            flight_.country = 'PL'
+
             flight_ = flight_.to_dict()
 
             flights_info.append(flight_) 

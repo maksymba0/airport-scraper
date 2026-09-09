@@ -65,7 +65,7 @@ class LUZ_Scraper(BaseScraper):
                 flight_.carrier ="ENTER AIR"
             else:
                 flight_.carrier = carrierText
-            
+            flight_.country = 'PL'
             flight = flight_.to_dict()
             
             flights_info.append(flight) 
@@ -112,7 +112,7 @@ class LUZ_Scraper(BaseScraper):
                 flight_.carrier ="ENTER AIR"
             else:
                 flight_.carrier = carrierText
-            
+            flight_.country = 'PL'
             flight = flight_.to_dict()
             flights_info.append(flight) 
         return flights_info  

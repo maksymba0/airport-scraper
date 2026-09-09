@@ -61,6 +61,7 @@ class BZG_Scraper(BaseScraper):
             flight_.carrier = key['airlineName'] or ' '
             flight_.gate = key['gateNumbers'] or ' '
             flight_.status = key['statusEn'] or ' '
+            flight_.country = 'PL'
             flight = flight_.to_dict()
             flights_info.append(flight) 
             
@@ -94,6 +95,7 @@ class BZG_Scraper(BaseScraper):
             flight_.date = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%d/%m/%Y") or ""
             flight_.gate = key['gateNumbers'] or ' '
             flight_.status = key['statusEn'] or ' '
+            flight_.country = 'PL'
             flight = flight_.to_dict()
 
             flights_info.append(flight) 

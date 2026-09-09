@@ -68,7 +68,7 @@ class LCJ_Scraper(BaseScraper):
                 flight.carrier = "Royal Dutch"
             else:
                 flight.carrier = carriertext
-
+            flight_.country = 'PL'
             flight_ = flight.to_dict()
             flights_info.append(flight_) 
         return flights_info   
@@ -118,7 +118,8 @@ class LCJ_Scraper(BaseScraper):
                 flight.carrier = "Royal Dutch"
             else:
                 flight.carrier = carriertext
-
+            flight_.country = 'PL'
+            
             flight_ = flight.to_dict()
 
             flights_info.append(flight_) 

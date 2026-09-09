@@ -55,6 +55,7 @@ class POZ_Scraper(BaseScraper):
             flight_.carrier = key['airline']['label'] or ' '
             flight_.gate = key['gate']['value'] or ' '
             flight_.status = key['status']['value'] or ' '
+            flight_.country = 'PL'
             flight = flight_.to_dict()
 
             flights_info.append(flight) 
@@ -83,6 +84,7 @@ class POZ_Scraper(BaseScraper):
             flight_.carrier = key['airline']['label'] or ' '
             flight_.gate = key['gate']['value'] or ' '
             flight_.status = key['status']['value'] or ' '
+            flight_.country = 'PL'
             flight = flight_.to_dict()
 
             flights_info.append(flight) 

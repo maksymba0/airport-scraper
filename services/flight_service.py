@@ -7,7 +7,7 @@ import psycopg2
 from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
-
+from scrapers.Spain import alc_scraper
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flight import Flight, FlightFields
@@ -17,79 +17,13 @@ from scrapers.Poland import wro_scraper
 import database.flights_db as DB
 
 class FlightService:
-
-    @staticmethod
-    @DeprecationWarning
-    def get_all_flights(force_refresh: bool = False) -> dict:
-
-        b_force = False if force_refresh is None else force_refresh 
-
-        if not b_force:
-
-            #flights = get_db()
-            cache_ = load_cache()
-            if cache_ and is_valid_cache(cache_):
-                print("loading saved objects")
-                return jsonify(
-                        {
-                        "cached":True,
-                        "flights":cache_["flights"],
-                        "last_updated":cache_["timestamp"]
-                        })
-            else:
-                print("cache expired or empty. building new data")
-        else:
-            print("Force refresh data. Building")
-        airports = {
-                "SZZ" : szz_scraper.SZZ_Scraper("https://airport.com.pl/loty/tablica-przylotow-odlotow/"),
-                "WRO" : wro_scraper.WRO_Scraper("https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow"),
-                "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
-                "GDN" : gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow"),
-                "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
-                "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
-                "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
-                "WMI" : wmi_scraper.WMI_Scraper(""),
-                "BZG" : bzg_scraper.BZG_Scraper("https://plb.pl/wp-admin/admin-ajax.php?action=get_flights_arrivals"), #Disabled BZG temporarily due to clouidfare issues
-                "KTW" : ktw_scraper.KTW_Scraper("None"), #its okay, let it be None
-                "LCJ" : lcj_scraper.LCJ_Scraper("https://www.lodz-airport.pl/pl"),
-                "RZE" : rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty"),
-                "RDO" : rdo_scraper.RDO_Scraper("https://www.lotniskowarszawa-radom.pl/api/search-flight"),
-                "SZY" : szy_scraper.SZY_Scraper("https://mazuryairport.pl/"),
-                "LUZ" : luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/")     
-            }
-
-
-
-        
-        all_flights = []
-        for code, scraper in airports.items():
-            arrivals = scraper.getArrivals()
-            departures = scraper.getDepartures()
-            for flight in arrivals:
-                flight["code"] = code
-                flight["type"] = "arrival"
-            for flight in departures:
-                flight["code"] = code
-                flight["type"] = "departure"   
-            all_flights.extend(arrivals)
-            all_flights.extend(departures) 
-        cache_
-        save_to_db(all_flights)
-        #save_cache(all_flights)
-        return jsonify(
-            {
-            "cached":False,
-            "flights":all_flights,
-            "last_updated":datetime.now().isoformat()
-            }) 
-
-
-
  
     @staticmethod
-    def get_flights(force_refresh: bool = False, airports : str = "all") -> dict:
+    def get_flights(force_refresh: bool = False, countries : str = "all", airports : str = "all") -> dict:
         
         if airports is None:
+            return []
+        if countries is None: #ES
             return []
 
         b_force = False if force_refresh is None else force_refresh
@@ -98,7 +32,7 @@ class FlightService:
         if not b_force:
             cache_ = load_cache()
             if is_valid_cache(cache_): # up to date?
-                flights = get_db(None,airportcode)    
+                flights = get_db(None,airportcode, countries)    
                 if flights:
                     flights_ = get_flights_dataDB(flights,airportcode)
                     return jsonify(
@@ -112,12 +46,11 @@ class FlightService:
                 print("cache DB expired. creating new ones")    
         
         airports_ = {
+                "PL":{
                         "SZZ" : szz_scraper.SZZ_Scraper("https://airport.com.pl/loty/tablica-przylotow-odlotow/"),
-                                                        #https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow
                         "WRO" : wro_scraper.WRO_Scraper("https://airport.wroclaw.pl/wp-admin/admin-ajax.php?lang=pl&action=maly_rozklad_lotow"),
                         "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
                         "GDN" : gdn_scraper.GDN_Scraper("https://www.airport.gdansk.pl/loty/tablica-przylotow"),
-                        "KRK" : krk_scraper.KRK_Scraper("https://krakowairport.pl/pl/pasazer/loty/polaczenia/przyloty"),
                         "POZ" : poz_scraper.POZ_Scraper("https://poznanairport.pl/wp-json/api/v1/board/?page=1&phrase=&type=arrivals&day=0&timeFrom=00:00&timeTo=23:59&lang=pl"),
                         "WAW" : waw_scraper.WAW_Scraper("https://lotnisko-chopina.pl/en/arrivals-and-departures/"),
                         "WMI" : wmi_scraper.WMI_Scraper(""),
@@ -127,38 +60,59 @@ class FlightService:
                         "RZE" : rze_scraper.RZE_Scraper("https://www.rzeszowairport.pl/pl/pasazer/loty"),
                         "RDO" : rdo_scraper.RDO_Scraper("https://www.lotniskowarszawa-radom.pl/api/search-flight"),
                         "SZY" : szy_scraper.SZY_Scraper("https://mazuryairport.pl/"),
-                        "LUZ" : luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/") 
-                        }
+                        "LUZ" : luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/")
+                        },
+                "ES":{
+                        "ALC": alc_scraper.ALC_Scraper("https://alicanteairport.es/departures.json")
+                },
+                "IT":{},
+                "DE":{},
+        }
 
 
         
         all_flights = []
-        for airport, scraper in airports_.items():
-            arrivals = scraper.getArrivals()
-            departures = scraper.getDepartures()
-            for flight in arrivals:
-                flight["airport"] = airport
-                flight["type"] = "arrival"
-            for flight in departures:
-                flight["airport"] = airport
-                flight["type"] = "departure"   
-            all_flights.extend(arrivals)
-            all_flights.extend(departures) 
-
-        save_to_db(all_flights)
-        save_cacheDB()
-        
-        #cache_ = load_cache()
-        flights_ = get_flights_dataDB(all_flights,airportcode)
-        date = datetime.today().isoformat();
-        return jsonify(
-                {
-                "cached":True,
-                "flights":flights_,
-                "last_updated":date
-                })
 
 
+       # Iterate over all countries
+        for country_code, country_airports in airports_.items():
+            print(f"Scraping {country_code}")
+            
+            # Iterate over airports in this country
+            for airport_code, scraper in country_airports.items():
+                print(f"  Scraping {airport_code}")
+                
+                try:
+                    arrivals = scraper.getArrivals()
+                    departures = scraper.getDepartures()
+                    
+                    for flight in arrivals:
+                        flight["airport"] = airport_code
+                        flight["type"] = "arrival"
+                        flight["country"] = country_code  # ✅ Add country to each flight
+                    
+                    for flight in departures:
+                        flight["airport"] = airport_code
+                        flight["type"] = "departure"
+                        flight["country"] = country_code  # ✅ Add country to each flight
+                    
+                    all_flights.extend(arrivals)
+                    all_flights.extend(departures)
+                    
+                except Exception as e:
+                    print(f"Error scraping {airport_code} ({country_code}): {e}")
+                    
+            save_to_db(all_flights)
+            save_cacheDB()
+            
+            flights_ = get_flights_dataDB(all_flights,airportcode)
+            date = datetime.today().isoformat();
+            return jsonify(
+                    {
+                    "cached":True,
+                    "flights":flights_,
+                    "last_updated":date
+                    })
  
     
     @staticmethod
@@ -262,8 +216,11 @@ def stats_delay():
     return
 
 
-def get_db(date, airport):
+def get_db(date, airport, country):  
 
+    if not country:
+        print('Unable to obtain flights to DB -- no country selected')
+        return 
     if not date:
         date = datetime.today().strftime('%Y-%m-%d')
     if airport == 'all':
@@ -274,12 +231,21 @@ def get_db(date, airport):
         return
     cursor = conn.cursor()
 
-    print(f"searching for flights from {date} for airport {airport}")
+    print(f"searching for flights from {date} for airport {airport} (country: {country})")
 
-    query = """SELECT * FROM flights WHERE Date = %s AND airport = COALESCE(%s, airport);"""
-    print(query)
+    #query = """SELECT * FROM flights WHERE (country = 'all' OR country = %s) AND Date = %s AND airport = COALESCE(%s, airport);"""
 
-    cursor.execute(query, (date, airport))
+    query = """
+        SELECT * FROM flights 
+        WHERE country = COALESCE(%s, country)
+          AND Date = %s 
+          AND airport = COALESCE(%s, airport);
+    """
+    params = (airport)
+    
+    print(params)
+
+    cursor.execute(query, (country,date, airport))
 
     DBflights = cursor.fetchall();
     flights = []
@@ -303,6 +269,7 @@ def get_db(date, airport):
         flight.status = obj['status']
         flight.time = obj['scheduled_time'].strftime('%H:%M')
         flight.terminal = obj['terminal']
+        flight.country = obj['country']
         flight.was_delayed = obj['was_delayed']
         flights.append(flight)
 
@@ -336,6 +303,7 @@ def save_to_db(flights):
         time = flight['time']
         gate = flight['gate']
         terminal = flight['terminal']
+        country = flight['country']
         status = flight['status'] or ' ' 
         was_delayed = 'delay' in status or 'opó' in status
 
@@ -344,14 +312,14 @@ def save_to_db(flights):
 
         query = """
         INSERT INTO flights 
-        (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status, was_delayed) 
+        (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status, was_delayed, country) 
         VALUES 
-        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s)
+        (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, %s, %s)
         ON CONFLICT (flight_number,airline,date,airport,type)
         DO NOTHING
         RETURNING id;"""
         cursor.execute(query,
-        (airport,type,carrier,flight_number,destination,date,time,gate,terminal,status, was_delayed))
+        (airport,type,carrier,flight_number,destination,date,time,gate,terminal,status, was_delayed,country))
         if cursor.fetchone():
             addedFlights += 1
 

@@ -56,6 +56,7 @@ class SZY_Scraper(BaseScraper):
             flight_.flightNum = f"{text[1]} {text[2]}".replace("(","").replace(")","")
             flight_.carrier = text[0]
             flight_.status = tds[3].get_text() or ' '
+            flight_.country = 'PL'
             flight = flight_.to_dict()
             
             flights_info.append(flight) 
@@ -106,7 +107,7 @@ class SZY_Scraper(BaseScraper):
                 flight_.carrier ="RYANAIR"
             else:
                 flight_.carrier = carriertext
-
+            flight_.country = 'PL'
             flight = flight_.to_dict()
 
             flights_info.append(flight) 

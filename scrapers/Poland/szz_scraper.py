@@ -92,7 +92,7 @@ class SZZ_Scraper(BaseScraper):
                 flight_.carrier ="RYANAIR"
             else:
                 flight_.carrier = carriertext
-
+            flight_.country = 'PL'
             flight = flight_.to_dict()
             flights.append(flight)
 
@@ -159,7 +159,7 @@ class SZZ_Scraper(BaseScraper):
                 flight_.carrier ="RYANAIR"
             else:
                 flight_.carrier = carriertext
-
+            flight_.country = 'PL'
             flight = flight_.to_dict()
 
             flights.append(flight)

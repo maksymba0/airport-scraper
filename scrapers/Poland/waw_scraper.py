@@ -70,6 +70,7 @@ class WAW_Scraper(BaseScraper):
             flight.carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""
             flight.gate = t.get_text(strip=True) if (t := li.select_one(".column-gate")) else ""
             flight.status = t.get_text(strip=True) if (t := li.select_one(".column-status")) else ""
+            flight.country = 'PL'
             dFlight = flight.to_dict()
             flights_info.append(dFlight)
             
@@ -125,6 +126,7 @@ class WAW_Scraper(BaseScraper):
             flight_.flightNum = number
             flight_.status = status
             flight_.gate = gate
+            flight_.country = 'PL'
             flight = flight_.to_dict()  
         
             flights_info.append(flight) 

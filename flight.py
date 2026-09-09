@@ -13,7 +13,8 @@ class FlightFields:
     terminal= "terminal",
     airport='airport',
     type=  "type",
-    was_delayed= "was_delayed"
+    was_delayed= "was_delayed",
+    country = "country"
 @dataclass
 class Flight:
 
@@ -29,6 +30,7 @@ class Flight:
     terminal: Optional[str] = None
     type: Optional[str] = None
     was_delayed: Optional[bool] = False
+    country: Optional[str] = None
 
     def to_dict(self):
         return {
@@ -43,5 +45,6 @@ class Flight:
             "gate": self.gate,
             "terminal": self.terminal,
             "type": self.type,
-            "was_delayed" : self.was_delayed
+            "was_delayed" : self.was_delayed,
+            "country":self.country
         }

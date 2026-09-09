@@ -10,11 +10,20 @@ from services.flight_service import FlightService as FlightService
 
 app = Flask(__name__)
 
+from scrapers.Spain import alc_scraper 
+
+@app.route("/api/test")
+def testdebug():
+    obj = alc_scraper.ALC_Scraper 
+    dp = obj.getArrivals(obj)
+    print(dp)
+    
 @app.route("/api/get_flights")
 def allFlights():
     force_refresh_ = request.args.get('refresh',False)
     airports_ = request.args.get('airports','all')
-    return FlightService.get_flights(airports=airports_,force_refresh=force_refresh_)
+    country = request.args.get('country','all')
+    return FlightService.get_flights(airports=airports_,force_refresh=force_refresh_, countries=country)
         
 @app.route("/api/get_statistics")
 def statistics():

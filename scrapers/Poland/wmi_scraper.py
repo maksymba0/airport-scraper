@@ -83,6 +83,7 @@ class WMI_Scraper(BaseScraper):
             flight.status = tds[3].get('status','');
             value =  re.search(r'gate\s+(\d+)',flight.status,re.IGNORECASE)  
             flight.gate = value.group(1) if value else None 
+            flight.country = 'PL'
             dFlight = flight.to_dict()
             flights_info.append(dFlight)
             
@@ -146,6 +147,7 @@ class WMI_Scraper(BaseScraper):
             flight.status = tds[3].get('status','');
             value =  re.search(r'gate\s+(\d+)',flight.status,re.IGNORECASE)  
             flight.gate = value.group(1) if value else None 
+            flight.country = 'PL'
             dFlight = flight.to_dict()
             flights_info.append(dFlight)
             

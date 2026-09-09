@@ -55,7 +55,7 @@ class KTW_Scraper(BaseScraper):
             flight_.carrier = key['airline_name'] or ' '
             flight_.gate = key['boarding_gate'] or ' '
             flight_.status = key['status'] or ' '
-
+            flight_.country = 'PL'
 
             flight =  flight_.to_dict()
             flights_info.append(flight) 
@@ -92,7 +92,7 @@ class KTW_Scraper(BaseScraper):
             flight_.carrier = key['airline_name'] or ' '
             flight_.terminal = key['boarding_gate'] or ' '
             flight_.status = key['status'] or ' '
-
+            flight_.country = 'PL'
 
             flight =  flight_.to_dict()
 

@@ -64,6 +64,7 @@ class KRK_Scraper(BaseScraper):
             flight_.terminal = fl[0]["terminal"].strip() if fl[0]["terminal"] else ""
             flight_.status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""
             flight = flight_.to_dict()
+            flight_.country = 'PL'
 
             flights_info.append(flight) 
  
@@ -106,6 +107,7 @@ class KRK_Scraper(BaseScraper):
             flight_.terminal = fl[0]["terminal"].strip() if fl[0]["terminal"] else ""
             flight_.status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""
             flight = flight_.to_dict()
+            flight_.country = 'PL'
             
             flights_info.append(flight)
              

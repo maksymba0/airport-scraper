@@ -99,7 +99,7 @@ class WRO_Scraper(BaseScraper):
             flight_.flightNum = flight_no
             flight_.carrier = carrier
             flight_.status = status 
-
+            flight_.country = 'PL'
             flight = flight_.to_dict()  
 
             flights.append(flight)
@@ -180,7 +180,7 @@ class WRO_Scraper(BaseScraper):
             flight_.flightNum = flight_no
             flight_.carrier = carrier
             flight_.status = status 
-
+            flight_.country = 'PL'
             flight = flight_.to_dict() 
  
             
