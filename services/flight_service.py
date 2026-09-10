@@ -7,7 +7,9 @@ import psycopg2
 from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
-from scrapers.Spain import alc_scraper
+from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper
+
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flight import Flight, FlightFields
@@ -17,7 +19,11 @@ from scrapers.Poland import wro_scraper
 import database.flights_db as DB
 
 class FlightService:
- 
+    @staticmethod
+    def testFunc():
+        something = mad_scraper.MAD_Scraper("")
+        departures = something.getDepartures() 
+        return departures
     @staticmethod
     def get_flights(force_refresh: bool = False, countries : str = "all", airports : str = "all") -> dict:
         
@@ -63,7 +69,9 @@ class FlightService:
                         "LUZ" : luz_scraper.LUZ_Scraper("https://www.airport.lublin.pl/")
                         },
                 "ES":{
-                        "ALC": alc_scraper.ALC_Scraper("https://alicanteairport.es/departures.json")
+                        "ALC": alc_scraper.ALC_Scraper("https://alicanteairport.es/departures.json"),
+                        "BCN": bcn_scraper.BCN_Scraper("https://www.aeropuertobarcelona-elprat.com/ingl/barcelona_airport_departures.html"),
+                        "MAD": mad_scraper.MAD_Scraper("https://www.aeropuertomadrid-barajas.com/eng/madrid-airport-flight-arrivals.html")
                 },
                 "IT":{},
                 "DE":{},
@@ -102,17 +110,17 @@ class FlightService:
                 except Exception as e:
                     print(f"Error scraping {airport_code} ({country_code}): {e}")
                     
-            save_to_db(all_flights)
-            save_cacheDB()
-            
-            flights_ = get_flights_dataDB(all_flights,airportcode)
-            date = datetime.today().isoformat();
-            return jsonify(
-                    {
-                    "cached":True,
-                    "flights":flights_,
-                    "last_updated":date
-                    })
+        save_to_db(all_flights)
+        save_cacheDB()
+        
+        flights_ = get_flights_dataDB(all_flights,airportcode)
+        date = datetime.today().isoformat();
+        return jsonify(
+                {
+                "cached":True,
+                "flights":flights_,
+                "last_updated":date
+                })
  
     
     @staticmethod

@@ -75,7 +75,7 @@ class BZG_Scraper(BaseScraper):
         data = scrapper.get(self.url_)  
 
         _data = data.text
-        print(_data)
+        
         data_ = JSON.loads(_data)
          
 

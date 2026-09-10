@@ -14,9 +14,7 @@ from scrapers.Spain import alc_scraper
 
 @app.route("/api/test")
 def testdebug():
-    obj = alc_scraper.ALC_Scraper 
-    dp = obj.getArrivals(obj)
-    print(dp)
+   return FlightService.testFunc()
     
 @app.route("/api/get_flights")
 def allFlights():

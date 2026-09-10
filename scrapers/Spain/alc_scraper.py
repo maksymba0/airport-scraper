@@ -38,11 +38,11 @@ class ALC_Scraper(BaseScraper):
             }
  
         
-        data = self.makeRequestHTML(headers=headers, method="GET")  #(url=None, headers=None, method=None):
+        data = self.makeRequestHTML()  #(url=None, headers=None, method=None):
         
         data_ = data.json() 
 
-        print(f"Found {len(data_["data"])} elements")
+        print(f"Found {len(data_)} elements")
 
         flights_info = []
         for flight in data_:
@@ -52,9 +52,9 @@ class ALC_Scraper(BaseScraper):
 
             flight_ = Flight()
 
-            flight_.time = time
+            flight_.time = time.strftime("%H:%M")
             
-            date = datetime.strptime(time,"%Y-%m-%d").strftime("%d/%m/%Y") or ' '
+            date = time.strftime("%d/%m/%Y") or ' '
            
             flight_.date = date
             flight_.destination = flight["cityInitial"] or ' '
@@ -63,6 +63,7 @@ class ALC_Scraper(BaseScraper):
             flight_.status = flight["status"] or ' '
             flight_.gate = flight["gate"] or ' '
             flight_.country = 'ES'
+            flight_.airport = 'ALC'
 
             flight = flight_.to_dict()
 
@@ -70,7 +71,7 @@ class ALC_Scraper(BaseScraper):
         return flights_info
 
     def getArrivals(self):
-
+        
         data = ""
         print("downloading")
 
@@ -80,11 +81,11 @@ class ALC_Scraper(BaseScraper):
             }
     
         
-        data = self.makeRequestHTML("https://alicanteairport.es/arrivals.json",headers=headers, method="GET")  #(url=None, headers=None, method=None):
+        data = self.makeRequestHTML("https://alicanteairport.es/arrivals.json")  #(url=None, headers=None, method=None):
         
         data_ = data.json() 
 
-        print(f"Found {len(data_["data"])} elements")
+        print(f"Found {len(data_)} elements")
 
         flights_info = []
         for flight in data_:
@@ -94,9 +95,9 @@ class ALC_Scraper(BaseScraper):
 
             flight_ = Flight()
 
-            flight_.time = time
+            flight_.time = time.strftime("%H:%M")
             
-            date = datetime.strptime(time,"%Y-%m-%d").strftime("%d/%m/%Y") or ' '
+            date = time.strftime("%d/%m/%Y") or ' '
             
             flight_.date = date
             flight_.destination = flight["cityInitial"] or ' '
@@ -105,6 +106,7 @@ class ALC_Scraper(BaseScraper):
             flight_.status = flight["status"] or ' '
             flight_.gate = flight["baggage_belt"] or ' '
             flight_.country = 'ES'
+            flight_.airport = 'ALC'
 
             flight = flight_.to_dict()
 
