@@ -66,17 +66,19 @@ class MAD_Scraper(BaseScraper):
             flightListTimeStatus = record.find("div", class_="flightListTimeStatus")
             flightListTerminal = record.find("div", class_="flightListTerminal")
 
-            timedata = flightListOtherAirport.text.split() if flightListOtherAirport else ""
-            flight_.destination = timedata[2] if timedata else ""
+            timedata = flightListOtherAirport.text.split('-') if flightListOtherAirport else ""
+            flight_.destination = timedata[1] if timedata else ""
 
             flight_.time = timedata[0] if timedata else ""
 
             flight_.flightNum = flightListFlightIDs.find('a',class_="flightListFlightIDLink").text or  ' '
+    
+         
             flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text or  ' ' 
             flightListStatus = flightListTimeStatus.find('div',class_="flightListStatus")
 
             if flightListStatus:
-                print(flightListStatus)
+   
                 flight_.status = flightListStatus.text or ' '
             else:
                 flightListStatus = flightListTimeStatus.find('div').text   
@@ -108,8 +110,8 @@ class MAD_Scraper(BaseScraper):
 
         flights_info = []
         for record in records:
-            tdate = record.find("div", class_="flightListOtherAirport").span.text # "18:00"
 
+            tdate = record.find("div", class_="flightListOtherAirport").span.text # "18:00" 
             flight_ = Flight()
 
             flight_.time = tdate
@@ -123,26 +125,28 @@ class MAD_Scraper(BaseScraper):
             flightListTerminal = record.find("div", class_="flightListTerminal")
 
             timedata = flightListOtherAirport.text.split() if flightListOtherAirport else ""
-            flight_.destination = timedata[2] if timedata else ""
+            flight_.origin = timedata[2] if timedata else ""
 
             flight_.time = timedata[0] if timedata else ""
 
             flight_.flightNum = flightListFlightIDs.find('a',class_="flightListFlightIDLink").text or  ' '
+          
             flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text or  ' ' 
-            flight_.airport = 'MAD'
             flightListStatus = flightListTimeStatus.find('div',class_="flightListStatus")
 
-            if flightListStatus:
-                print(flightListStatus)
+            if flightListStatus: 
                 flight_.status = flightListStatus.text or ' '
             else:
                 flightListStatus = flightListTimeStatus.find('div').text   
 
-            flight_.gate = flightListTerminal.text or ' ' 
-            flight_.type = 'departure'
+            flight_.terminal = flightListTerminal.text or ' ' 
+            flight_.type = 'arrival'
             flight_.country = 'ES'
+            flight_.airport = 'MAD'
 
             flight = flight_.to_dict()
+
+            flights_info.append(flight) 
 
             flights_info.append(flight) 
         return flights_info

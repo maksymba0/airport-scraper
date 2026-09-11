@@ -7,7 +7,7 @@ import psycopg2
 from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
-from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper
+from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper, pmi_scraper
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -21,8 +21,8 @@ import database.flights_db as DB
 class FlightService:
     @staticmethod
     def testFunc():
-        something = mad_scraper.MAD_Scraper("")
-        departures = something.getDepartures() 
+        something = pmi_scraper.PMI_Scraper("")
+        departures = something.getArrivals() 
         return departures
     @staticmethod
     def get_flights(force_refresh: bool = False, countries : str = "all", airports : str = "all") -> dict:
@@ -71,7 +71,8 @@ class FlightService:
                 "ES":{
                         "ALC": alc_scraper.ALC_Scraper("https://alicanteairport.es/departures.json"),
                         "BCN": bcn_scraper.BCN_Scraper("https://www.aeropuertobarcelona-elprat.com/ingl/barcelona_airport_departures.html"),
-                        "MAD": mad_scraper.MAD_Scraper("https://www.aeropuertomadrid-barajas.com/eng/madrid-airport-flight-arrivals.html")
+                        "MAD": mad_scraper.MAD_Scraper("https://www.aeropuertomadrid-barajas.com/eng/madrid-airport-flight-arrivals.html"),
+                        "PMI": pmi_scraper.PMI_Scraper("https://www.avionio.com/widget/en/pmi/departures")
                 },
                 "IT":{},
                 "DE":{},
@@ -152,7 +153,6 @@ class FlightService:
             result = []
 
             for obj in tuple:
-                print(obj)
                 result.append({'airline':obj['airline'],'count':obj['count']})
             sorts = sorted(result,key=lambda x: x['count'],reverse=True)
 
@@ -179,7 +179,6 @@ class FlightService:
             result = []
 
             for obj in tuple:
-                print(obj)
                 result.append({'airport':obj['airport'],'count':obj['count']})
             sorts = sorted(result,key=lambda x: x['count'],reverse=True)
 
@@ -205,7 +204,6 @@ class FlightService:
                     result = []
         
                     for obj in tuple:
-                        print(obj)
                         result.append({'airport':obj['airport'],'count':obj['count']})
                     sorts = sorted(result,key=lambda x: x['count'],reverse=True)
         
@@ -229,6 +227,8 @@ def get_db(date, airport, country):
     if not country:
         print('Unable to obtain flights to DB -- no country selected')
         return 
+    country_param = None if country.lower() == 'all' else country
+    airport_param = None if airport.lower() == 'all' else airport
     if not date:
         date = datetime.today().strftime('%Y-%m-%d')
     if airport == 'all':
@@ -239,30 +239,25 @@ def get_db(date, airport, country):
         return
     cursor = conn.cursor()
 
-    print(f"searching for flights from {date} for airport {airport} (country: {country})")
+    print(f"searching for flights from {date} for airport {airport_param} (country: {country_param})")
 
     #query = """SELECT * FROM flights WHERE (country = 'all' OR country = %s) AND Date = %s AND airport = COALESCE(%s, airport);"""
 
     query = """
         SELECT * FROM flights 
         WHERE country = COALESCE(%s, country)
-          AND Date = %s 
+          AND scraped_at::date = %s 
           AND airport = COALESCE(%s, airport);
-    """
-    params = (airport)
-    
-    print(params)
+    """ 
 
-    cursor.execute(query, (country,date, airport))
+    cursor.execute(query, (country_param,date, airport_param))
 
     DBflights = cursor.fetchall();
     flights = []
     for obj in DBflights:
 
         flight = Flight()
-
-        print(obj)
-
+  
         flight.date = obj['date'].strftime('%d/%m/%Y')
         flight.carrier = obj['airline']
         flight.airport = obj['airport']
