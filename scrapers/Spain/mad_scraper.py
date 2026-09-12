@@ -73,8 +73,9 @@ class MAD_Scraper(BaseScraper):
 
             flight_.flightNum = flightListFlightIDs.find('a',class_="flightListFlightIDLink").text or  ' '
     
-         
-            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text or  ' ' 
+            name = flight_.findAirline()
+            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text if name == '-' else name 
+
             flightListStatus = flightListTimeStatus.find('div',class_="flightListStatus")
 
             if flightListStatus:
@@ -131,7 +132,8 @@ class MAD_Scraper(BaseScraper):
 
             flight_.flightNum = flightListFlightIDs.find('a',class_="flightListFlightIDLink").text or  ' '
           
-            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text or  ' ' 
+            name = flight_.findAirline()
+            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text if name == '-' else name 
             flightListStatus = flightListTimeStatus.find('div',class_="flightListStatus")
 
             if flightListStatus: 

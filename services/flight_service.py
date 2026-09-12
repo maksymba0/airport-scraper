@@ -7,7 +7,8 @@ import psycopg2
 from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
-from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper, pmi_scraper
+from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper, pmi_scraper, lpa_scraper
+from scrapers.Italy import bgy_scraper
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -17,12 +18,13 @@ from cache import load_cache, save_cache, is_valid_cache, get_flights_data, get_
 
 from scrapers.Poland import wro_scraper 
 import database.flights_db as DB
+from utils import get_airline_name
 
 class FlightService:
     @staticmethod
     def testFunc():
-        something = pmi_scraper.PMI_Scraper("")
-        departures = something.getArrivals() 
+        something = bgy_scraper.BGY_Scraper("")
+        departures = something.getDepartures() 
         return departures
     @staticmethod
     def get_flights(force_refresh: bool = False, countries : str = "all", airports : str = "all") -> dict:
@@ -72,9 +74,13 @@ class FlightService:
                         "ALC": alc_scraper.ALC_Scraper("https://alicanteairport.es/departures.json"),
                         "BCN": bcn_scraper.BCN_Scraper("https://www.aeropuertobarcelona-elprat.com/ingl/barcelona_airport_departures.html"),
                         "MAD": mad_scraper.MAD_Scraper("https://www.aeropuertomadrid-barajas.com/eng/madrid-airport-flight-arrivals.html"),
-                        "PMI": pmi_scraper.PMI_Scraper("https://www.avionio.com/widget/en/pmi/departures")
+                        "PMI": pmi_scraper.PMI_Scraper("https://www.avionio.com/widget/en/pmi/departures"),
+                        "LPA" : lpa_scraper.LPA_Scraper("https://www.avionio.com/widget/en/lpa/departures")
                 },
-                "IT":{},
+                "IT":
+                {
+                    "BGY" : bgy_scraper.BGY_Scraper("https://www.avionio.com/widget/en/lpa/departures")
+                },
                 "DE":{},
         }
 

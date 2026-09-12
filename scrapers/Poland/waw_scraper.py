@@ -67,7 +67,8 @@ class WAW_Scraper(BaseScraper):
 
             flight.destination = t.get_text(strip=True) if (t := li.select_one(".column-origin-destination")) else ""
             flight.flightNum = t.get_text(strip=True) if (t := li.select_one(".column-flight-no")) else ""
-            flight.carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""
+            carrier = t.get("alt","") if (t := li.select_one(".column-airline img")) else ""
+            flight.carrier = carrier if (airline := flight.findAirline()) == '-' else airline
             flight.gate = t.get_text(strip=True) if (t := li.select_one(".column-gate")) else ""
             flight.status = t.get_text(strip=True) if (t := li.select_one(".column-status")) else ""
             flight.country = 'PL'
@@ -120,7 +121,7 @@ class WAW_Scraper(BaseScraper):
 
             flight_.date = datetime.combine(currentdate,timeobj).strftime("%d/%m/%Y")
 
-            flight_.carrier = carrier
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.time = arrivaltime_
             flight_.origin = destination_
             flight_.flightNum = number

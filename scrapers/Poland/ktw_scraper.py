@@ -52,7 +52,8 @@ class KTW_Scraper(BaseScraper):
             flight_.time = time
             flight_.destination = key['airport'] or ' '
             flight_.flightNum = key['flight_number'] or ' '
-            flight_.carrier = key['airline_name'] or ' '
+            carrier = key['airline_name'] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.gate = key['boarding_gate'] or ' '
             flight_.status = key['status'] or ' '
             flight_.country = 'PL'
@@ -89,7 +90,8 @@ class KTW_Scraper(BaseScraper):
             flight_.time = time
             flight_.origin = key['airport'] or ' '
             flight_.flightNum = key['flight_number'] or ' '
-            flight_.carrier = key['airline_name'] or ' '
+            carrier = key['airline_name'] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.terminal = key['boarding_gate'] or ' '
             flight_.status = key['status'] or ' '
             flight_.country = 'PL'

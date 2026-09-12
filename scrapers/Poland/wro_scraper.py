@@ -78,26 +78,14 @@ class WRO_Scraper(BaseScraper):
             flight_no = tds[2].get_text(strip=True)
             status = tds[3].get_text(strip=True)
             carriertext = flight_no
-            carrier = ""
-            if "RR" in carriertext:
-                carrier = "RYANAIR"
-            elif "PC" in carriertext:
-                carrier = "PEGASUS AIRLINES"
-            elif "ENT" in carriertext:
-                carrier = "ENTER AIR"
-            elif "FR" in carriertext:
-                carrier ="RYANAIR"
-            elif "KL" in carriertext:
-                carrier = "Royal Dutch"
-            else:
-                carrier = carriertext
+           
             flight_ = Flight()
             
             flight_.time= flightTime
             flight_.destination = airport
             flight_.date = flightdate_
             flight_.flightNum = flight_no
-            flight_.carrier = carrier
+            flight_.carrier = carriertext if (airline := flight_.findAirline()) == '-' else airline
             flight_.status = status 
             flight_.country = 'PL'
             flight = flight_.to_dict()  
@@ -158,27 +146,14 @@ class WRO_Scraper(BaseScraper):
             airport = tds[1].find_all("div")[0].get_text(strip=True)
             flight_no = tds[2].get_text(strip=True)
             status = tds[3].get_text(strip=True) 
-            carriertext = flight_no
-            carrier = ""
-            if "RR" in carriertext:
-                carrier = "RYANAIR"
-            elif "PC" in carriertext:
-                carrier = "PEGASUS AIRLINES"
-            elif "ENT" in carriertext:
-                carrier = "ENTER AIR"
-            elif "FR" in carriertext:
-                carrier ="RYANAIR"
-            elif "KL" in carriertext:
-                carrier = "Royal Dutch"
-            else:
-                carrier = carriertext
+            carriertext = flight_no 
             flight_ = Flight()
 
             flight_.time= flightTime
             flight_.date = flightdate_
             flight_.origin = airport
             flight_.flightNum = flight_no
-            flight_.carrier = carrier
+            flight_.carrier = carriertext if (airline := flight_.findAirline()) == '-' else airline
             flight_.status = status 
             flight_.country = 'PL'
             flight = flight_.to_dict() 

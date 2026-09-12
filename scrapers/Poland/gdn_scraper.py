@@ -60,8 +60,10 @@ class GDN_Scraper(BaseScraper):
             flight_.date = dtTime.strftime("%d/%m/%Y")
             flight_.time = dtTime.strftime("%H:%M")
             flight_.destination = flight["destination"].strip()
-            flight_.carrier = flight["carrierName"].strip() 
             flight_.flightNum = flight["flight"].strip()
+            carrier = flight["carrierName"].strip() 
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
+ 
             flight_.status = flight["remarks"].strip()  
             flight_.terminal = flight.get("terminal") or ""
             flight_.country = 'PL'            
@@ -106,8 +108,9 @@ class GDN_Scraper(BaseScraper):
             flight_.date = dtTime.strftime("%d/%m/%Y")
             flight_.time = dtTime.strftime("%H:%M")
             flight_.origin = flight["origin"].strip()
-            flight_.carrier = flight["carrierName"].strip() 
+            carrier = flight["carrierName"].strip() 
             flight_.flightNum = flight["flight"].strip()
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.status = flight["remarks"].strip() 
             flight_.gate = flight.get("terminal") or ""
             flight_.country = 'PL'

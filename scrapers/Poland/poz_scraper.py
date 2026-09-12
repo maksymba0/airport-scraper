@@ -52,7 +52,8 @@ class POZ_Scraper(BaseScraper):
             flight_.date = datetime.strptime(key['date_only'],"%Y-%m-%d").strftime("%d/%m/%Y")
             flight_.destination = key['airport']['label'] or ' '
             flight_.flightNum = key['flight_id'] or ' '
-            flight_.carrier = key['airline']['label'] or ' '
+            carrier = key['airline']['label'] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.gate = key['gate']['value'] or ' '
             flight_.status = key['status']['value'] or ' '
             flight_.country = 'PL'
@@ -81,7 +82,8 @@ class POZ_Scraper(BaseScraper):
             flight_.date = datetime.strptime(key['date_only'],"%Y-%m-%d").strftime("%d/%m/%Y")
             flight_.origin = key['airport']['label'] or ' '
             flight_.flightNum = key['flight_id'] or ' '
-            flight_.carrier = key['airline']['label'] or ' '
+            carrier = key['airline']['label'] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.gate = key['gate']['value'] or ' '
             flight_.status = key['status']['value'] or ' '
             flight_.country = 'PL'

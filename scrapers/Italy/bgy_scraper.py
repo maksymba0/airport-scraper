@@ -5,10 +5,10 @@ import json as JSON
 from datetime import datetime, timezone
 from flight import Flight
 
-class PMI_Scraper(BaseScraper):
+class BGY_Scraper(BaseScraper):
 
-    airportName_ = "Palma de Mallorca Airport"
-    airportCode_ = "PMI"
+    airportName_ = "Milan Bergamo Airport"
+    airportCode_ = "BGY"
 
     def __init__(self, url):
             super().__init__(url)
@@ -38,45 +38,50 @@ class PMI_Scraper(BaseScraper):
             }
  
         
-        data = self.makeRequestHTML("https://www.avionio.com/widget/en/pmi/departures", headers=headers)  #(url=None, headers=None, method=None):
+        data = self.makeRequestHTML("https://www.milanbergamoairport.it/en/real-time-flights/", headers=headers)  #(url=None, headers=None, method=None):
         
         data_ = bs(data.text,"html.parser") 
 
-        rows = data_.select('.tt-row') 
-
+        departures = data_.find('div',id="dep-table")
+ 
+        rows = departures.find('tbody').find_all('tr') 
+        
         print(f"Found {len(data_)} elements")
 
         flights_info = []
         for record in rows:
 
             elements = record.find_all('td')
+    
+            raw_text = elements[3].text.strip().replace('"', '')
+            tdate = raw_text.split()[1] if raw_text else " "
 
-            
-            tdate = elements[0].text.strip().replace('"', '')
             
             flight_ = Flight()
 
             flight_.time = tdate
             
             date = datetime.today().strftime('%d/%m/%Y') or ' '
-           
-            flight_.date = date 
-               
-            flight_.destination = elements[3].text.strip().replace('"', '') or " " 
+            
+            flight_.date = date
+             
+            flight_.destination = next(elements[2].stripped_strings, " ").replace('"', '')
 
 
-            flight_.flightNum = elements[4].text.strip().replace('"', '') or  ' '
-            name = flight_.findAirline()    
-         
-            flight_.carrier = elements[5].text.strip().replace('"', '') if name == '-' else name
-            flightListStatus = elements[6].text.strip().replace('"', '') or ' '
+
+            flight_.flightNum = elements[1].text.strip().replace('"', '') or  ' '
+    
+
+            flight_.carrier = flight_.flightNum if (airline := flight_.findAirline()) == '-' else airline
+
+            flightListStatus = elements[5].text.strip().replace('"', '') or ' '
 
             flight_.status = flightListStatus or ' '
 
-            flight_.gate = '' 
+            flight_.gate = '  ' 
             flight_.type = 'departure'
-            flight_.country = 'ES'
-            flight_.airport = 'PMI' 
+            flight_.country = 'IT'
+            flight_.airport = self.airportCode_
 
             flight = flight_.to_dict()
 
@@ -87,11 +92,12 @@ class PMI_Scraper(BaseScraper):
  
         print("downloading") 
         
-        data = self.makeRequestHTML("https://www.avionio.com/widget/en/pmi/arrivals")  #(url=None, headers=None, method=None):
+        data = self.makeRequestHTML("https://www.milanbergamoairport.it/en/real-time-flights/")  #(url=None, headers=None, method=None):
                 
-        data_ = bs(data.text,"html.parser") 
+        data_ = bs(data.text,"html.parser")
 
-        rows = data_.select('.tt-row') 
+        arrivals = data_.find('div',id="arr-table")
+        rows = arrivals.find('tbody').find_all('tr') 
 
         print(f"Found {len(data_)} elements")
 
@@ -100,7 +106,8 @@ class PMI_Scraper(BaseScraper):
 
             elements = record.find_all('td')
  
-            tdate = elements[0].text.strip().replace('"', '')
+            raw_text = elements[3].text.strip().replace('"', '')
+            tdate = raw_text.split()[1] if raw_text else " "
             
             flight_ = Flight()
 
@@ -109,22 +116,21 @@ class PMI_Scraper(BaseScraper):
             date = datetime.today().strftime('%d/%m/%Y') or ' '
             
             flight_.date = date 
-                
-            flight_.origin = elements[3].text.strip().replace('"', '') or " " 
-
-            flight_.flightNum = elements[4].text.strip().replace('"', '') or  ' '
+                 
+            flight_.origin = next(elements[2].stripped_strings, " ").replace('"', '')
+            flight_.flightNum = elements[1].text.strip().replace('"', '') or  ' '
     
-            name = flight_.findAirline()    
-         
-            flight_.carrier = elements[5].text.strip().replace('"', '') if name == '-' else name
-            flightListStatus = elements[6].text.strip().replace('"', '') or ' '
+
+            flight_.carrier = flight_.flightNum if (airline := flight_.findAirline()) == '-' else airline
+
+            flightListStatus = elements[5].text.strip().replace('"', '') or ' '
 
             flight_.status = flightListStatus or ' '
 
-            flight_.gate = '' 
+            flight_.gate = ' ' 
             flight_.type = 'arrival'
-            flight_.country = 'ES'
-            flight_.airport = 'PMI'
+            flight_.country = 'IT'
+            flight_.airport = self.airportCode_
 
             flight = flight_.to_dict()
 

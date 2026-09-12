@@ -4,11 +4,11 @@ from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime, timezone
 from flight import Flight
+from utils import get_airline_name
+class LPA_Scraper(BaseScraper):
 
-class PMI_Scraper(BaseScraper):
-
-    airportName_ = "Palma de Mallorca Airport"
-    airportCode_ = "PMI"
+    airportName_ = "La Gran Canaria Airport"
+    airportCode_ = "LPA"
 
     def __init__(self, url):
             super().__init__(url)
@@ -38,7 +38,7 @@ class PMI_Scraper(BaseScraper):
             }
  
         
-        data = self.makeRequestHTML("https://www.avionio.com/widget/en/pmi/departures", headers=headers)  #(url=None, headers=None, method=None):
+        data = self.makeRequestHTML("https://www.avionio.com/widget/en/lpa/departures", headers=headers)  #(url=None, headers=None, method=None):
         
         data_ = bs(data.text,"html.parser") 
 
@@ -64,11 +64,11 @@ class PMI_Scraper(BaseScraper):
                
             flight_.destination = elements[3].text.strip().replace('"', '') or " " 
 
-
             flight_.flightNum = elements[4].text.strip().replace('"', '') or  ' '
-            name = flight_.findAirline()    
+    
          
-            flight_.carrier = elements[5].text.strip().replace('"', '') if name == '-' else name
+            airlineName = flight_.findAirline()
+            flight_.carrier = elements[5].text.strip().replace('"', '') if airlineName == '-' else airlineName
             flightListStatus = elements[6].text.strip().replace('"', '') or ' '
 
             flight_.status = flightListStatus or ' '
@@ -76,7 +76,7 @@ class PMI_Scraper(BaseScraper):
             flight_.gate = '' 
             flight_.type = 'departure'
             flight_.country = 'ES'
-            flight_.airport = 'PMI' 
+            flight_.airport = 'LPA' 
 
             flight = flight_.to_dict()
 
@@ -87,7 +87,7 @@ class PMI_Scraper(BaseScraper):
  
         print("downloading") 
         
-        data = self.makeRequestHTML("https://www.avionio.com/widget/en/pmi/arrivals")  #(url=None, headers=None, method=None):
+        data = self.makeRequestHTML("https://www.avionio.com/widget/en/lpa/arrivals")  #(url=None, headers=None, method=None):
                 
         data_ = bs(data.text,"html.parser") 
 
@@ -114,9 +114,9 @@ class PMI_Scraper(BaseScraper):
 
             flight_.flightNum = elements[4].text.strip().replace('"', '') or  ' '
     
-            name = flight_.findAirline()    
-         
-            flight_.carrier = elements[5].text.strip().replace('"', '') if name == '-' else name
+
+            airlineName = flight_.findAirline() 
+            flight_.carrier = elements[5].text.strip().replace('"', '') if airlineName == '-' else airlineName
             flightListStatus = elements[6].text.strip().replace('"', '') or ' '
 
             flight_.status = flightListStatus or ' '
@@ -124,7 +124,7 @@ class PMI_Scraper(BaseScraper):
             flight_.gate = '' 
             flight_.type = 'arrival'
             flight_.country = 'ES'
-            flight_.airport = 'PMI'
+            flight_.airport = 'LPA'
 
             flight = flight_.to_dict()
 

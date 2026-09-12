@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime, timezone
 from flight import Flight
+from utils import get_airline_name
 
 class ALC_Scraper(BaseScraper):
 
@@ -59,7 +60,8 @@ class ALC_Scraper(BaseScraper):
             flight_.date = date
             flight_.destination = flight["cityInitial"] or ' '
             flight_.flightNum = flight["numFlight"] or ' '
-            flight_.carrier = flight["nameCompany"] or ' '
+            name =  flight_.findAirline()
+            flight_.carrier = flight["nameCompany"] if name == '-' else name
             flight_.status = flight["status"] or ' '
             flight_.gate = flight["gate"] or ' '
             flight_.country = 'ES'
@@ -102,7 +104,8 @@ class ALC_Scraper(BaseScraper):
             flight_.date = date
             flight_.destination = flight["cityInitial"] or ' '
             flight_.flightNum = flight["numFlight"] or ' '
-            flight_.carrier = flight["nameCompany"] or ' '
+            name =  flight_.findAirline()
+            flight_.carrier = flight["nameCompany"] if name == '-' else name
             flight_.status = flight["status"] or ' '
             flight_.gate = flight["baggage_belt"] or ' '
             flight_.country = 'ES'

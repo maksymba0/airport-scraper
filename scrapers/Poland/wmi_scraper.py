@@ -78,7 +78,7 @@ class WMI_Scraper(BaseScraper):
 
             flight.destination = tds[0].find('a').text or ''
             flight.flightNum = tds[1].text or '';
-            flight.carrier = tds[2].find('img').get('alt','');
+            flight.carrier = tds[2].find('img').get('alt','') if (airline := flight.findAirline()) == '-' else airline;
 
             flight.status = tds[3].get('status','');
             value =  re.search(r'gate\s+(\d+)',flight.status,re.IGNORECASE)  
@@ -142,7 +142,7 @@ class WMI_Scraper(BaseScraper):
 
             flight.origin = tds[0].find('a').text or ''
             flight.flightNum = tds[1].text or '';
-            flight.carrier = tds[2].find('img').get('alt','');
+            flight.carrier = tds[2].find('img').get('alt','') if (airline := flight.findAirline()) == '-' else airline;
 
             flight.status = tds[3].get('status','');
             value =  re.search(r'gate\s+(\d+)',flight.status,re.IGNORECASE)  

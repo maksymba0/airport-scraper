@@ -67,7 +67,8 @@ class RZE_Scraper(BaseScraper):
             flight_.time = time
             flight_.destination = tds[2].get_text() or ' '
             flight_.flightNum = tds[3].get_text() or ' '
-            flight_.carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
+            carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.status = tds[4].get_text() or ' '
             flight_.country = 'PL'
             flight = flight_.to_dict()
@@ -120,7 +121,8 @@ class RZE_Scraper(BaseScraper):
             flight_.time = time
             flight_.origin = tds[2].get_text() or ' '
             flight_.flightNum = tds[3].get_text() or ' '
-            flight_.carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
+            carrier = tds[0].find("img").get("alt","") if tds[0].find("img") else "-"
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.status = tds[4].get_text() or ' '
             flight_.country = 'PL'
              

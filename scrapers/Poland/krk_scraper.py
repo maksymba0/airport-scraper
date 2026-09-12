@@ -59,7 +59,8 @@ class KRK_Scraper(BaseScraper):
             flight_.origin = fl[0]["origin"].strip() if fl[0]["origin"] else ""
             flight_.destination = fl[0]["destination"].strip() if fl[0]["destination"] else ""
             flight_.flightNum = fl[0]["flight_no"].strip() if fl[0]["flight_no"] else ""
-            flight_.carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
+            carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.gate = fl[0]["gate_id"].strip() if fl[0]["gate_id"] else ""
             flight_.terminal = fl[0]["terminal"].strip() if fl[0]["terminal"] else ""
             flight_.status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""
@@ -102,7 +103,8 @@ class KRK_Scraper(BaseScraper):
             flight_.origin = fl[0]["origin"].strip() if fl[0]["origin"] else ""
             flight_.destination = fl[0]["destination"].strip() if fl[0]["destination"] else ""
             flight_.flightNum = fl[0]["flight_no"].strip() if fl[0]["flight_no"] else ""
-            flight_.carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
+            carrier =fl[0]["airline"].strip() if fl[0]["airline"] else ""
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.gate = fl[0]["gate_id"].strip() if fl[0]["gate_id"] else ""
             flight_.terminal = fl[0]["terminal"].strip() if fl[0]["terminal"] else ""
             flight_.status = fl[0]["remarks"].strip() if fl[0]["remarks"] else ""

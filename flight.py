@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
-
+from utils import get_airline_name
 class FlightFields:
     flightNum= "flightNum",
     date = "date",
@@ -48,3 +48,6 @@ class Flight:
             "was_delayed" : self.was_delayed,
             "country":self.country
         }
+    def findAirline(self):
+        return get_airline_name(self.flightNum)
+

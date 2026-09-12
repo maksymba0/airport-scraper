@@ -81,17 +81,7 @@ class SZZ_Scraper(BaseScraper):
             flight_.flightNum = tds[1].get_text(strip=True)
             flight_.status = tds[3].get_text(strip=True)
             carriertext = flight_.flightNum
-            flight_.carrier = ""
-            if "RR" in carriertext:
-                flight_.carrier = "RYANAIR"
-            elif "LO" in carriertext:
-                flight_.carrier = "LOT"
-            elif "W6" in carriertext:
-                flight_.carrier = "WIZZ AIR"
-            elif "FR" in carriertext:
-                flight_.carrier ="RYANAIR"
-            else:
-                flight_.carrier = carriertext
+            flight_.carrier = carriertext if (airline := flight_.findAirline()) == '-' else airline
             flight_.country = 'PL'
             flight = flight_.to_dict()
             flights.append(flight)
@@ -148,17 +138,7 @@ class SZZ_Scraper(BaseScraper):
             flight_.flightNum = tds[1].get_text(strip=True)
             flight_.status = tds[3].get_text(strip=True)
             carriertext = flight_.flightNum
-            flight_.carrier = ""
-            if "RR" in carriertext:
-                flight_.carrier = "RYANAIR"
-            elif "LO" in carriertext:
-                flight_.carrier = "LOT"
-            elif "W6" in carriertext:
-                flight_.carrier = "WIZZ AIR"
-            elif "FR" in carriertext:
-                flight_.carrier ="RYANAIR"
-            else:
-                flight_.carrier = carriertext
+            flight_.carrier = carriertext if (airline := flight_.findAirline()) == '-' else airline
             flight_.country = 'PL'
             flight = flight_.to_dict()
 

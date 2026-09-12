@@ -53,18 +53,8 @@ class LUZ_Scraper(BaseScraper):
             flight_.flightNum = tds[3].get_text() or ' '
             flight_.status = tds[5].get_text().split() or ' '
             carrierText = tds[4].find("img").get("alt") if tds[4].find("img") else "-"
-            flight_.carrier = "-"
-            if carrierText == "LO":
-            
-                flight_.carrier = "LOT"
-            elif carrierText == "W6":
-                flight_.carrier = "WIZZ AIR"
-            elif carrierText == "FR":
-                flight_.carrier = "RYANAIR"
-            elif carrierText == "E4":
-                flight_.carrier ="ENTER AIR"
-            else:
-                flight_.carrier = carrierText
+            flight_.carrier = carrierText if (airline := flight_.findAirline()) == '-' else airline
+             
             flight_.country = 'PL'
             flight = flight_.to_dict()
             
@@ -99,19 +89,9 @@ class LUZ_Scraper(BaseScraper):
             flight_.origin = tds[2].find("p").get_text() or ' '
             flight_.flightNum = tds[3].get_text() or ' '
             flight_.status = tds[5].get_text().split() or ' '
-            carrierText = tds[4].find("img").get("alt") if tds[4].find("img") else "-";
-            flight_.carrier = "-"
-            if carrierText == "LO":
-            
-                flight_.carrier = "LOT"
-            elif carrierText == "W6":
-                flight_.carrier = "WIZZ AIR"
-            elif carrierText == "FR":
-                flight_.carrier = "RYANAIR"
-            elif carrierText == "E4":
-                flight_.carrier ="ENTER AIR"
-            else:
-                flight_.carrier = carrierText
+            carrierText = tds[4].find("img").get("alt") if tds[4].find("img") else "-"
+            flight_.carrier = carrierText if (airline := flight_.findAirline()) == '-' else airline
+
             flight_.country = 'PL'
             flight = flight_.to_dict()
             flights_info.append(flight) 

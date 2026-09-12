@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as bs
 import json as JSON
 from datetime import datetime, timezone
 from flight import Flight
+from utils import get_airline_name
 
 class BCN_Scraper(BaseScraper):
 
@@ -72,11 +73,11 @@ class BCN_Scraper(BaseScraper):
             flight_.time = timedata[0] if timedata else ""
 
             flight_.flightNum = flightListFlightIDs.find('a',class_="flightListFlightIDLink").text or  ' '
-            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text or  ' ' 
+            name = flight_.findAirline()
+            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text if name == '-' else name 
             flightListStatus = flightListTimeStatus.find('div',class_="flightListStatus")
 
-            if flightListStatus:
-                print(flightListStatus)
+            if flightListStatus: 
                 flight_.status = flightListStatus.text or ' '
             else:
                 flightListStatus = flightListTimeStatus.find('div').text   
@@ -128,12 +129,12 @@ class BCN_Scraper(BaseScraper):
             flight_.time = timedata[0] if timedata else ""
 
             flight_.flightNum = flightListFlightIDs.find('a',class_="flightListFlightIDLink").text or  ' '
-            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text or  ' ' 
+            name = flight_.findAirline()
+            flight_.carrier = flightListFlightIDs.find('a',class_="flightListFlightIDAirline").text if name == '-' else name 
             flight_.airport = 'BCN'
             flightListStatus = flightListTimeStatus.find('div',class_="flightListStatus")
 
-            if flightListStatus:
-                print(flightListStatus)
+            if flightListStatus: 
                 flight_.status = flightListStatus.text or ' '
             else:
                 flightListStatus = flightListTimeStatus.find('div').text   

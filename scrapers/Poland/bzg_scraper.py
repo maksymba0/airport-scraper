@@ -58,7 +58,8 @@ class BZG_Scraper(BaseScraper):
             flight_.origin = key['airportNameEn'] or ' '
             flight_.flightNum = key['flightNumber'] or ' '
             flight_.date = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%d/%m/%Y") or ""
-            flight_.carrier = key['airlineName'] or ' '
+            carrier = key['airlineName'] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.gate = key['gateNumbers'] or ' '
             flight_.status = key['statusEn'] or ' '
             flight_.country = 'PL'
@@ -91,7 +92,8 @@ class BZG_Scraper(BaseScraper):
             flight_.time = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%H:%M") or ""
             flight_.origin = key['airportNameEn'] or ' '
             flight_.flightNum = key['flightNumber'] or ' '
-            flight_.carrier = key['airlineName'] or ' '
+            carrier = key['airlineName'] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.date = datetime.fromisoformat(time.replace("Z","+00:00")).strftime("%d/%m/%Y") or ""
             flight_.gate = key['gateNumbers'] or ' '
             flight_.status = key['statusEn'] or ' '

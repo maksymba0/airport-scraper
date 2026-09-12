@@ -54,21 +54,8 @@ class LCJ_Scraper(BaseScraper):
             flight.flightNum = tds[2].get_text() or ' '
             flight.status = tds[3].get_text() or ' '
             carriertext = flight.flightNum
-
-            flight.carrier = ""
-            if "RR" in carriertext:
-                flight.carrier = "RYANAIR"
-            elif "PC" in carriertext:
-                flight.carrier = "PEGASUS AIRLINES"
-            elif "ENT" in carriertext:
-                flight.carrier = "ENTER AIR"
-            elif "FR" in carriertext:
-                flight.carrier ="RYANAIR"
-            elif "KL" in carriertext:
-                flight.carrier = "Royal Dutch"
-            else:
-                flight.carrier = carriertext
-            flight_.country = 'PL'
+            flight.carrier = carriertext if (airline := flight.findAirline()) == '-' else airline
+            flight.country = 'PL'
             flight_ = flight.to_dict()
             flights_info.append(flight_) 
         return flights_info   
@@ -104,21 +91,9 @@ class LCJ_Scraper(BaseScraper):
             flight.origin = tds[1].get_text() or ' '
             flight.flightNum = tds[2].get_text() or ' '
             flight.status = tds[3].get_text() or ' '
-            carriertext = flight.flightNum
-            flight.carrier = ""
-            if "RR" in carriertext:
-                flight.carrier = "RYANAIR"
-            elif "PC" in carriertext:
-                flight.carrier = "PEGASUS AIRLINES"
-            elif "ENT" in carriertext:
-                flight.carrier = "ENTER AIR"
-            elif "FR" in carriertext:
-                flight.carrier ="RYANAIR"
-            elif "KL" in carriertext:
-                flight.carrier = "Royal Dutch"
-            else:
-                flight.carrier = carriertext
-            flight_.country = 'PL'
+            carriertext = flight.flightNum 
+            flight.carrier = carriertext if (airline := flight.findAirline()) == '-' else airline
+            flight.country = 'PL'
             
             flight_ = flight.to_dict()
 

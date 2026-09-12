@@ -68,7 +68,8 @@ class RDO_Scraper(BaseScraper):
             flight_.date = date
             flight_.destination = flight["destination"] or ' '
             flight_.flightNum = flight["flight_no"] or ' '
-            flight_.carrier = flight["airline"] or ' '
+            carrier = flight["airline"] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.status = flight["status_en"] or ' '
             flight_.country = 'PL'
 
@@ -116,7 +117,8 @@ class RDO_Scraper(BaseScraper):
             flight_.date = date
             flight_.origin = flight["origin_en"] or ' '
             flight_.flightNum = flight["flight_no"] or ' '
-            flight_.carrier = flight["airline"] or ' '
+            carrier = flight["airline"] or ' '
+            flight_.carrier = carrier if (airline := flight_.findAirline()) == '-' else airline
             flight_.status = flight["status_en"] or ' '
             flight_.country = 'PL'
             

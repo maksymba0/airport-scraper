@@ -54,7 +54,8 @@ class SZY_Scraper(BaseScraper):
             flight_.destination = destt or ' '
             text = tds[1].get_text().split()
             flight_.flightNum = f"{text[1]} {text[2]}".replace("(","").replace(")","")
-            flight_.carrier = text[0]
+            
+            flight_.carrier = text[0] if (airline := flight_.findAirline()) == '-' else airline 
             flight_.status = tds[3].get_text() or ' '
             flight_.country = 'PL'
             flight = flight_.to_dict()
@@ -96,17 +97,7 @@ class SZY_Scraper(BaseScraper):
             text = tds[1].get_text().split()
             flight_.flightNum = f"{text[1]} {text[2]}".replace("(","").replace(")","")
             carriertext = text[0]
-            flight_.carrier = ""
-            if "RR" in carriertext:
-                flight_.carrier = "RYANAIR"
-            elif "LO" in carriertext:
-                flight_.carrier = "LOT"
-            elif "W6" in carriertext:
-                flight_.carrier = "WIZZ AIR"
-            elif "FR" in carriertext:
-                flight_.carrier ="RYANAIR"
-            else:
-                flight_.carrier = carriertext
+            flight_.carrier = carriertext if (airline := flight_.findAirline()) == '-' else airline 
             flight_.country = 'PL'
             flight = flight_.to_dict()
 
