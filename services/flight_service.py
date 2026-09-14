@@ -8,7 +8,7 @@ from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
 from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper, pmi_scraper, lpa_scraper
-from scrapers.Italy import bgy_scraper
+from scrapers.Italy import bgy_scraper, fco_scraper, nap_scraper
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +23,7 @@ from utils import get_airline_name
 class FlightService:
     @staticmethod
     def testFunc():
-        something = bgy_scraper.BGY_Scraper("")
+        something = nap_scraper.NAP_Scraper("")
         departures = something.getDepartures() 
         return departures
     @staticmethod
@@ -79,7 +79,8 @@ class FlightService:
                 },
                 "IT":
                 {
-                    "BGY" : bgy_scraper.BGY_Scraper("https://www.avionio.com/widget/en/lpa/departures")
+                    "BGY" : bgy_scraper.BGY_Scraper("https://www.avionio.com/widget/en/lpa/departures"),
+                    "FCO" : fco_scraper.FCO_Scraper("-")
                 },
                 "DE":{},
         }
