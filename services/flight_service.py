@@ -24,7 +24,7 @@ class FlightService:
     @staticmethod
     def testFunc():
         something = nap_scraper.NAP_Scraper("")
-        departures = something.getDepartures() 
+        departures = something.getArrivals() 
         return departures
     @staticmethod
     def get_flights(force_refresh: bool = False, countries : str = "all", airports : str = "all") -> dict:
@@ -80,7 +80,8 @@ class FlightService:
                 "IT":
                 {
                     "BGY" : bgy_scraper.BGY_Scraper("https://www.avionio.com/widget/en/lpa/departures"),
-                    "FCO" : fco_scraper.FCO_Scraper("-")
+                    "FCO" : fco_scraper.FCO_Scraper("-"),
+                    "NAP" : nap_scraper.NAP_Scraper("-")
                 },
                 "DE":{},
         }

@@ -37,22 +37,23 @@ class NAP_Scraper(BaseScraper):
                 "Content-Type": "application/json"
             }
         
-        data = self.makeRequestHTML("https://www.aeroportodinapoli.it/en/departures", headers=headers)  #(url=None, headers=None, method=None):
+        data = self.makeRequestHTML("https://www.avionio.com/widget/en/nap/departures", headers=headers)  #(url=None, headers=None, method=None):
 
         data_ = bs(data.text,"html.parser") 
-
-        departures = data_.find_all('div',class_='single-flight row')
  
-        rows = departures
+        departures = data_.find('table',class_='tt').find('tbody')
+
+        target_rows = departures.select('tr.tt-row.estimated')
+
         
-        print(f"Found {len(data_)} elements")
+        print(f"Found {len(target_rows)} elements")
 
         flights_info = []
-        for record in rows:
+        for record in target_rows: 
+ 
+            elements = record.find_all('td') 
 
-            elements = record
-    
-            raw_text = record.select_one('.timetables .expected')
+            raw_text = elements[0]
             tdate = raw_text.text.strip() or " "
 
             
@@ -64,15 +65,15 @@ class NAP_Scraper(BaseScraper):
             
             flight_.date = date
              
-            flight_.destination = record.select_one('.flight-info .col info')
+            flight_.destination = elements[3].text.strip() or ' '
 
 
 
-            flight_.flightNum = elements['flights'][0]['number']
+            flight_.flightNum = elements[4].find('a').text.strip() or ' '
 
             flight_.carrier = flight_.flightNum if (airline := flight_.findAirline()) == '-' else airline
 
-            flightListStatus = elements['status']['description']
+            flightListStatus = elements[6].text.strip() or ' '
 
             flight_.status = flightListStatus or ' '
 
@@ -89,23 +90,29 @@ class NAP_Scraper(BaseScraper):
     def getArrivals(self):
  
         print("downloading") 
+        headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Content-Type": "application/json"
+        } 
+        data = self.makeRequestHTML("https://www.avionio.com/widget/en/nap/arrivals", headers=headers)  #(url=None, headers=None, method=None):
         
-        data = self.makeRequestHTML("https://www.milanbergamoairport.it/en/real-time-flights/")  #(url=None, headers=None, method=None):
-                
-        data_ = bs(data.text,"html.parser")
+        data_ = bs(data.text,"html.parser") 
+    
+        departures = data_.find('table',class_='tt').find('tbody')
 
-        arrivals = data_.find('div',id="arr-table")
-        rows = arrivals.find('tbody').find_all('tr') 
+        target_rows = departures.select('tr.tt-row.estimated')
 
-        print(f"Found {len(data_)} elements")
+        
+        print(f"Found {len(target_rows)} elements")
 
         flights_info = []
-        for record in rows:
+        for record in target_rows: 
+    
+            elements = record.find_all('td') 
 
-            elements = record.find_all('td')
- 
-            raw_text = elements[3].text.strip().replace('"', '')
-            tdate = raw_text.split()[1] if raw_text else " "
+            raw_text = elements[0]
+            tdate = raw_text.text.strip() or " "
+
             
             flight_ = Flight()
 
@@ -113,15 +120,17 @@ class NAP_Scraper(BaseScraper):
             
             date = datetime.today().strftime('%d/%m/%Y') or ' '
             
-            flight_.date = date 
-                 
-            flight_.origin = next(elements[2].stripped_strings, " ").replace('"', '')
-            flight_.flightNum = elements[1].text.strip().replace('"', '') or  ' '
-    
+            flight_.date = date
+                
+            flight_.origin = elements[3].text.strip() or ' '
+
+
+
+            flight_.flightNum = elements[4].find('a').text.strip() or ' '
 
             flight_.carrier = flight_.flightNum if (airline := flight_.findAirline()) == '-' else airline
 
-            flightListStatus = elements[5].text.strip().replace('"', '') or ' '
+            flightListStatus = elements[6].text.strip() or ' '
 
             flight_.status = flightListStatus or ' '
 
