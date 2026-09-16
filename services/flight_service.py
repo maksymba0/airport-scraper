@@ -8,7 +8,9 @@ from flask import Flask, jsonify, render_template, request
 
 from scrapers.Poland import bzg_scraper, gdn_scraper, krk_scraper, ktw_scraper, lcj_scraper, luz_scraper, poz_scraper, rdo_scraper, rze_scraper, szy_scraper, szz_scraper, waw_scraper, wmi_scraper
 from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper, pmi_scraper, lpa_scraper
-from scrapers.Italy import bgy_scraper, fco_scraper, nap_scraper
+from scrapers.Italy import bgy_scraper, fco_scraper, nap_scraper, cta_scraper, mxp_scraper
+from scrapers.Germany import ber_scraper, fra_scraper, muc_scraper
+from scrapers.French import bva_scraper, cdg_scraper, mrs_scraper, nce_scraper, tls_scraper
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +25,7 @@ from utils import get_airline_name
 class FlightService:
     @staticmethod
     def testFunc():
-        something = nap_scraper.NAP_Scraper("")
+        something = mxp_scraper.MXP_Scraper("")
         departures = something.getArrivals() 
         return departures
     @staticmethod
@@ -81,9 +83,22 @@ class FlightService:
                 {
                     "BGY" : bgy_scraper.BGY_Scraper("https://www.avionio.com/widget/en/lpa/departures"),
                     "FCO" : fco_scraper.FCO_Scraper("-"),
-                    "NAP" : nap_scraper.NAP_Scraper("-")
+                    "NAP" : nap_scraper.NAP_Scraper("-"),
+                    "CTA" : cta_scraper.CTA_Scraper("-"),
+                    "MXP" : mxp_scraper.MXP_Scraper("-")
                 },
-                "DE":{},
+                "DE":{
+                    "BER" : ber_scraper.BER_Scraper("-"),
+                    "FRA" : fra_scraper.FRA_Scraper("-"),
+                    "MUC" : muc_scraper.MUC_Scraper("-")
+                },
+                 "FR":{
+                    "BVA" : ber_scraper.BER_Scraper("-"),
+                    "CDG" : fra_scraper.FRA_Scraper("-"),
+                    "MRS" : mrs_scraper.MRS_Scraper("-"),
+                    "NCE" : nce_scraper.NCE_Scraper("-"),
+                    "TLS" : tls_scraper.TLS_Scraper("-")
+                },               
         }
 
 
