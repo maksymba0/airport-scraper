@@ -3,6 +3,8 @@
 A Python-based tracking tool designed to gather live airport data. The goal is to collect and centralize flight schedules from various airport sources for easy monitoring and logging.
 
 ### ✈️ Supported Airports
+
+#### 🇵🇱 Poland (PL)
 | Code | Airport Name | Region / City |
 | :---: | :--- | :--- |
 | **GDN** | Gdańsk Lech Wałęsa Airport | Gdańsk |
@@ -20,6 +22,40 @@ A Python-based tracking tool designed to gather live airport data. The goal is t
 | **SZY** | Port Lotniczy Olsztyn-Mazury | Olsztyn |
 | **BZG** | Port Lotniczy Bydgoszcz | Bydgoszcz |
 
+#### 🇮🇹 Italy (IT)
+| Code | Airport Name | Region / City |
+| :---: | :--- | :--- |
+| **NAP** | Naples International Airport | Naples |
+| **FCO** | Rome Fiumicino Airport | Rome |
+| **BGY** | Bergamo Airport | Bergamo |
+| **CTA** | Catania Airport | Catania |
+| **MXP** | Milan-Malpensa Airport | Milan |
+
+#### 🇩🇪 Germany (DE)
+| Code | Airport Name | Region / City |
+| :---: | :--- | :--- |
+| **BER** | Berlin Brandenburg Airport | Berlin |
+| **FRA** | Frankfurt International Airport | Frankfurt |
+| **MUC** | Munich Airport | Munich |
+
+#### 🇫🇷 France (FR)
+| Code | Airport Name | Region / City |
+| :---: | :--- | :--- |
+| **BVA** | Paris Beauvais Airport | Beauvais |
+| **CDG** | Paris Charles de Gaulle Airport | Paris |
+| **MRS** | Marseille Airport | Marseille |
+| **NCE** | Nice Airport | Nice |
+| **TLS** | Toulouse Airport | Toulouse |
+
+#### 🇪🇸 Spain (ES)
+| Code | Airport Name | Region / City |
+| :---: | :--- | :--- |
+| **ALC** | Alicante–Elche Miguel Hernández Airport | Alicante |
+| **MAD** | Madrid Barajas Airport | Madrid |
+| **BCN** | Barcelona El Prat Airport | Barcelona |
+| **PMI** | Palma de Mallorca Airport | Palma de Mallorca |
+| **LPA** | Gran Canaria Airport | Gran Canaria |
+
 ## Future Plans
 * Add support for tracking more regional and international airports.
 * **UX/UI Enhancements**: Improve the web design for easier access to airport tables information, ensuring a clean, responsive layout for desktop and mobile users.
@@ -30,10 +66,13 @@ A pivot table made with the exported CSV file, showing the top 3 airlines with t
 
 
 Page display now
-<img width="1892" height="870" alt="image" src="https://github.com/user-attachments/assets/3883443f-f664-4200-81dd-d021224483b4" />
+<img width="1442" height="820" alt="image" src="https://github.com/user-attachments/assets/0690a0ce-50a8-4de3-9902-9a63176a5c12" />
+
 
 
 Page display before
+<img width="1892" height="870" alt="image" src="https://github.com/user-attachments/assets/3883443f-f664-4200-81dd-d021224483b4" />
+
 <img width="1117" height="577" alt="image" src="https://github.com/user-attachments/assets/f9c138ec-51d3-4467-9df9-1e37df122328" />
 * (Data may not be accurate)
 <img width="1896" height="678" alt="image" src="https://github.com/user-attachments/assets/4ea17b90-08c1-4f6d-9004-a2e880e55541" />
