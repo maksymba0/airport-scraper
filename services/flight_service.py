@@ -11,6 +11,7 @@ from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper, pmi_scraper, l
 from scrapers.Italy import bgy_scraper, fco_scraper, nap_scraper, cta_scraper, mxp_scraper
 from scrapers.Germany import ber_scraper, fra_scraper, muc_scraper
 from scrapers.French import bva_scraper, cdg_scraper, mrs_scraper, nce_scraper, tls_scraper
+from scrapers.Greece import ath_scraper
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -98,7 +99,10 @@ class FlightService:
                     "MRS" : mrs_scraper.MRS_Scraper("-"),
                     "NCE" : nce_scraper.NCE_Scraper("-"),
                     "TLS" : tls_scraper.TLS_Scraper("-")
-                },               
+                },   
+                "FR":{
+                    "ATH" : ath_scraper.ATH_Scraper("-"),
+                },             
         }
 
 
