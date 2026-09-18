@@ -338,8 +338,6 @@ def save_to_db(flights):
         was_delayed = 'delay' in status or 'opó' in status
 
 
-
-
         query = """
         INSERT INTO flights 
         (airport,type,airline,flight_number,destination,date,scheduled_time,gate,terminal,status, was_delayed, country) 
