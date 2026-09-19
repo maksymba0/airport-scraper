@@ -11,7 +11,15 @@ from scrapers.Spain import alc_scraper, bcn_scraper, mad_scraper, pmi_scraper, l
 from scrapers.Italy import bgy_scraper, fco_scraper, nap_scraper, cta_scraper, mxp_scraper
 from scrapers.Germany import ber_scraper, fra_scraper, muc_scraper
 from scrapers.French import bva_scraper, cdg_scraper, mrs_scraper, nce_scraper, tls_scraper
-from scrapers.Greece import ath_scraper
+from scrapers.Greece import ath_scraper, skg_scraper
+from scrapers.Lithuania import kun_scraper, vno_scraper
+from scrapers.Norway import osl_scraper
+from scrapers.Portugal import fnc_scraper,lis_scraper,opo_scraper
+from scrapers.Switzerland import zrh_scraper
+from scrapers.Denmark import aar_scraper,bll_scraper,cph_scraper
+from scrapers.Estonia import tll_scraper
+from scrapers.Finland import hel_scraper, rvn_scraper
+
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -94,17 +102,44 @@ class FlightService:
                     "MUC" : muc_scraper.MUC_Scraper("-")
                 },
                  "FR":{
-                    "BVA" : ber_scraper.BER_Scraper("-"),
-                    "CDG" : fra_scraper.FRA_Scraper("-"),
+                    "BVA" : bva_scraper.BVA_Scraper("-"),
+                    "CDG" : cdg_scraper.CDG_Scraper("-"),
                     "MRS" : mrs_scraper.MRS_Scraper("-"),
                     "NCE" : nce_scraper.NCE_Scraper("-"),
                     "TLS" : tls_scraper.TLS_Scraper("-")
                 },   
-                "FR":{
+                "GR":{
                     "ATH" : ath_scraper.ATH_Scraper("-"),
+                    "SKG" : skg_scraper.SKG_Scraper("-")
                 },             
-        }
-
+                "LT":{
+                    "KUN" : kun_scraper.KUN_Scraper("-"),
+                    "VNO" : vno_scraper.VNO_Scraper("-")
+                },
+                "NW":{
+                    "OSL" : osl_scraper.OSL_Scraper("-")
+                },
+                "PT":{
+                    "FNC" : fnc_scraper.FNC_Scraper("-"),
+                    "LIS" : lis_scraper.LIS_Scraper("-"),
+                    "OPO" : opo_scraper.OPO_Scraper("-"),
+                },
+                "SW":{
+                    "ZRH" : zrh_scraper.ZRH_Scraper("-")
+                },
+                "DK":{
+                    "AAR" : aar_scraper.AAR_Scraper("-"),
+                    "BLL" : bll_scraper.BLL_Scraper("-"),
+                    "CPH" : cph_scraper.CPH_Scraper("-")
+                },
+                "ET":{
+                    "TLL" : tll_scraper.TLL_Scraper("-")
+                },
+                "FL":{
+                    "HEL" : hel_scraper.HEL_Scraper("-"),
+                    "RVN" : rvn_scraper.RVN_Scraper("-")
+                },
+        }  
 
         
         all_flights = []
